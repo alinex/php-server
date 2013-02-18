@@ -1,0 +1,6 @@
+/** @namespace Alinex\Storage\ImportExport
+
+This classes allow the export and import of values from and to the key-value
+storages.
+
+*/

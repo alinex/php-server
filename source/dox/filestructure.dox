@@ -1,0 +1,57 @@
+/** @page filestructure File System Structure
+
+@section development Development Environment
+
+This defines the top structure.
+
+@verbatim
+  /bin/...       console commands to help managing the development
+  /server/...    PHP server development
+    source/...      code
+    test/...        unit tests
+    example/...     example code used in documentation
+    translation/... translation files
+    vendor/...      foreign libraries
+    www/...         static files
+  /client/...    qooxdoo client development
+    source/...      code
+    translation/... translation files
+    resource/...    client resource files
+  /lib/...       external libraries needed for development
+  /doc/...       additional documentation
+  /temp/...      temporary files in development
+  /www/...       direct use of development environment
+  /build/...     optimized version for productive use
+  /pack/...      released packages
+@endverbatim
+
+@section test Test Environment (/www)
+
+This can be used withouz time consuming build processes direct while coding.
+
+@verbatim
+  /index.php     Start page
+  /res/...       Resources for start page
+  /app/...       UserInterface based on qooxdoo
+  /srv/...       Json Server (PHP)
+    lib/...      code library
+    vnd/...      vendor libraries
+    tr/...       translation files
+    tpl/...      templates
+  /doc/...       Developer documentation
+  /bin/...       binaries (worker)
+@endverbatim
+
+@section build Build Environmen (/build)
+
+This resembles the final structure like on the public system. The same is in
+the packages.
+
+@verbatim
+  /index.php     Start page
+  /res/...       Resources for start page
+  /app/...       UserInterface based on qooxdoo
+  /srv/...       Json Server (PHP)
+@endverbatim
+
+*/

@@ -1,0 +1,8 @@
+/** @namespace Alinex
+
+Base platform for generating cloud applications.
+
+To use this platform you have to add the Alinex::Autoloader within your
+bootstrap.php file.
+
+*/

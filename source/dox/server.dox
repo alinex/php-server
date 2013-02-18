@@ -1,0 +1,10 @@
+/** @page server Server Platform
+
+This page should give an short overview of the server part.
+
+\image html server/architecture.png
+\image latex server/architecture.png "Architecture" width=10cm
+
+Read more about specific areas under @ref description.
+
+*/

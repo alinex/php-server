@@ -1,0 +1,133 @@
+/** @page docStyleguide Documentation Styleguide
+
+This page covers the standards for documentation in Alinex code.
+
+
+@section generalDocStyle General documentation standards
+
+These standards apply to both in-line and header comments:
+- All documentation and comments should form proper sentences and use proper
+grammar and punctuation.
+- Sentences should be separated by single spaces.
+- Comments and variable names should be in English, and use US English spelling
+(e.g., "color" not "colour").
+- All caps are used in comments only when referencing constants, for example
+TRUE
+- Comments should be word-wrapped if the line length would exceed 80 characters
+(i.e., go past the 80th column, including any leading spaces and comment
+characters in the 80 character count). They should be as long as possible within
+the 80-character limit. There are a few exceptions to this, which are noted in
+sections below. (@@code, @@link, and annotations are the main ones).
+
+
+@section inlineDocStyle In-line comment standards
+
+Non-header or in-line comments are strongly encouraged. A general rule of
+thumb is that if you look at a section of code and think "Wow, I don't want to
+try and describe that", you need to comment it before you forget how it works.
+Comments should be on a separate line immediately before the code line or block
+they reference. For example:
+@code
+// Unselect all other contact categories.
+db_query('UPDATE {contact} SET selected = 0');
+@endcode
+
+If each line of a list needs a separate comment, the comments may be given on
+the same line and may be formatted to a uniform indent for readability.
+
+C style comments (/* ... * /) and standard C++ comments (//) are both fine, though
+the former is discouraged within functions (even for multiple lines, repeat
+the // single-line comment). Use of Perl/shell style comments (#) is
+only used within this languages.
+
+
+@section headerDocStyle General header documentation syntax
+
+To document a block of code, such as a file, function, class, method, constant,
+etc., the syntax we use is:
+@verbatim
+/**
+* Documentation here.
+*/
+@endverbatim
+
+Doxygen will parse any comments located in such a block. Any mentions of
+functions, classes, file names, topics, etc. within the documentation will
+automatically link to the referenced code, so typically no markup need be
+introduced to produce links. The documentation block should appear immediately
+before the function, class, method, etc. that is being documented, with no blank
+lines in between.
+
+
+@section doxygenTags Used doxygen tags
+
+The following tags from doxygen http://www.stack.nl/~dimitri/doxygen/manual.html
+are used:
+
+File and Class description:
+- @@author - author name like:  @@author Alexander Schilling <info@alinex.de>
+- @@copyright - like: @@copyright 2002-2013 Alexander Schilling (@@ref Copyright)
+- @@license - license information like: @@license All Alinex code is released
+under the GNU General Public @@ref License.
+
+Code tags:
+- @@param - parameter description
+- @@return - return information
+- @@throw - Exception description
+- @@var - variable description
+
+General Attributes:
+- @@see - link to other docs or urls like: @@see http://alinex.de Alinex Project
+- @@link...@@endlink - link to object with individual link text
+- @@ref - link to named page, section or subsection
+- @@todo
+- @@note
+- @@attention
+- @@warning
+- @@internal...@@endinternal - mark as internal doc
+
+Writing source code:
+- @@code...@@endcode - inline code example
+- @@verbatim...@@endverbatim
+- @@example - link to example code file
+- @@include - include external example code inline
+- @@verbinclude - include verbatim text
+- @@dontinclude with @@skip @@line @@until @@skipline
+
+Helper functions:
+- @@copydoc - copy documentation from other element
+@verbatim
+  /** @@copydoc MyClass::myfunction()
+   *  More documentation.
+   */
+@endverbatim
+
+Formating:
+- \\b - bold word or <b>...</b> for phrase
+- \\c - typewriter word or <tt>...</tt> for phrase
+- \\e - emphasize word or <em>...</em> for phrase
+- \\n - add newline
+
+Graphic generation:
+- @@msc, @@mscfile - add a sequence chart like on
+http://www.mcternan.me.uk/mscgen/
+- @@dot, @@dotfile - directed graphs described on
+http://graphviz.org/content/dot-language
+
+Special documentation pages in *.dox files:
+- @@file - doc block for file
+- @@namespace - information for namespace
+- @@page - related page
+- @@subpage - link to subpage
+- @@section - create a section within the page
+- @@subsection - create a subsection
+- @@tableofcontents - add a table of contents with all sections on top
+- @@defgroup, @@ingroup, @@addtogroup - see http://www.doxygen.nl/grouping.html
+
+
+@section groupsDocStyle Doxygen groups which are used
+
+- registryEntry
+- entity
+
+*/

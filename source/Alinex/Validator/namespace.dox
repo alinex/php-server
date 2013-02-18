@@ -1,0 +1,45 @@
+/** @namespace Alinex\Validator
+
+This classes are used to check each value which comes from out of the
+system before it is used.\n
+This classes are used to prevent problems and make the system more stable and
+secure.
+
+The validation methods are splitted into different classes which may be used
+directly or through the Validator class methods. All validation methods follow
+the same basics:
+
+They will be called with:
+- value to be checked
+- name of origin
+- method specific check options
+
+The validation will try to sanitize the data.
+If the check fails an Alinex\Validator\Exception will be thrown.\n
+To do the work the php validation and sanitize filters are also used.
+
+Additionally every validator may be called through Exec::call().
+
+@section Validator
+
+Each validator is a static method with the same parameters:
+- mixed   $value    value to be checked
+- string  $name     readable origin identification
+- array   $options  specific settings
+
+For each validator a ...Decription function have to be set up, which is also
+static and have the options as parameters. This will be called from
+the Exception and Exec::describe() method.
+
+Some validators are simplified versions of the base types for common use.
+
+<b>Use in assert</b>
+
+The validators can be used inside of assert() calls to also check internal
+interfaces for correct data type but you should avoid the use of sanitizing
+options there. Because if system runs in production mode you miss the sanitizing
+and may run into problems.
+
+@see http://www.php.net/manual/en/filter.filters.validate.php
+@see http://www.php.net/manual/en/filter.filters.sanitize.php
+*/

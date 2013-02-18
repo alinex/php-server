@@ -1,0 +1,30 @@
+/** @page features System Features
+
+The features are divided into different areas of interest:
+- @ref developer
+- @ref platform
+
+@section developer Developer Features
+
+- well documented concept
+- style and code guides
+- shell based development system
+- documentation system integrated
+- full asserts running in development mode
+- complete unit test coverage
+
+@section platform Platform Features
+
+- autloloading\n
+  platform, vendor and system files
+- value validation\n
+  to be used for security checks
+- registry\n
+  global storage of general configuration settings
+- logging\n
+  configuerable for advanced logging strategies
+- multilingual support\n
+  for easy use and translation
+
+
+*/

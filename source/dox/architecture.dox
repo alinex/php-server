@@ -1,0 +1,26 @@
+/** @page architecture Software Architecture
+
+This page describes the software architecture to give an overview of which
+parts work in which way together.
+
+@section usage Overview of Usage
+
+The server part itself mostly won't deliver ready to display web pages but exchange data structures via rpc
+calls from the qooxdoo clients. All incoming rpc calls will be send to the \c index.php script which will
+initialize the system and gives control to the RpcServers as front controller.
+
+The server has an web based installer application, which will guide and do most of the installation itself
+(if possible).
+
+An background daemon called worker may be used to do some tasks. This will run independently from the web interface
+and can be controlled by command line. All of this tasks can also be called by cron.
+
+- @subpage filestructure
+- @subpage server
+- @subpage client
+
+@section moreArchitecture More
+
+Coming links to subpages like security, database
+
+*/

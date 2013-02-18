@@ -1,0 +1,104 @@
+/** @page roadmap Roadmap
+
+This page shows the current status of the system and the further planned versions and ideas:
+- \ref current
+- \ref version02
+- \ref version03
+- \ref ideas
+
+@section current Current Version 0.1-devel
+
+@note Planned to be finished in January 2012
+
+@warning This is a development Version and should not be used for productive 
+purpose. It is never approved nor completed, yet.
+
+This Version has the following abilities:
+- well documented concept
+- base structure defined
+- development system set up
+- style and code guides
+- documentation system integrated
+- complete unit test coverage
+
+The server implements:
+- autloloading
+- value validation
+- Registry
+- multilingual support
+
+
+@section version02 Next Version will be 0.2-devel
+
+@note Planned to be finished in April 2013
+
+Planned abilities:
+- rudimentary server running
+- first test client working
+
+The server application has:
+- session management
+- integrated database abstraction
+- object-relation-mapper database integration
+- security system integrated
+- performance optimization
+- flexible rpc server with service system
+- installer program
+
+The client is just now very thin and can only:
+- display flexible menu bar
+- switch lanbguage (with server sync)
+- call rpc methods
+- integrated help system
+- basic authentication call
+
+@section version03 Next Version will be 0.3-devel
+
+@note Planned to be finished in August 2013
+
+In this version the basic system is completed:
+- authentication should be working
+- login/logout
+- registration should be done in client and server
+
+
+@section version04 Version 0.4-devel
+
+This should contain a user management application.
+
+@section ideas More Ideas to be done anytime
+
+Logger
+- XMPP / Messaging Logger http://code.google.com/p/xmpphp/ http://www.ibm.com/developerworks/xml/tutorials/x-alertxmpptut/section4.html
+- icq, gtalk logger
+- SMS Logger
+- SqlLogger über PDO
+- SocketLogger
+- Memcache logger
+
+RPC
+- JSON support binary data BSON http://en.wikipedia.org/wiki/BSON
+- YAML support http://en.wikipedia.org/wiki/YAML
+- POST server which sends data as multipart form
+- binary fomats like:
+  - SDXF http://en.wikipedia.org/wiki/SDXF
+  - XDR http://en.wikipedia.org/wiki/External_Data_Representation
+- XML REST as alternative to classic RPC
+
+Online Help
+ - integrate link checker
+
+Login
+- Encrypt passwort on client side before sending
+- LDAP, IMAP, POP3, NNTP, Radius, Externe Datenbank, PAM Passwortprüfung
+- CAS  Anmeldung über Anmeldedienst
+- SSO Integration
+
+Shell access
+- IPC class
+- parallel processing support
+
+Functions
+- TaskManager
+
+*/

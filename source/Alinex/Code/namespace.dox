@@ -1,0 +1,5 @@
+/** @namespace Alinex\Code
+
+Code management functionality like Autoloader, error- and assert handler.
+
+*/
