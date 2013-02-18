@@ -1,4 +1,4 @@
-alinex-server
+Alinex Server
 =============
 
 PHP Development Platform
