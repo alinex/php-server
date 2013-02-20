@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Storage keeping values in user sessiom.
+ * Storage keeping values in the local filesystem.
  *
  * @author    Alexander Schilling <info@alinex.de>
  * @copyright 2009-2013 Alexander Schilling (\ref Copyright)
@@ -16,32 +16,39 @@ use Alinex\Storage\Engine;
 use Alinex\Util\String;
 
 /**
- * Storage keeping values in user session.
- *
- * This class will store the key-value pairs in the user session storage. This
- * scope will be kept locally, globally or persistent depending on the session
- * configuration.
- *
- * All values stored through this registry will be prefixed and stored in the
- * APC user-cache. To use more than one instance of this registry you may use
- * different prefixes. Also use the prefix wisely to prevent collision with
- * other librarys and php routines on the same machine.
+ * Storage keeping values in the local filesystem.
  */
-class Session extends Engine
+class Directory extends Engine
 {
     /**
-     * Constructor
-     *
-     * The session handling will be started if not allready done and the
-     * storage array will be added.
-     *
-     * @param string $context special name of this instance
+     * Directory to store values as files.
+     * @var string
      */
-    protected function __construct($context)
+    protected $_dir = null;
+
+    /**
+     * Set the storage directory.
+     *
+     * @param string $dir path to store files to
+     * @return string value set
+     */
+    protected function setDirectory($dir)
     {
-        parent::__construct($context);
-        // start session if not done
-        @session_start();
+        assert(\Alinex\Validator::is(
+            $dir, 'storage-directory', 'IO::path',
+            array('writable' => true)
+        ));
+        $this->_dir = $dir;
+        // create directory if not existing
+        mkdir($dir);
+    }
+    
+    private keyToPath($key)
+    {
+        
+        
+        
+        return $path;
     }
 
     /**
@@ -59,8 +66,12 @@ class Session extends Engine
             $this->remove($key);
             return null;
         }
+        if (!isset($this->_dir))
+            throw new Exception(
+                tr("Engine not configured, need directory to store")
+            );
         $this->checkKey($key);
-        return $_SESSION[$this->_context.$key] = $value;
+        return apc_store($this->_context.$key, $value, $this->_ttl);
     }
 
     /**
@@ -71,11 +82,7 @@ class Session extends Engine
      */
     public function remove($key)
     {
-        if (isset($_SESSION[$this->_context.$key])) {
-            unset($_SESSION[$this->_context.$key]);
-            return TRUE;
-        }
-        return FALSE;
+        return apc_delete($this->_context.$key);
     }
 
     /**
@@ -87,9 +94,8 @@ class Session extends Engine
     public function get($key)
     {
         $this->checkKey($key);
-        return isset($_SESSION[$this->_context.$key])
-            ? $_SESSION[$this->_context.$key]
-            : NULL;
+        return apc_exists($this->_context.$key) ?
+                apc_fetch($this->_context.$key) : NULL;
     }
 
     /**
@@ -101,46 +107,48 @@ class Session extends Engine
     public function has($key)
     {
         $this->checkKey($key);
-        return isset($_SESSION[$this->_context.$key]);
+        return apc_exists($this->_context.$key);
     }
 
     /**
      * Get the list of keys
      *
+     * @note This is done by searching through the APC cache and collecting all
+     * registry keys because of the prefix.
+     *
      * @return array   list of key names
      */
     public function keys()
     {
-        if (!isset($_SESSION) || !count($_SESSION))
-            return array();
-        $context = $this->_context;
-        return array_filter(
-            array_keys($_SESSION),
-            function($item) use ($context) {
-                return String::startsWith($item, $context);
-            }
-        );
+        $keys = array();
+        $info = apc_cache_info('user');
+        foreach ($info['cache_list'] as $entry)
+            if (String::startsWith($entry['info'], $this->_context))
+                $keys[] = substr($entry['info'], strlen($this->_context));
+        return $keys;
     }
-
+    
     /**
-     * Scope of the engine.
+     * Persistence level of the engine.
      * @var int
      */
-    protected $_scope = Engine::SCOPE_SESSION;
+    protected $_persistence = Engine::PERSISTENCE_MEDIUM;
 
     /**
      * Performance level of the engine.
      * @var int
      */
-    protected $_performance = Engine::PERFORMANCE_MEDIUM;
+    protected $_performance = Engine::PERFORMANCE_HIGH;
 
     /**
      * Size quotes to select best Cache engine.
      * @var array
      */
     protected $_limitSize = array(
+        1000000 => 0,
         100000 => 0.2,
-        1000 => 0.5
+        10000 => 0.5,
+        1000 => 0.8
     );
     
 }

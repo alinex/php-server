@@ -12,7 +12,7 @@
  * @see       http://alinex.de
  */
 
-use Alinex\Registry;
+use Alinex\Storage\Registry;
 use Alinex\Code;
 use Alinex\Util\I18n;
 

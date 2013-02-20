@@ -8,10 +8,10 @@ This list contains all things to be done in the system:
 @section next Next steps (for current release)
 
 - Cache
-  - add storage with rules
-  - rules scope = global/local/session
-  - rules size of data
-  - rules type = scalar/list/hash/structure/object
+  - asserts
+  - test
+- Engine asserts
+- Engine Directory
 
 I18n
 - bootstrap set local

@@ -13,6 +13,7 @@
 namespace Alinex\Storage\Engine;
 
 use Alinex\Storage;
+use Alinex\Storage\Engine;
 
 /**
  * Storage keeping values in local array.
@@ -27,7 +28,7 @@ use Alinex\Storage;
  *
  * @see Storage
  */
-class ArrayList extends Storage\Engine
+class ArrayList extends Engine
 {
     /**
      * Storage for context with values
@@ -152,5 +153,19 @@ class ArrayList extends Storage\Engine
     {
         return count($this->_storage);
     }
+
+    /**
+     * Performance level of the engine.
+     * @var int
+     */
+    protected $_performance = Engine::PERFORMANCE_HIGH;
+
+    /**
+     * Size quotes to select best Cache engine.
+     * @var array
+     */
+    protected $_limitSize = array(
+        1000000 => 0 // not more than 1Mio characters per entry
+    );
 
 }

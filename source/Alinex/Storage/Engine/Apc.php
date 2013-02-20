@@ -12,7 +12,7 @@
 
 namespace Alinex\Storage\Engine;
 
-use Alinex\Storage;
+use Alinex\Storage\Engine;
 use Alinex\Util\String;
 
 /**
@@ -35,7 +35,7 @@ use Alinex\Util\String;
  * different prefixes. Also use the prefix wisely to prevent collision with
  * other librarys and php routines on the same machine.
  */
-class Apc extends Storage\Engine
+class Apc extends Engine
 {
     /**
      * Check if this storage is available.
@@ -147,4 +147,28 @@ class Apc extends Storage\Engine
                 $keys[] = substr($entry['info'], strlen($this->_context));
         return $keys;
     }
+    
+    /**
+     * Persistence level of the engine.
+     * @var int
+     */
+    protected $_persistence = Engine::PERSISTENCE_MEDIUM;
+
+    /**
+     * Performance level of the engine.
+     * @var int
+     */
+    protected $_performance = Engine::PERFORMANCE_HIGH;
+
+    /**
+     * Size quotes to select best Cache engine.
+     * @var array
+     */
+    protected $_limitSize = array(
+        1000000 => 0,
+        100000 => 0.2,
+        10000 => 0.5,
+        1000 => 0.8
+    );
+    
 }

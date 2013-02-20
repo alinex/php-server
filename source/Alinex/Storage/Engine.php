@@ -46,15 +46,55 @@ use Alinex\Validator;
  */
 abstract class Engine implements \Countable, \ArrayAccess
 {
-    const SCOPE_GLOBAL = 1;
+    /**
+     * Engine stores values in session.
+     * The entries are only for the specific user on this machine.
+     */
+    const SCOPE_SESSION = 1;
+    /**
+     * Engine stores values on local machine.
+     * The entries are only accessible for the users on this machine.
+     */
     const SCOPE_LOCAL = 2;
-    const SCOPE_SESSION = 3;
+    /**
+     * Engine stores values global accessible.
+     * The data can be accessed from all machines with the same cluster setup.
+     */
+    const SCOPE_GLOBAL = 4;
 
-    const TYPE_SCALAR = 1;
-    const TYPE_LIST = 2;
-    const TYPE_HASH = 4;
-    const TYPE_STRUCTURE = 8;
-    const TYPE_OBJECT = 16;
+    /**
+     * Engine keeps values only for short time.
+     * This are some minutes to few hours. Mostly they will be removed in some
+     * type of garbage collection.
+     */
+    const PERSISTENCE_SHORT = 8; // only minutes
+    /**
+     * Engine keeps values for some time.
+     * This means some hours or days. Mostly this is stored till the next server
+     * restart.
+     */
+    const PERSISTENCE_MEDIUM = 16; // some hours
+    /**
+     * Engine keeps values nearly for ever.
+     * This means that the values won't be removed automatically and stay for
+     * months or ever.
+     */
+    const PERSISTENCE_LONG = 32; // nearly for ever
+
+    /**
+     * Engine has a low performance.
+     * Accessing the values is not as fast, used for seldom accessed data.
+     */
+    const PERFORMANCE_LOW = 64;
+    /**
+     * Engine has a good performance.
+     */
+    const PERFORMANCE_MEDIUM = 128;
+    /**
+     * Engine has a very high performance.
+     * This engine should be used for heavily accessed data.
+     */
+    const PERFORMANCE_HIGH = 256;
 
     /**
      * Check if this storage is available.
@@ -383,14 +423,230 @@ abstract class Engine implements \Countable, \ArrayAccess
     }
 
     /**
+     * Estimate the size of the value.
+     *
+     * This may vary depending on the engine. This general method can only
+     * estimate. For more accurate values this has to be overriden in the engine
+     * itself.
+     *
+     * @param mixed $value value to calculate
+     * @return int size in characters of serialized message
+     */
+    protected static function size($value)
+    {
+        return strlen(serialize($value));
+    }
+
+    /**
+     * Scope of the engine.
+     * @var int
+     */
+    protected $_scope = Engine::SCOPE_LOCAL;
+
+    /**
+     * Persistence level of the engine.
+     * @var int
+     */
+    protected $_persistence = Engine::PERSISTENCE_SHORT;
+
+    /**
+     * Performance level of the engine.
+     * @var int
+     */
+    protected $_performance = Engine::PERFORMANCE_LOW;
+
+    /**
+     * Size quotes to select best Cache engine.
+     * @var array
+     */
+    protected $_limitSize = array();
+
+    /**
+     * Limit the value size for Cache selection.
+     *
+     * The defined limit will be used from the Cache class to find the best
+     * caching solution for specific values.
+     *
+     * @param int $size number of characters
+     * @param float $percent 0 (not possible)...(not perfect)...1 (no limit)
+     * @return array list of limits set
+     */
+    public function limitSize($size, $percent = 0)
+    {
+        // delete limits
+        if ($percent == 1) {
+            foreach ($this->_limitSize as $limit) {
+                if ($limit < $size)
+                    break;
+                unset($this->_limitSize[$limit]);
+            }
+        }
+        $this->_limitSize[$size] = $percent;
+        krsort($this->_limitSize);
+        return $this->_limitSize;
+    }
+
+    /**
      * Check how good the engine is for specified data.
-     * 
-     * @param mixed $value data to store
-     * @param int $scope identification of preferred scope
+     *
+     * The returning quote will give a percentage level (0...1) estimating
+     * how good the engine is for this purpose. The best quality is an exact
+     * match in all categories.
+     *
+     * The following will be checked:
+     * - engine scope
+     * - engine persistence
+     * - engine performance
+     * - value size
+     *
+     * The results can be affected by the engine's settings.
+     *
+     * @param mixed $value data to store later
+     * @param int $flags scope, persistence and performance... flags
      * @return float quality (0 impossible, 1 best)
      */
-    public function allow($value, $scope)
+    public function allow($value, $flags = 0)
     {
+        $quote = 1;
+        // check flags
+        if ($flags) {
+            $quote = $this->allowScope($flags);
+            $quote *= $this->allowPersistence($flags);
+            $quote *= $this->allowPerformance($flags);
+        }
+        // check value
+        $quote *= $this->allowSize($value);
+        // return result
+        return $quote;
+    }
+
+    /**
+     * Check the scope.
+     *
+     * The quality of each engine will be as shown in the following decision
+     * table:
+     * @verbatim
+     * in \ engine   session    local    global
+     *   session       1.0        0         0
+     *    local        0.8       1.0        0
+     *    global       0.5       0.8       1.0
+     *   undefined     1.0       1.0       1.0
+     * @endverbatim
+     *
+     * @param int $flags scope, persistence and performance... flags
+     * @return float quality (0 impossible, 1 best)
+     */
+    private function allowScope($flags)
+    {
+        if ($flags & $this->_scope)
+            return 1; // identical
+        if ($flags & ($this->_scope * 2))
+            return 0.8; // one step too low
+        if ($flags & ($this->_scope * 4))
+            return 0.5; // two steps too low
+        if ($flags & self::SCOPE_GLOBAL || $flags & self::SCOPE_LOCAL)
+            return 0; // too high
         return 1;
     }
+
+    /**
+     * Check the persistence level.
+     *
+     * The quality of each engine will be as shown in the following decision
+     * table:
+     * @verbatim
+     * in \ engine    short    medium     long
+     *    short        1.0       0.8       0.5
+     *    medium       0.5       1.0       0.8
+     *     long        0.2       0.5       1.0
+     *   undefined     1.0       1.0       1.0
+     * @endverbatim
+     *
+     * @param int $flags scope, persistence and performance... flags
+     * @return float quality (0 impossible, 1 best)
+     */
+    private function allowPersistence($flags)
+    {
+        if ($flags & $this->_persistence)
+            return 1; // identical
+        if ($flags & ($this->_persistence * 2))
+            return 0.5; // one step too low
+        if ($flags & ($this->_persistence * 4))
+            return 0.2; // two steps too low
+        if ($this->_persistence > self::PERSISTENCE_SHORT
+            && $flags & ($this->_persistence / 2))
+            return 0.8; // one step too high
+        if ($flags & self::PERSISTENCE_SHORT
+            && $this->_persistence = self::PERSISTENCE_LONG)
+            return 0.5; // two steps too high
+        return 1;
+    }
+
+    /**
+     * Check the performance level.
+     *
+     * The quality of each engine will be as shown in the following decision
+     * table:
+     * @verbatim
+     * in \ engine     low     medium     high
+     *     low         1.0       0.8       0.5
+     *    medium       0.5       1.0       0.8
+     *     high        0.2       0.5       1.0
+     *   undefined     1.0       1.0       1.0
+     * @endverbatim
+     *
+     * @param int $flags scope, persistence and performance... flags
+     * @return float quality (0 impossible, 1 best)
+     */
+    private function allowPerformance($flags)
+    {
+        if ($flags & $this->_performance)
+            return 1; // identical
+        if ($flags & ($this->_performance * 2))
+            return 0.5; // one step too low
+        if ($flags & ($this->_performance * 4))
+            return 0.2; // two steps too low
+        if ($this->_performance > self::PERSISTENCE_SHORT
+            && $flags & ($this->_persistence / 2))
+            return 0.8; // one step too high
+        if ($flags & self::PERSISTENCE_SHORT
+            && $this->_performance = self::PERSISTENCE_LONG)
+            return 0.5; // two steps too high
+        return 1;
+    }
+
+    /**
+     * Check how good the engine is for specified data.
+     *
+     * The returning quote will give a percentage level (0...1) estimating
+     * how good the engine is for this purpose. The best quality is an exact
+     * match in all categories.
+     *
+     * The following will be checked:
+     * - engine scope
+     * - engine persistence
+     * - engine performance
+     * - value size
+     *
+     * The results can be affected by the engine's settings.
+     *
+     * @param mixed $value data to store later
+     * @return float quality (0 impossible, 1 best)
+     */
+    private function allowSize($value)
+    {
+        $quote = 1;
+        // check size if set
+        if (count($this->_limitSize)) {
+            $size = static::size($value);
+            foreach ($this->_limitSize as $limit => $percent) {
+                if ($limit > $size)
+                    continue;
+                $quote *= $percent;
+                break;
+            }
+        }
+        return $quote;
+    }
+    
 }

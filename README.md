@@ -16,8 +16,25 @@ Motivation and Origin
 In this project all the experience from further projects of the author are put together to make the best solution. The project started as a test for an optimal PHP project.
 It changed often in several years and a lot of other projects are successors of this. But now this project itself should be finished to build a basis for the next projects.
 
-API Documentation
+Platform Features
 -----------------
+
+In the moment the following parts are developed:
+- autloloading\n
+  platform, vendor and system files
+- value validation\n
+  to be used for security checks
+- multilingual support\n
+  for easy use and translation
+- registry\n
+  global storage of general configuration settings
+- cache\n
+  configurable cache system supporting multiple engines
+- logging\n
+  configurable for advanced logging strategies
+
+API Documentation & More
+---------------------
 
 A complete API documentation is included in the code and will be made available under http://alinex.de soon.
 

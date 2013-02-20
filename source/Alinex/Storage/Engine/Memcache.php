@@ -12,7 +12,7 @@
 
 namespace Alinex\Storage\Engine;
 
-use Alinex\Storage;
+use Alinex\Storage\Engine;
 
 /**
  * Storage keeping values in the Alternative PHP Cache.
@@ -33,7 +33,7 @@ use Alinex\Storage;
  * value may contain up to 1MB of data. this is already taken care of in the
  * Registry base class.
  */
-class Memcache extends Storage\Engine
+class Memcache extends Engine
 {
     /**
      * Check if this storage is available.
@@ -120,7 +120,7 @@ class Memcache extends Storage\Engine
     private $_memcache = NULL;
 
     /**
-     * Constructor
+     * Connect to memcache
      *
      * The session handling will be started if not allready done and the
      * storage array will be added.
@@ -154,7 +154,7 @@ class Memcache extends Storage\Engine
         }
         $this->checkKey($key);
         if (!isset($this->_memcache))
-            $this->connect();
+            throw new Exception(tr("No servers set to connect to memcache"));
         return $this->_memcache->set($this->_context.$key, $value, $this->_ttl);
     }
 
@@ -214,4 +214,33 @@ class Memcache extends Storage\Engine
         return array();
     }
 
+    /**
+     * Scope of the engine.
+     * @var int
+     */
+    protected $_scope = Engine::SCOPE_GLOBAL;
+
+    /**
+     * Persistence level of the engine.
+     * @var int
+     */
+    protected $_persistence = Engine::PERSISTENCE_MEDIUM;
+
+    /**
+     * Performance level of the engine.
+     * @var int
+     */
+    protected $_performance = Engine::PERFORMANCE_HIGH;
+
+    /**
+     * Size quotes to select best Cache engine.
+     * @var array
+     */
+    protected $_limitSize = array(
+        10000000 => 0,
+        1000000 => 0.2,
+        100000 => 0.5,
+        10000 => 0.8
+    );
+    
 }

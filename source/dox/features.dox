@@ -19,12 +19,14 @@ The features are divided into different areas of interest:
   platform, vendor and system files
 - value validation\n
   to be used for security checks
-- registry\n
-  global storage of general configuration settings
-- logging\n
-  configuerable for advanced logging strategies
 - multilingual support\n
   for easy use and translation
+- registry\n
+  global storage of general configuration settings
+- cache\n
+  configurable cache system supporting multiple engines
+- logging\n
+  configurable for advanced logging strategies
 
 
 */

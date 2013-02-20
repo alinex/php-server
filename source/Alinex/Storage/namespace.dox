@@ -13,18 +13,18 @@ Operations associated with this data type allow:
 This implementation supports different storage engines which may be used the
 same way.
 
-@section usage Usage
+The engines may be used directly but there are two high level classes for
+easy use of multiple engines.
 
-To use one of the hash tables you have to get an instance first.
-@code
-$hashtable = \Alinex\Storage\Array::getInstance();
-@endcode
+@section registry Central Registry
 
+The registry uses an engine to store configuration values. Optional validators
+may be used and the complete registry may be imported and exported into
+different files. 
 
+@section cache Cache System
 
-
-@section highlevel High-Level Access
-
-
+The Cache uses multiple Engines to store caching data. Each of the configured
+engines will be checked automatically to find the best storage automatically.
 
 */

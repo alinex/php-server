@@ -12,7 +12,7 @@
 
 namespace Alinex\Storage\Engine;
 
-use Alinex\Storage;
+use Alinex\Storage\Engine;
 use Alinex\Util\String;
 
 /**
@@ -32,7 +32,7 @@ use Alinex\Util\String;
  *
  * @codeCoverageIgnore because not testable while apc installed
  */
-class XCache extends Storage\Engine
+class XCache extends Engine
 {
     /**
      * Check if this storage is available.
@@ -151,4 +151,27 @@ class XCache extends Storage\Engine
         return $keys;
     }
 
+    /**
+     * Persistence level of the engine.
+     * @var int
+     */
+    protected $_persistence = Engine::PERSISTENCE_MEDIUM;
+
+    /**
+     * Performance level of the engine.
+     * @var int
+     */
+    protected $_performance = Engine::PERFORMANCE_HIGH;
+
+    /**
+     * Size quotes to select best Cache engine.
+     * @var array
+     */
+    protected $_limitSize = array(
+        1000000 => 0,
+        100000 => 0.2,
+        10000 => 0.5,
+        1000 => 0.8
+    );
+        
 }
