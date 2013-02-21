@@ -42,19 +42,11 @@ class Cache implements \Countable, \ArrayAccess
      *
      * This may be overwritten to implement some initialization of the storage
      * engine.
-     *
-     * @param string $context special name of this instance
      */
-    protected function __construct($context)
+    public function __construct()
     {
-        $this->_context = $context;
+        // nothing to do
     }
-
-    /**
-     * Context name for this instance.
-     * @var string
-     */
-    protected $_context = '';
 
     /**
      * List of engines to possibly use.
@@ -109,6 +101,8 @@ class Cache implements \Countable, \ArrayAccess
      */
     protected function searchEngines($key, $all = false)
     {
+        assert(is_bool($all));
+        
         $list = array();
         foreach ($this->_engines as $test) {
             if ($test->has($key)) {
@@ -132,14 +126,12 @@ class Cache implements \Countable, \ArrayAccess
      *
      * @param string $key   Registry array key
      * @param string $value Value of cache key
-     * @param int $scope identification of preferred scope
+     * @param int $flags scope, persistence and performance... flags
      *
      * @return bool    TRUE on success otherwise FALSE
      * @throws Validator\Exception
      */
-    public final function set(
-        $key, $value = null, $scope = Engine::SCOPE_GLOBAL
-    )
+    public final function set($key, $value = null, $flags = 0)
     {
         // first remove old entries
         if (!isset($value))
@@ -149,7 +141,7 @@ class Cache implements \Countable, \ArrayAccess
         $bestEngine = null;
         $bestScore = 0;
         foreach ($this->_engines as $engine) {
-            $score = $engine->allowed($value, $scope);
+            $score = $engine->allow($value, $flags);
             if ($score == 1)
                 // use the optimal engine
                 return $engine->set($key, $value);

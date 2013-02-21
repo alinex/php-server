@@ -531,17 +531,12 @@ abstract class Engine implements \Countable, \ArrayAccess
         $quote = 1;
         // check flags
         if ($flags) {
-error_log("1:".$quote);
             $quote = $this->allowScope($flags);
-error_log("2:".$quote);
             $quote *= $this->allowPersistence($flags);
-error_log("3:".$quote);
             $quote *= $this->allowPerformance($flags);
-error_log("4:".$quote);
         }
         // check value
         $quote *= $this->allowSize($value);
-error_log("5:".$quote);
         // return result
         return $quote;
     }
