@@ -10,8 +10,8 @@ This list contains all things to be done in the system:
 - Cache
   - asserts
   - test
-- Engine asserts
 - Engine Directory
+- extend engine by GC methods
 
 I18n
 - bootstrap set local

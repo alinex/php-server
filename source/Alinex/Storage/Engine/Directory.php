@@ -38,19 +38,37 @@ class Directory extends Engine
             $dir, 'storage-directory', 'IO::path',
             array('writable' => true)
         ));
+        if (substr($dir, -1) != '/')
+            $dir .= '/';
         $this->_dir = $dir;
         // create directory if not existing
         mkdir($dir);
     }
     
-    private keyToPath($key)
+    /**
+     * Translate the key into path.
+     * 
+     * @param string $key name of the value
+     * @return string relative path for the entry
+     */
+    private function keyToPath($key)
     {
-        
-        
-        
-        return $path;
+        for ($i=4; $i<strlen($key); $i+=5) 
+            $key = substr_replace($key, '/', $i, null);
+        return $path.'$';
     }
 
+    /**
+     * Get key from pathname.
+     * 
+     * @param string $path relativ path
+     * @return string key name
+     */
+    private function pathToKey($path)
+    {
+        return str_replace('/', '', substr($path, 0 ,-1));
+    }
+    
     /**
      * Method to set a storage variable
      *
@@ -70,8 +88,14 @@ class Directory extends Engine
             throw new Exception(
                 tr("Engine not configured, need directory to store")
             );
-        $this->checkKey($key);
-        return apc_store($this->_context.$key, $value, $this->_ttl);
+        // get path and dir
+        $path = $this->_dir.$this->keyToPath($this->checkKey($key));
+        $dir = dirname($path);
+        // store
+        if (!file_exists($dir))
+            mkdir($dir, 1);
+        file_put_contents($path, json_encode($value));
+        return $value;
     }
 
     /**
@@ -82,7 +106,10 @@ class Directory extends Engine
      */
     public function remove($key)
     {
-        return apc_delete($this->_context.$key);
+        $path = $this->_dir.$this->keyToPath($this->checkKey($key));
+        if (!file_exists($path))
+            return false;
+        return unlink($path);
     }
 
     /**
@@ -93,9 +120,11 @@ class Directory extends Engine
      */
     public function get($key)
     {
-        $this->checkKey($key);
-        return apc_exists($this->_context.$key) ?
-                apc_fetch($this->_context.$key) : NULL;
+        $path = $this->_dir.$this->keyToPath($this->checkKey($key));
+        $value = json_decode(file_get_contents($path));
+        if (json_last_error())
+            throw new Exception(json_last_error());
+        return $value;
     }
 
     /**
@@ -106,10 +135,14 @@ class Directory extends Engine
      */
     public function has($key)
     {
-        $this->checkKey($key);
-        return apc_exists($this->_context.$key);
+        $path = $this->_dir.$this->keyToPath($this->checkKey($key));
+        return file_exists($path);
     }
 
+    
+    
+    
+    
     /**
      * Get the list of keys
      *
@@ -120,12 +153,33 @@ class Directory extends Engine
      */
     public function keys()
     {
-        $keys = array();
-        $info = apc_cache_info('user');
-        foreach ($info['cache_list'] as $entry)
-            if (String::startsWith($entry['info'], $this->_context))
-                $keys[] = substr($entry['info'], strlen($this->_context));
-        return $keys;
+        return $this->fileKeys($this->_dir);
+    }
+    
+    /**
+     * Get the list of keys by directory scanning
+     * 
+     * @param string $dir dirctory to scan
+     * @param string $prefix prefix path to be prepended to files
+     * @return array list of keys for this directory and below.
+     */
+    private function fileKeys($dir, $prefix = '') {
+        $dir = rtrim($dir, '\\/');
+        $result = array();
+        foreach (scandir($dir) as $f) {
+            if ($f !== '.' and $f !== '..') 
+                continue;
+            if (is_dir("$dir/$f"))
+                $result = array_merge(
+                    $result, $this->fileKeys($dir.'/'.$f, $prefix.$f.'/')
+                );
+            else
+                $result[] = $this->pathToKey(
+                    substr($prefix.$f, strlen($this->_dir))
+                );
+        }
+
+      return $result;
     }
     
     /**

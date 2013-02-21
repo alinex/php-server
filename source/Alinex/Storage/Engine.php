@@ -150,7 +150,7 @@ abstract class Engine implements \Countable, \ArrayAccess
     {
         assert(
             Validator::is(
-                $context, 'context',
+                $context, 'storage-context',
                 'Type::string',
                 array(
                     'maxLength' => 10, // maximal 10 char. prefix is used
@@ -206,7 +206,7 @@ abstract class Engine implements \Countable, \ArrayAccess
      * won't be needed.
      *
      * @param string $key name of the entry
-     * @return type
+     * @return string key name given
      * @throws Validator\Exception if not valid
      */
     static final protected function checkKey($key)
@@ -473,6 +473,9 @@ abstract class Engine implements \Countable, \ArrayAccess
      */
     public function limitSize($size, $percent = 0)
     {
+        assert(is_int($size));
+        assert(is_float($percent) && $percent >= 0 && $percent <= 1);
+
         // delete limits
         if ($percent == 1) {
             foreach ($this->_limitSize as $limit) {
@@ -507,6 +510,8 @@ abstract class Engine implements \Countable, \ArrayAccess
      */
     public function allow($value, $flags = 0)
     {
+        assert(is_int($flags) && $flags >= 0);
+
         $quote = 1;
         // check flags
         if ($flags) {
@@ -648,5 +653,5 @@ abstract class Engine implements \Countable, \ArrayAccess
         }
         return $quote;
     }
-    
+
 }
