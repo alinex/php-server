@@ -466,26 +466,42 @@ abstract class Engine implements \Countable, \ArrayAccess
      *
      * The defined limit will be used from the Cache class to find the best
      * caching solution for specific values.
+     * 
+     * To clean the limits call it with a size of 0 and no limit (percent = 1):
+     * @code
+     * $engine->limitSize(0, 1);
+     * @endcode
+     *
+     * To only get the defined limits call it without any parameters:
+     * @code
+     * $limits = $engine->limitSize();
+     * @endcode
      *
      * @param int $size number of characters
      * @param float $percent 0 (not possible)...(not perfect)...1 (no limit)
      * @return array list of limits set
      */
-    public function limitSize($size, $percent = 0)
+    public function limitSize($size = null, $percent = 0)
     {
+        if (!isset($size))
+            return $this->_limitSize;
+        
         assert(is_int($size));
-        assert(is_float($percent) && $percent >= 0 && $percent <= 1);
+        assert(is_numeric($percent) && $percent >= 0 && $percent <= 1);
 
         // delete limits
         if ($percent == 1) {
-            foreach ($this->_limitSize as $limit) {
+            foreach (array_keys($this->_limitSize) as $limit) {
                 if ($limit < $size)
                     break;
                 unset($this->_limitSize[$limit]);
             }
         }
-        $this->_limitSize[$size] = $percent;
-        krsort($this->_limitSize);
+
+        if ($size != 0) {
+            $this->_limitSize[$size] = $percent;
+            krsort($this->_limitSize);
+        }
         return $this->_limitSize;
     }
 
@@ -515,12 +531,17 @@ abstract class Engine implements \Countable, \ArrayAccess
         $quote = 1;
         // check flags
         if ($flags) {
+error_log("1:".$quote);
             $quote = $this->allowScope($flags);
+error_log("2:".$quote);
             $quote *= $this->allowPersistence($flags);
+error_log("3:".$quote);
             $quote *= $this->allowPerformance($flags);
+error_log("4:".$quote);
         }
         // check value
         $quote *= $this->allowSize($value);
+error_log("5:".$quote);
         // return result
         return $quote;
     }
@@ -545,11 +566,11 @@ abstract class Engine implements \Countable, \ArrayAccess
     {
         if ($flags & $this->_scope)
             return 1; // identical
-        if ($flags & ($this->_scope * 2))
+        if ($flags & ($this->_scope * 2) && $this->_scope < self::SCOPE_GLOBAL)
             return 0.8; // one step too low
-        if ($flags & ($this->_scope * 4))
+        if ($flags & self::SCOPE_GLOBAL && $this->_scope = self::SCOPE_SESSION)
             return 0.5; // two steps too low
-        if ($flags & self::SCOPE_GLOBAL || $flags & self::SCOPE_LOCAL)
+        if ($flags & self::SCOPE_SESSION || $flags & self::SCOPE_LOCAL)
             return 0; // too high
         return 1;
     }
@@ -574,9 +595,11 @@ abstract class Engine implements \Countable, \ArrayAccess
     {
         if ($flags & $this->_persistence)
             return 1; // identical
-        if ($flags & ($this->_persistence * 2))
+        if ($flags & ($this->_persistence * 2) 
+            && $this->_persistence < self::PERSISTENCE_LONG)
             return 0.5; // one step too low
-        if ($flags & ($this->_persistence * 4))
+        if ($flags & self::PERSISTENCE_LONG
+            && $this->_persistence = self::PERSISTENCE_SHORT)
             return 0.2; // two steps too low
         if ($this->_persistence > self::PERSISTENCE_SHORT
             && $flags & ($this->_persistence / 2))
@@ -607,15 +630,17 @@ abstract class Engine implements \Countable, \ArrayAccess
     {
         if ($flags & $this->_performance)
             return 1; // identical
-        if ($flags & ($this->_performance * 2))
+        if ($flags & ($this->_performance * 2)
+            && $this->_performance < self::PERFORMANCE_HIGH)
             return 0.5; // one step too low
-        if ($flags & ($this->_performance * 4))
+        if ($flags & self::PERFORMANCE_HIGH
+            && $this->_performance = self::PERFORMANCE_LOW)
             return 0.2; // two steps too low
-        if ($this->_performance > self::PERSISTENCE_SHORT
-            && $flags & ($this->_persistence / 2))
+        if ($this->_performance > self::PERFORMANCE_LOW
+            && $flags & ($this->_performance / 2))
             return 0.8; // one step too high
-        if ($flags & self::PERSISTENCE_SHORT
-            && $this->_performance = self::PERSISTENCE_LONG)
+        if ($flags & self::PERFORMANCE_LOW
+            && $this->_performance = self::PERFORMANCE_HIGH)
             return 0.5; // two steps too high
         return 1;
     }
