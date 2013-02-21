@@ -53,9 +53,10 @@ class Directory extends Engine
      */
     private function keyToPath($key)
     {
+        $key = $this->_context.$key;
         for ($i=4; $i<strlen($key); $i+=5) 
             $key = substr_replace($key, '/', $i, null);
-        return $path.'$';
+        return $key.'$';
     }
 
     /**
@@ -66,7 +67,8 @@ class Directory extends Engine
      */
     private function pathToKey($path)
     {
-        return str_replace('/', '', substr($path, 0 ,-1));
+        $key = str_replace('/', '', substr($path, 0 ,-1));
+        return substr($key, strlen($this->_context));
     }
     
     /**
@@ -139,10 +141,6 @@ class Directory extends Engine
         return file_exists($path);
     }
 
-    
-    
-    
-    
     /**
      * Get the list of keys
      *
@@ -181,18 +179,45 @@ class Directory extends Engine
 
       return $result;
     }
+
+    /**
+     * Get all values which start with the given string.
+     *
+     * The key name will be shortened by cropping the group name from the start.
+     *
+     * @param string $group start phrase for selected values
+     * @return array list of values
+     */
+    public function groupGet($group)
+    {
+        assert(is_string($group));
+
+        $dir = dirname($this->keyToPath($group));
+        if ($dir)
+            return parent::groupGet($group);
+        // search for keys in group dir
+        $result = array();
+        foreach ($this->fileKeys($dir) as $key) {
+            $key = $this->pathToKey($dir).$key;
+            if (strlen($group) == 0)
+                $result[$key] = $this->get($key);
+            else if (String::startsWith($key, $group))
+                $result[substr($key, strlen($group))] = $this->get($key);
+        }
+        return $result;
+    }
     
     /**
      * Persistence level of the engine.
      * @var int
      */
-    protected $_persistence = Engine::PERSISTENCE_MEDIUM;
+    protected $_persistence = Engine::PERSISTENCE_HIGH;
 
     /**
      * Performance level of the engine.
      * @var int
      */
-    protected $_performance = Engine::PERFORMANCE_HIGH;
+    protected $_performance = Engine::PERFORMANCE_LOW;
 
     /**
      * Size quotes to select best Cache engine.
