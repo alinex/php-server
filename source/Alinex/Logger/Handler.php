@@ -36,9 +36,9 @@ abstract class Handler
             if (!$filter->check($level, $message, $context, $data))
                 return false;
         // format message
-        $format = $this->_formatter->format($level, $message, $context, $data);
+        $formatted = $this->_formatter->format($level, $message, $context, $data);
         // write message
-        $this->write($format);
+        $this->write($formatted);
         return true;
     }
     
@@ -48,6 +48,10 @@ abstract class Handler
      */
     protected $_formatter = null;
     
+    /**
+     * Set a formatter for the message.
+     * @param \Alinex\Logger\Formatter $formatter
+     */
     function setFormatter(Formatter $formatter)
     {
         $this->_formatter = $formatter;
