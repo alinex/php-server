@@ -211,6 +211,8 @@ abstract class Engine implements \Countable, \ArrayAccess
      */
     static final protected function checkKey($key)
     {
+        if (is_numeric($key))
+            $key = (string) $key;
         return Validator\Type::string(
             $key, 'key',
             array(

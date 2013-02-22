@@ -18,6 +18,23 @@ use Exception;
 
 /**
  * Storage keeping values in the local filesystem.
+ * 
+ * Therefor a self managed structure under the given directory will be created.
+ * Each value will be stored in its own file making it perfect for big values.
+ * To gain the best performance out of the filesystem the key will be structured
+ * as a directory path mmaking less files per directory.
+ * 
+ * Best used for large values, which are needed not so often.
+ * 
+ * The values itself will be stored using JSON Format and can also be read 
+ * directly from the file. A typicat entry with key 'database.default.hostname'
+ * will be stored as:
+ *   /data/base/.def/ault/.hos/tnam/e$
+ * 
+ * Removing all slashes and the trailing $ you can read the keyname out of the
+ * filesystem.
+ * 
+ * The whole size will only be limited by the harddisk capacity.
  */
 class Directory extends Engine
 {

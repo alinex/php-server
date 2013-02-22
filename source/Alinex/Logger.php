@@ -26,12 +26,12 @@ namespace Alinex;
  * Through the use of filters each handler may ignore the message or buffer
  * them. This brings the highest flexibility. The formatter defines the concrete
  * output and additional provider give more information to the output.
+ * 
+ * The class is compatible with the PEAR standards to enforce an 
+ * interchangeability in other standard conform projects.
  */
 class Logger
 {
-    // Make these corresponding with PEAR
-    // Ensures compatibility while maintaining independency
-
     /**
      * System is unusable (will throw a LOG_Exception as well)
      */
@@ -108,9 +108,9 @@ class Logger
         E_USER_ERROR => array(self::ERROR, 'User Error'),
         E_USER_WARNING => array(self::WARNING, 'User Warning'),
         E_USER_NOTICE => array(self::DEBUG, 'User Notice'),
-        'E_RECOVERABLE_ERROR' => array(self::LOG_WARNING, 'Recoverable Error'),
-        'E_DEPRECATED' => array(self::LOG_NOTICE, 'Deprecated'),
-        'E_USER_DEPRECATED' => array(self::LOG_NOTICE, 'User Deprecated'),
+        'E_RECOVERABLE_ERROR' => array(self::WARNING, 'Recoverable Error'),
+        'E_DEPRECATED' => array(self::NOTICE, 'Deprecated'),
+        'E_USER_DEPRECATED' => array(self::NOTICE, 'User Deprecated'),
     );
 
     /**
@@ -144,7 +144,7 @@ class Logger
      * Create a new 
      * @param string $name The logging channel
      */
-    public function __construct($name)
+    protected function __construct($name)
     {
         $this->_name = $name;
     }
@@ -157,7 +157,7 @@ class Logger
      * @param  mixed   $level   The log level
      * @param  string  $message The log message
      * @param  array   $context The log context
-     * @return int number of successful log providers
+     * @return int number of successful processings 0 = not logged
      */
     public function log($level, $message, array $context = array())
     {
@@ -175,7 +175,7 @@ class Logger
      *
      * @param  string  $message The log message
      * @param  array   $context The log context
-     * @return Boolean Whether the record has been processed
+     * @return int number of successful processings 0 = not logged
      */
     public function debug($message, array $context = array())
     {
@@ -189,7 +189,7 @@ class Logger
      *
      * @param  string  $message The log message
      * @param  array   $context The log context
-     * @return Boolean Whether the record has been processed
+     * @return int number of successful processings 0 = not logged
      */
     public function info($message, array $context = array())
     {
@@ -203,7 +203,7 @@ class Logger
      *
      * @param  string  $message The log message
      * @param  array   $context The log context
-     * @return Boolean Whether the record has been processed
+     * @return int number of successful processings 0 = not logged
      */
     public function notice($message, array $context = array())
     {
@@ -217,7 +217,7 @@ class Logger
      *
      * @param  string  $message The log message
      * @param  array   $context The log context
-     * @return Boolean Whether the record has been processed
+     * @return int number of successful processings 0 = not logged
      */
     public function warn($message, array $context = array())
     {
@@ -231,7 +231,7 @@ class Logger
      *
      * @param  string  $message The log message
      * @param  array   $context The log context
-     * @return Boolean Whether the record has been processed
+     * @return int number of successful processings 0 = not logged
      */
     public function warning($message, array $context = array())
     {
@@ -245,7 +245,7 @@ class Logger
      *
      * @param  string  $message The log message
      * @param  array   $context The log context
-     * @return Boolean Whether the record has been processed
+     * @return int number of successful processings 0 = not logged
      */
     public function err($message, array $context = array())
     {
@@ -259,7 +259,7 @@ class Logger
      *
      * @param  string  $message The log message
      * @param  array   $context The log context
-     * @return Boolean Whether the record has been processed
+     * @return int number of successful processings 0 = not logged
      */
     public function error($message, array $context = array())
     {
@@ -273,7 +273,7 @@ class Logger
      *
      * @param  string  $message The log message
      * @param  array   $context The log context
-     * @return Boolean Whether the record has been processed
+     * @return int number of successful processings 0 = not logged
      */
     public function crit($message, array $context = array())
     {
@@ -287,7 +287,7 @@ class Logger
      *
      * @param  string  $message The log message
      * @param  array   $context The log context
-     * @return Boolean Whether the record has been processed
+     * @return int number of successful processings 0 = not logged
      */
     public function critical($message, array $context = array())
     {
@@ -301,7 +301,7 @@ class Logger
      *
      * @param  string  $message The log message
      * @param  array   $context The log context
-     * @return Boolean Whether the record has been processed
+     * @return int number of successful processings 0 = not logged
      */
     public function alert($message, array $context = array())
     {
@@ -315,7 +315,7 @@ class Logger
      *
      * @param  string  $message The log message
      * @param  array   $context The log context
-     * @return Boolean Whether the record has been processed
+     * @return int number of successful processings 0 = not logged
      */
     public function emerg($message, array $context = array())
     {
@@ -329,7 +329,7 @@ class Logger
      *
      * @param  string  $message The log message
      * @param  array   $context The log context
-     * @return Boolean Whether the record has been processed
+     * @return int number of successful processings 0 = not logged
      */
     public function emergency($message, array $context = array())
     {

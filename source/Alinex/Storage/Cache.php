@@ -15,6 +15,10 @@ namespace Alinex\Storage;
 /**
  * System cache using multiple storages.
  *
+ * The cache will hold a list of engines which may be used. Which engine to use
+ * for a specific value will be decided automatically based on the engine's
+ * scope, performance, persistence and its value size settings.
+ * 
  * @see Registry for storage with validation
  */
 class Cache implements \Countable, \ArrayAccess

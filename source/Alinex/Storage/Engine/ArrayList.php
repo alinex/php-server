@@ -22,6 +22,9 @@ use Alinex\Storage\Engine;
  * over multiple requests only if an opcode system stores them. A better
  * approach is to use the opcode user cache directly.
  *
+ * This engine can be used as a fallback with fast access but the whole
+ * space is limited by the php max. memory setting.
+ * 
  * This is the simplest storage, it will last till the end of the php process
  * (mostly the request). It has no dependencies but the performance is high
  * but its usability is poor because of the restricted scope.
