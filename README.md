@@ -36,6 +36,6 @@ In the moment the following parts are developed:
 API Documentation & More
 ---------------------
 
-A complete API documentation is included in the code and will be made available under http://alinex.de soon.
+A complete API documentation is included in the code and will be made available under http://alinex.de/server soon.
 
 A.Schilling
