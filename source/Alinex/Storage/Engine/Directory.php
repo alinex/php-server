@@ -14,6 +14,7 @@ namespace Alinex\Storage\Engine;
 
 use Alinex\Storage\Engine;
 use Alinex\Util\String;
+use Exception;
 
 /**
  * Storage keeping values in the local filesystem.
@@ -32,17 +33,18 @@ class Directory extends Engine
      * @param string $dir path to store files to
      * @return string value set
      */
-    protected function setDirectory($dir)
+    public function setDirectory($dir)
     {
         assert(\Alinex\Validator::is(
             $dir, 'storage-directory', 'IO::path',
-            array('writable' => true)
+            array('writable' => true, 'allowBackreferences' => true)
         ));
         if (substr($dir, -1) != '/')
             $dir .= '/';
         $this->_dir = $dir;
         // create directory if not existing
-        mkdir($dir);
+        if (!file_exists($dir))
+            mkdir($dir);
     }
     
     /**
@@ -82,6 +84,8 @@ class Directory extends Engine
      */
     function set($key, $value = null)
     {
+        if (!isset($this->_dir))
+            throw new Exception(tr("Directory for engine not set"));
         if (!isset($value)) {
             $this->remove($key);
             return null;
@@ -95,7 +99,7 @@ class Directory extends Engine
         $dir = dirname($path);
         // store
         if (!file_exists($dir))
-            mkdir($dir, 1);
+            mkdir($dir, 0777, true);
         file_put_contents($path, json_encode($value));
         return $value;
     }
@@ -108,10 +112,18 @@ class Directory extends Engine
      */
     public function remove($key)
     {
+        if (!isset($this->_dir))
+            throw new Exception(tr("Directory for engine not set"));
         $path = $this->_dir.$this->keyToPath($this->checkKey($key));
         if (!file_exists($path))
             return false;
-        return unlink($path);
+        $result = unlink($path);
+        do {
+            $path = dirname($path);
+            if (strlen($path) <= strlen($this->_dir))
+                break;
+        } while (@rmdir($path));
+        return $result;
     }
 
     /**
@@ -122,6 +134,8 @@ class Directory extends Engine
      */
     public function get($key)
     {
+        if (!$this->has($key))
+            return null;
         $path = $this->_dir.$this->keyToPath($this->checkKey($key));
         $value = json_decode(file_get_contents($path));
         if (json_last_error())
@@ -137,6 +151,8 @@ class Directory extends Engine
      */
     public function has($key)
     {
+        if (!isset($this->_dir))
+            throw new Exception(tr("Directory for engine not set"));
         $path = $this->_dir.$this->keyToPath($this->checkKey($key));
         return file_exists($path);
     }
@@ -151,6 +167,9 @@ class Directory extends Engine
      */
     public function keys()
     {
+        if (!isset($this->_dir))
+            throw new Exception(tr("Directory for engine not set"));
+        error_log(print_r($this->fileKeys($this->_dir),1));
         return $this->fileKeys($this->_dir);
     }
     
@@ -161,20 +180,22 @@ class Directory extends Engine
      * @param string $prefix prefix path to be prepended to files
      * @return array list of keys for this directory and below.
      */
-    private function fileKeys($dir, $prefix = '') {
+    private function fileKeys($dir) {
         $dir = rtrim($dir, '\\/');
         $result = array();
         foreach (scandir($dir) as $f) {
-            if ($f !== '.' and $f !== '..') 
+            if ($f == '.' || $f == '..') 
                 continue;
             if (is_dir("$dir/$f"))
                 $result = array_merge(
-                    $result, $this->fileKeys($dir.'/'.$f, $prefix.$f.'/')
+                    $result, $this->fileKeys($dir.'/'.$f)
+                );
+            else if (substr($f, -1) == '$')
+                $result[] = $this->pathToKey(
+                    substr($dir.$f, strlen($this->_dir))
                 );
             else
-                $result[] = $this->pathToKey(
-                    substr($prefix.$f, strlen($this->_dir))
-                );
+                error_log('trash:'.$f);
         }
 
       return $result;
@@ -192,6 +213,8 @@ class Directory extends Engine
     {
         assert(is_string($group));
 
+        if (!isset($this->_dir))
+            throw new Exception(tr("Directory for engine not set"));
         $dir = dirname($this->keyToPath($group));
         if ($dir)
             return parent::groupGet($group);
@@ -211,7 +234,7 @@ class Directory extends Engine
      * Persistence level of the engine.
      * @var int
      */
-    protected $_persistence = Engine::PERSISTENCE_HIGH;
+    protected $_persistence = Engine::PERSISTENCE_LONG;
 
     /**
      * Performance level of the engine.
