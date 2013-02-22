@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Abstract formatter to create log output.
+ * Handler storing logs in given storage engine.
  *
  * @author    Alexander Schilling <info@alinex.de>
  * @copyright 2009-2013 Alexander Schilling (\ref Copyright)
@@ -10,13 +10,18 @@
  * @see       http://alinex.de Alinex Project
  */
 
-namespace Alinex\Logger;
+namespace Alinex\Logger\Formatter;
+
+use \Alinex\Logger\Formatter;
 
 /**
- * Abstract formatter to create log output.
+ * Handler storing logs in given storage engine.
+ * 
+ * Each log message will be added under the unix timestamp with milliseconds.
  */
-abstract class Formatter
+class Object extends Formatter
 {
+
     /**
      * Adds a log record to this handler.
      *
@@ -26,7 +31,16 @@ abstract class Formatter
      * @param  array   $info result data from providers
      * @return string Whether the record has been processed
      */
-    abstract public function format(
+    public function format(
         $level, $message, array $context = array(), $info = array()
-    );
+    )
+    {
+        $result = array('level' => $level, 'message' => $message);
+        if (isset($context))
+            $result['context'] = $context;
+        if (isset($info))
+            $result['info'] = $info;
+        return $result;
+    }
+    
 }

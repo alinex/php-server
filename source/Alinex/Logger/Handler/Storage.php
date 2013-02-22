@@ -10,12 +10,15 @@
  * @see       http://alinex.de Alinex Project
  */
 
-namespace Alinex\Logger;
+namespace Alinex\Logger\Handler;
 
+use Alinex\Logger\Handler;
 use Alinex\Storage\Engine;
 
 /**
  * Handler storing logs in given storage engine.
+ * 
+ * Each log message will be added under the unix timestamp with milliseconds.
  */
 class Storage extends Handler
 {
@@ -32,6 +35,7 @@ class Storage extends Handler
     function __construct(Engine $engine) 
     {
         $this->_engine = $engine;
+        $this->_formatter = new \Alinex\Logger\Formatter\Object();
     }
     
     /**
@@ -40,7 +44,6 @@ class Storage extends Handler
      */
     protected function write($formatted)
     {
-        $key = time();
-        $this->_engine->set($key, $formatted);
+        $this->_engine->set(microtime(true), $formatted);
     }
 }

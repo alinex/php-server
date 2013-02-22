@@ -12,6 +12,8 @@
 
 namespace Alinex\Logger;
 
+use Exception;
+
 /**
  * Abstract handler for log managing.
  */
@@ -28,15 +30,17 @@ abstract class Handler
     public function log($level, $message, array $context = array())
     {
         // evaluate providers
-        $data = array();
+        $info = array();
         foreach($this->_provider as $provider)
-            $data = array_merge($data, $provider->getData());
+            $info = array_merge($info, $provider->getData());
         // rotate through filters
         foreach($this->_filter as $filter)
             if (!$filter->check($level, $message, $context, $data))
                 return false;
         // format message
-        $formatted = $this->_formatter->format($level, $message, $context, $data);
+        $formatted = $this->_formatter->format(
+            $level, $message, $context, $info
+        );
         // write message
         $this->write($formatted);
         return true;
@@ -49,12 +53,12 @@ abstract class Handler
     protected $_formatter = null;
     
     /**
-     * Set a formatter for the message.
-     * @param \Alinex\Logger\Formatter $formatter
+     * Get the formatter to configure it.
+     * @return \Alinex\Logger\Formatter
      */
-    function setFormatter(Formatter $formatter)
+    public function getFormatter()
     {
-        $this->_formatter = $formatter;
+        return $this->_formatter;
     }
     
     /**
