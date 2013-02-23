@@ -35,7 +35,7 @@ class Storage extends Handler
     function __construct(Engine $engine) 
     {
         $this->_engine = $engine;
-        $this->_formatter = new \Alinex\Logger\Formatter\Object();
+        $this->_formatter = new \Alinex\Logger\Formatter\ArrayStructure();
     }
     
     /**

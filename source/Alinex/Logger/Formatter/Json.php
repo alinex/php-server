@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Handler storing logs in given storage engine.
+ * Formatter storing messages as Json structure.
  *
  * @author    Alexander Schilling <info@alinex.de>
  * @copyright 2009-2013 Alexander Schilling (\ref Copyright)
@@ -15,11 +15,11 @@ namespace Alinex\Logger\Formatter;
 use \Alinex\Logger\Formatter;
 
 /**
- * Handler storing logs in given storage engine.
+ * Formatter storing messages as Json structure.
  * 
  * Each log message will be added under the unix timestamp with milliseconds.
  */
-class Object extends Formatter
+class Json extends Formatter
 {
 
     /**
@@ -40,7 +40,8 @@ class Object extends Formatter
             $result['context'] = $context;
         if (isset($info))
             $result['info'] = $info;
-        return $result;
+        // return export string
+        return json_encode($result);
     }
     
 }
