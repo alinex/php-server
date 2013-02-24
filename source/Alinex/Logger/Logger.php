@@ -171,8 +171,6 @@ class Logger
     /**
      * Adds a log record at the DEBUG level.
      *
-     * This method allows for compatibility with common interfaces.
-     *
      * @param  string  $message The log message
      * @param  array   $context The log context
      * @return Boolean Whether the record has been processed
@@ -185,8 +183,8 @@ class Logger
     /**
      * Adds a log record at the INFO level.
      *
-     * This method allows for compatibility with common interfaces.
-     *
+     * Example: User logs in, SQL logs.
+     * 
      * @param  string  $message The log message
      * @param  array   $context The log context
      * @return Boolean Whether the record has been processed
@@ -197,9 +195,7 @@ class Logger
     }
 
     /**
-     * Adds a log record at the INFO level.
-     *
-     * This method allows for compatibility with common interfaces.
+     * Adds a log record at the NOTICE level.
      *
      * @param  string  $message The log message
      * @param  array   $context The log context
@@ -213,7 +209,8 @@ class Logger
     /**
      * Adds a log record at the WARNING level.
      *
-     * This method allows for compatibility with common interfaces.
+     * Example: Use of deprecated APIs, poor use of an API, undesirable things
+     * that are not necessarily wrong.
      *
      * @param  string  $message The log message
      * @param  array   $context The log context
@@ -227,7 +224,8 @@ class Logger
     /**
      * Adds a log record at the WARNING level.
      *
-     * This method allows for compatibility with common interfaces.
+     * Example: Use of deprecated APIs, poor use of an API, undesirable things
+     * that are not necessarily wrong.
      *
      * @param  string  $message The log message
      * @param  array   $context The log context
@@ -241,7 +239,8 @@ class Logger
     /**
      * Adds a log record at the ERROR level.
      *
-     * This method allows for compatibility with common interfaces.
+     * Runtime errors that do not require immediate action but should typically
+     * be logged and monitored.
      *
      * @param  string  $message The log message
      * @param  array   $context The log context
@@ -255,7 +254,8 @@ class Logger
     /**
      * Adds a log record at the ERROR level.
      *
-     * This method allows for compatibility with common interfaces.
+     * Runtime errors that do not require immediate action but should typically
+     * be logged and monitored.
      *
      * @param  string  $message The log message
      * @param  array   $context The log context
@@ -269,7 +269,7 @@ class Logger
     /**
      * Adds a log record at the CRITICAL level.
      *
-     * This method allows for compatibility with common interfaces.
+     * Example: Application component unavailable, unexpected exception.
      *
      * @param  string  $message The log message
      * @param  array   $context The log context
@@ -283,8 +283,8 @@ class Logger
     /**
      * Adds a log record at the CRITICAL level.
      *
-     * This method allows for compatibility with common interfaces.
-     *
+     * Example: Application component unavailable, unexpected exception.
+     * 
      * @param  string  $message The log message
      * @param  array   $context The log context
      * @return Boolean Whether the record has been processed
@@ -297,8 +297,9 @@ class Logger
     /**
      * Adds a log record at the ALERT level.
      *
-     * This method allows for compatibility with common interfaces.
-     *
+     * Example: Entire website down, database unavailable, etc. This should
+     * trigger the SMS alerts and wake you up.
+     * 
      * @param  string  $message The log message
      * @param  array   $context The log context
      * @return Boolean Whether the record has been processed
@@ -311,7 +312,7 @@ class Logger
     /**
      * Adds a log record at the EMERGENCY level.
      *
-     * This method allows for compatibility with common interfaces.
+     * System is unusable.
      *
      * @param  string  $message The log message
      * @param  array   $context The log context
@@ -325,7 +326,7 @@ class Logger
     /**
      * Adds a log record at the EMERGENCY level.
      *
-     * This method allows for compatibility with common interfaces.
+     * System is unusable.
      *
      * @param  string  $message The log message
      * @param  array   $context The log context
