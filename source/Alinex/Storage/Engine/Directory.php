@@ -18,22 +18,22 @@ use Exception;
 
 /**
  * Storage keeping values in the local filesystem.
- * 
+ *
  * Therefor a self managed structure under the given directory will be created.
  * Each value will be stored in its own file making it perfect for big values.
  * To gain the best performance out of the filesystem the key will be structured
  * as a directory path mmaking less files per directory.
- * 
+ *
  * Best used for large values, which are needed not so often.
- * 
- * The values itself will be stored using JSON Format and can also be read 
+ *
+ * The values itself will be stored using JSON Format and can also be read
  * directly from the file. A typicat entry with key 'database.default.hostname'
  * will be stored as:
  *   /data/base/.def/ault/.hos/tnam/e$
- * 
+ *
  * Removing all slashes and the trailing $ you can read the keyname out of the
  * filesystem.
- * 
+ *
  * The whole size will only be limited by the harddisk capacity.
  */
 class Directory extends Engine
@@ -63,24 +63,24 @@ class Directory extends Engine
         if (!file_exists($dir))
             mkdir($dir);
     }
-    
+
     /**
      * Translate the key into path.
-     * 
+     *
      * @param string $key name of the value
      * @return string relative path for the entry
      */
     private function keyToPath($key)
     {
         $key = $this->_context.$key;
-        for ($i=4; $i<strlen($key); $i+=5) 
+        for ($i=4; $i<strlen($key); $i+=5)
             $key = substr_replace($key, '/', $i, null);
         return $key.'$';
     }
 
     /**
      * Get key from pathname.
-     * 
+     *
      * @param string $path relativ path
      * @return string key name
      */
@@ -89,7 +89,7 @@ class Directory extends Engine
         $key = str_replace('/', '', substr($path, 0 ,-1));
         return substr($key, strlen($this->_context));
     }
-    
+
     /**
      * Method to set a storage variable
      *
@@ -189,19 +189,18 @@ class Directory extends Engine
         error_log(print_r($this->fileKeys($this->_dir),1));
         return $this->fileKeys($this->_dir);
     }
-    
+
     /**
      * Get the list of keys by directory scanning
-     * 
+     *
      * @param string $dir dirctory to scan
-     * @param string $prefix prefix path to be prepended to files
      * @return array list of keys for this directory and below.
      */
     private function fileKeys($dir) {
         $dir = rtrim($dir, '\\/');
         $result = array();
         foreach (scandir($dir) as $f) {
-            if ($f == '.' || $f == '..') 
+            if ($f == '.' || $f == '..')
                 continue;
             if (is_dir("$dir/$f"))
                 $result = array_merge(
@@ -246,7 +245,7 @@ class Directory extends Engine
         }
         return $result;
     }
-    
+
     /**
      * Persistence level of the engine.
      * @var int
@@ -269,5 +268,5 @@ class Directory extends Engine
         10000 => 0.5,
         1000 => 0.8
     );
-    
+
 }

@@ -15,22 +15,43 @@ namespace Alinex;
 
 /**
  * Logging class.
- * 
+ *
  * This class sends the log messages to different handlers like file, mail,
  * database and more. It is compatible with the PSR-3 logger interface.
- * 
+ *
  * Every Logger instance has a channel (name) and a stack of handlers. Whenever
  * you add a message to the logger, it traverses the handler stack. Each handler
  * decides whether it handle the message and how to record it.
- * 
+ *
+ * @dot
+ * digraph G {
+ *      subgraph process {
+ *          node [style=filled];
+ *          pre_Filter -> Provider -> Formatter -> buffer_Filter
+ *              -> Output [weight=4];
+ *          pre_Filter -> pre_Filter [label=loop];
+ *          Provider -> Provider [label=loop];
+ *          buffer_Filter -> buffer_Filter [label=loop];
+ *          pre_Filter -> Handler_2 [label="filtered out"];
+ *          buffer_Filter -> Handler_2 [label="buffered"];
+ *      }
+ *      Logger [shape=box];
+ *      Logger -> Handler -> Handler_2 -> Handler_n
+ *          -> Return [style=bold,weight=8];
+ *      Handler -> pre_Filter;
+ *      Output -> Handler_2;
+ *      Return [shape=box];
+ * }
+ * @enddot
+ *
  * Through the use of filters each handler may ignore the message or buffer
  * them. This brings the highest flexibility. The formatter defines the concrete
  * output and additional provider give more information to the output.
- * 
- * The class is compatible with the PEAR standards to enforce an 
+ *
+ * The class is compatible with the PEAR standards to enforce an
  * interchangeability in other standard conform projects.
  */
-class Logger
+class Logger // implements \Psr\Log\LoggerInterface
 {
     /**
      * System is unusable (will throw a LOG_Exception as well)
@@ -85,7 +106,7 @@ class Logger
         self::WARNING => 'Warning',
         self::NOTICE => 'Notice',
         self::INFO => 'Info',
-        self::DEBUG => 'Debug',
+        self::DEBUG => 'Debug'
     );
 
     /**
@@ -118,10 +139,10 @@ class Logger
      * @var array
      */
     private static $_instances = array();
-    
+
     /**
      * Get or create a logger with the defined name.
-     * 
+     *
      * @param string $name to identify this logger later
      * @return Logger instance of this class
      */
@@ -139,9 +160,9 @@ class Logger
      * @var string
      */
     protected $_name = null;
-    
+
     /**
-     * Create a new 
+     * Create a new
      * @param string $name The logging channel
      */
     protected function __construct($name)
@@ -161,9 +182,14 @@ class Logger
      */
     public function log($level, $message, array $context = array())
     {
+        assert(key_exists($level, self::$_logLevels));
+
+        // create message object
+        $logmessage = new Logger\Message($level, $message, $context);
+        // process handlers
         $success = 0;
         foreach($this->_handler as $handler)
-            if ($handler->log($level, $message, $context))
+            if ($handler->log($logmessage))
                 $success++;
         return $success;
     }
@@ -335,13 +361,13 @@ class Logger
     {
         return $this->log(static::EMERGENCY, $message, $context);
     }
-    
+
     /**
      * List of handlers
      * @var array
      */
     protected $_handler = array();
-    
+
     /**
      * Adding Handler to the end of the list.
      * @param Logger\Handler $handler handler instance
@@ -351,7 +377,7 @@ class Logger
     {
         return array_push($this->_handler, $handler);
     }
-    
+
     /**
      * Adding Handler to the start of the list.
      * @param Logger\Handler $handler handler instance
@@ -361,7 +387,7 @@ class Logger
     {
         return array_unshift($this->_handler, $handler);
     }
-    
+
     /**
      * Removing Handler from the end of the list.
      * @return Logger\Handler handler instance
@@ -370,7 +396,7 @@ class Logger
     {
         return array_pop($this->_handler);
     }
-    
+
     /**
      * Removing Handler from the start of the list.
      * @return Logger\Handler handler instance
@@ -379,5 +405,5 @@ class Logger
     {
         return array_shift($this->_handler);
     }
- 
+
 }

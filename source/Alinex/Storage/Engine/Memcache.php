@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Storage keeping values in the Alternative PHP Cache.
+ * Storage keeping values in the Memcache service.
  *
  * @author    Alexander Schilling <info@alinex.de>
  * @copyright 2009-2013 Alexander Schilling (\ref Copyright)
@@ -15,7 +15,7 @@ namespace Alinex\Storage\Engine;
 use Alinex\Storage\Engine;
 
 /**
- * Storage keeping values in the Alternative PHP Cache.
+ * Storage keeping values in the AMemcache service.
  *
  * This class will store the registry in the global memcache store. This makes
  * it less performant but globally accessible.

@@ -19,7 +19,7 @@ use Alinex\Storage;
  *
  * @attention
  * This needs the PECL extension under http://pecl.php.net/package/yaml to work.
- * 
+ *
  * @verbinclude Alinex/Storage/ImportExport/storage.yaml
  */
 class YamlFile extends File
@@ -46,7 +46,7 @@ class YamlFile extends File
             throw new \BadMethodCallException("YAML extension not loaded");
         parent::__construct($data, $file);
     }
-    
+
     /**
      * Import hashtable entries from json file
      *
@@ -93,7 +93,9 @@ class YamlFile extends File
             foreach ($this->getValues() as $key => $value) {
                 $comment = $this->getCommentLines($key);
                 // add on specific position
-                $content = preg_replace('/^\w+'.$key.':/m', $comment.'$1', $content);
+                $content = preg_replace(
+                    '/^\w+'.$key.':/m', $comment.'$1', $content
+                );
             }
         }
         $this->checkWritable();
