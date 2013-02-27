@@ -20,17 +20,29 @@ Platform Features
 -----------------
 
 In the moment the following parts are developed:
-- autloloading\n
+
+- autloloading
+
   platform, vendor and system files
-- value validation\n
+
+- value validation
+
   to be used for security checks
-- multilingual support\n
+
+- multilingual support
+
   for easy use and translation
-- registry\n
+
+- registry
+
   global storage of general configuration settings
-- cache\n
+
+- cache
+
   configurable cache system supporting multiple engines
-- logging\n
+
+- logging
+
   configurable for advanced logging strategies
 
 API Documentation & More
