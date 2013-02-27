@@ -18,15 +18,21 @@ namespace Alinex\Logger;
 abstract class Filter
 {
     /**
-     * Adds a log record to this handler.
+     * Does this filter use a message buffer.
+     * @return boolean
+     */
+    public function hasBuffer()
+    {
+        return false;
+    }
+
+    /**
+     * Check if this Message should  be further processed.
      *
-     * @param  mixed   $level   The log level
-     * @param  string  $message The log message
-     * @param  array   $context The log context
-     * @param  array   $data result data from providers
+     * Buffer filters may also store some messages locally to add them later.
+     *
+     * @param  Message  $message Log message object
      * @return Boolean Whether the record has been processed
      */
-    abstract public function check(
-        $level, $message, array $context = array(), $data = array()
-    );
+    abstract public function check(Message $message);
 }

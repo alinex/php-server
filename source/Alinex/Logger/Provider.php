@@ -18,7 +18,14 @@ namespace Alinex\Logger;
 abstract class Provider
 {
     /**
-     * Get the specific data.
+     * Get additional information.
+     *
+     * This class will retrieve additional information to be added to the
+     * Message object. They may be used later to generate the message in the
+     * Formatter.
+     *
+     * @param  Message  $message Log message object
+     * @return bool true on success
      */
-    abstract function getData();
+    abstract function addTo(Message $message);
 }

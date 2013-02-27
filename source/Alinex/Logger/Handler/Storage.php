@@ -17,7 +17,7 @@ use Alinex\Storage\Engine;
 
 /**
  * Handler storing logs in given storage engine.
- * 
+ *
  * Each log message will be added under the unix timestamp with milliseconds.
  */
 class Storage extends Handler
@@ -27,23 +27,23 @@ class Storage extends Handler
      * @var \Alinex\Storage\Engine
      */
     private $_engine = null;
-    
+
     /**
      * Set storage engine to use.
      * @param \Alinex\Storage\Engine $engine storage engine
      */
-    function __construct(Engine $engine) 
+    function __construct(Engine $engine)
     {
         $this->_engine = $engine;
         $this->_formatter = new \Alinex\Logger\Formatter\ArrayStructure();
     }
-    
+
     /**
      * Write the log message down.
-     * @param mixed $format formatted log message
+     * @param  Message  $message Log message object
      */
-    protected function write($formatted)
+    protected function write(Message $message)
     {
-        $this->_engine->set(microtime(true), $formatted);
+        $this->_engine->set(microtime(true), $message->formatted);
     }
 }

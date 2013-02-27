@@ -16,32 +16,28 @@ use \Alinex\Logger\Formatter;
 
 /**
  * Formatter storing messages as Json structure.
- * 
+ *
  * Each log message will be added under the unix timestamp with milliseconds.
  */
 class Json extends Formatter
 {
 
     /**
-     * Adds a log record to this handler.
+     * Create the JSON code to log.
      *
-     * @param  mixed   $level   The log level
-     * @param  string  $message The log message
-     * @param  array   $context The log context
-     * @param  array   $info result data from providers
-     * @return string Whether the record has been processed
+     * @param  Message  $message Log message object
+     * @return bool true on success
      */
-    public function format(
-        $level, $message, array $context = array(), $info = array()
-    )
+    public function format(Message $message)
     {
-        $result = array('level' => $level, 'message' => $message);
-        if (isset($context))
-            $result['context'] = $context;
-        if (isset($info))
-            $result['info'] = $info;
-        // return export string
-        return json_encode($result);
+        $result = array('level' => $message->level, 'message' => $message->message);
+        if (isset($message->context))
+            $result['context'] = $message->context;
+        if (isset($message->data))
+            $result['data'] = $message->data;
+        // set the final structure
+        $message->formatted = json_encode($result);
+        return true;
     }
-    
+
 }

@@ -18,15 +18,14 @@ namespace Alinex\Logger;
 abstract class Formatter
 {
     /**
-     * Adds a log record to this handler.
+     * Format the log message.
      *
-     * @param  mixed   $level   The log level
-     * @param  string  $message The log message
-     * @param  array   $context The log context
-     * @param  array   $info result data from providers
-     * @return string Whether the record has been processed
+     * This class will create a formated message version for the handler to
+     * directly output later. The formatted message is stored in the message
+     * object.
+     *
+     * @param  Message  $message Log message object
+     * @return bool true on success
      */
-    abstract public function format(
-        $level, $message, array $context = array(), $info = array()
-    );
+    abstract public function format(Message $message);
 }

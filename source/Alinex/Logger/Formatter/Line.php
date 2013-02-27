@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Formatter storing messages as Array structure.
+ * Formatter writing message as single line.
  *
  * @author    Alexander Schilling <info@alinex.de>
  * @copyright 2009-2013 Alexander Schilling (\ref Copyright)
@@ -16,28 +16,30 @@ use \Alinex\Logger\Message;
 use \Alinex\Logger\Formatter;
 
 /**
- * Formatter storing messages as Array structure.
- *
- * Each log message will be added under the unix timestamp with milliseconds.
+ * Formatter writing message as single line.
  */
-class ArrayStructure extends Formatter
+class Line extends Formatter
 {
 
+    public $formatString = '{message}';
+
     /**
-     * Create the log object structure.
+     * Format the log line.
      *
      * @param  Message  $message Log message object
      * @return bool true on success
      */
     public function format(Message $message)
     {
-        $result = array('level' => $message->level, 'message' => $message->message);
-        if (isset($message->context))
-            $result['context'] = $message->context;
-        if (isset($message->data))
-            $result['data'] = $message->data;
+        $replace = array(
+            'message' => $message->message,
+        );
         // set the final structure
-        $message->formatted = $result;
+        $message->formatted = str_replace(
+            array_keys($replace),
+            array_values($replace),
+            $this->formatString
+        );
         return true;
     }
 
