@@ -1,0 +1,56 @@
+{
+	"values": 
+	{
+		"boolean": true,
+		"integer": 5,
+		"float": 5.3,
+		"text": "short text",
+		"textMultiline": "line1\nline2\nline3",
+		"textEmpty": "",
+		"array": 
+		{
+			"0": 1,
+			"1": 2,
+			"2": 3
+		},
+		"hash": 
+		{
+			"eins": 1,
+			"zwei": 2,
+			"drei": 3
+		},
+		"arrayArray": 
+		{
+			"0": 
+			{
+				"0": 1,
+				"1": 2,
+				"2": 3
+			},
+			"1": 
+			{
+				"0": 4,
+				"1": 5,
+				"2": 6
+			}
+		}
+	},
+	"validators": 
+	{
+		"float": 
+		{
+			"0": 
+			{
+				"0": "Alinex\\Validator\\Type",
+				"1": "float"
+			},
+			"1": 
+			{
+				"description": "Eine kleine Zahl.",
+				"minRange": 1,
+				"maxRange": 10,
+				"round": 2
+			}
+		}
+	}
+}
