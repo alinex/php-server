@@ -7,55 +7,19 @@ This list contains all things to be done in the system:
 
 @section next Next steps (for current release)
 
-- Cache
-  - asserts
+- Engine Redis
+  - coding
   - test
-- Engine Directory
-- extend engine by GC methods
 
 I18n
 - bootstrap set local
 - include vendor/php-gettext as alternative
 
 Logging class
-- log()
-  - rotate over handlers
-  - send message to log() in handler
-- create handler
-  - Abstract handler
-  - customize formatter
-  - add filters
-  - add provider
-- different handlers Handler/Abstract
-  - Handler/Console
-  - Handler/Errorlog
-  - Handler/File
-  - Observer
-  - DB
-  - Globals
-  - Mail
-  - Rpc
-  - Session
-  - SessionRequest
-  - StaticRequest
-  - Echo
-  - Firebug
-  - PHPChrome
-  - Socket
-  - REST
-- filters Filter/Abstract
-  - define level
-  - define namespace
-  - buffer (min level)
-  - prevent duplicates
-- addon provider Provider/Abstract
-  - introspection
-  - web
-  - system top
-- formatter Formatter/Abstract
-  - oneliner
-  - json
-  - normalizer
+- formatter line format definer printf??
+- create filters
+- create providers
+- complete test
 
 @section later Things to do later (in future releases)
 
@@ -65,17 +29,24 @@ Documentation (doxygen)
 
 Tooling
 - kcachegrind
-- phar archiv als pack
+- phar archiv as pack
 
 Serverbase
-- config (Registry class structure) o
-- cache (from alinex) o
-- RPC Server
+- Sytsem
+  - IPC, Parallel Processing
+- Task
+  - RPC Server
+
+DB
+- simple db
+- orm doctrine
+  - initialization
+  - setup database
 
 Multitenancy (Mandantenfähigkeit auch multi client capability)
 - Kennung
   - über Hostname (Domain/Subdomain)
-  - über CLient IP
+  - über Client IP
   - über Parameter
 
 Client Qooxdoo DemoViewer
@@ -85,14 +56,6 @@ Client Qooxdoo DemoViewer
 - RPC Anbindung
 - Mehrsprachig
 - Theming
-
-DB
-- simple db
-- orm doctrine
-  - initialization
-  - setup database
-
-IPC, Parallel Processing
 
 Server
 - Enable Auth class
@@ -112,39 +75,6 @@ Login (june)
 - CAS  Anmeldung über Anmeldedienst
 - SSO Integration
 - OAuth2
-
-RPC Servers
-- test XML
-- test SOAPjr
-- JSON support binary data BSON http://en.wikipedia.org/wiki/BSON
-- YAML support http://en.wikipedia.org/wiki/YAML
-- POST server which sends data as multipart form
-- binary formats
-  - SDXF http://en.wikipedia.org/wiki/SDXF
-  - XDR http://en.wikipedia.org/wiki/External_Data_Representation
-
-
-
-
-
-
-
-- XML REST als Alternative zu RPC
-
-More loggers:
-- free sql logger through PDO
-- XMPP / Messaging Logger http://code.google.com/p/xmpphp/ http://www.ibm.com/developerworks/xml/tutorials/x-alertxmpptut/section4.html
-- icq, gtalk logger
-- SMS Logger
-- SocketLogger
-- Memcache logger
-
-Make packages 'pack'
-- core package with doctrine included in php/lib directory
-- remove config.json.php
-- seperate the core and each extension packages in one package dir /package/NAME_VERSION_DATE
-- create zip file for each package
-
 
 @section code Entries from code
 

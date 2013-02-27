@@ -8,7 +8,7 @@ This page shows the current status of the system and the further planned version
 
 @section current Current Version 0.1-devel
 
-@note Planned to be finished in January 2012
+@note Planned to be finished in February 2013
 
 @warning This is a development Version and should not be used for productive 
 purpose. It is never approved nor completed, yet.
@@ -24,13 +24,13 @@ This Version has the following abilities:
 The server implements:
 - autloloading
 - value validation
-- Registry
+- Registry, Cache
 - multilingual support
-
+- Logging
 
 @section version02 Next Version will be 0.2-devel
 
-@note Planned to be finished in April 2013
+@note Planned to be finished in May 2013
 
 Planned abilities:
 - rudimentary server running
@@ -43,6 +43,15 @@ The server application has:
 - security system integrated
 - performance optimization
 - flexible rpc server with service system
+
+@section version03 Next Version will be 0.3-devel
+
+@note Planned to be finished in August 2013
+
+Planned abilities:
+- first test client working
+
+The server application has:
 - installer program
 
 The client is just now very thin and can only:
@@ -52,9 +61,9 @@ The client is just now very thin and can only:
 - integrated help system
 - basic authentication call
 
-@section version03 Next Version will be 0.3-devel
+@section version04 Next Version will be 0.4-devel
 
-@note Planned to be finished in August 2013
+@note Planned to be finished in November 2013
 
 In this version the basic system is completed:
 - authentication should be working
@@ -62,28 +71,11 @@ In this version the basic system is completed:
 - registration should be done in client and server
 
 
-@section version04 Version 0.4-devel
+@section version04 Version 0.5-devel
 
 This should contain a user management application.
 
 @section ideas More Ideas to be done anytime
-
-Logger
-- XMPP / Messaging Logger http://code.google.com/p/xmpphp/ http://www.ibm.com/developerworks/xml/tutorials/x-alertxmpptut/section4.html
-- icq, gtalk logger
-- SMS Logger
-- SqlLogger über PDO
-- SocketLogger
-- Memcache logger
-
-RPC
-- JSON support binary data BSON http://en.wikipedia.org/wiki/BSON
-- YAML support http://en.wikipedia.org/wiki/YAML
-- POST server which sends data as multipart form
-- binary fomats like:
-  - SDXF http://en.wikipedia.org/wiki/SDXF
-  - XDR http://en.wikipedia.org/wiki/External_Data_Representation
-- XML REST as alternative to classic RPC
 
 Online Help
  - integrate link checker
@@ -93,12 +85,5 @@ Login
 - LDAP, IMAP, POP3, NNTP, Radius, Externe Datenbank, PAM Passwortprüfung
 - CAS  Anmeldung über Anmeldedienst
 - SSO Integration
-
-Shell access
-- IPC class
-- parallel processing support
-
-Functions
-- TaskManager
 
 */
