@@ -17,8 +17,9 @@ Thumbs.db
 .settings
 .tmproj
 *.esproj
-nbproject
+/nbproject/
 
-# Folders to ignore
-translation
-
+# application specific
+/translation/
+/www/
+/Manifest.json
