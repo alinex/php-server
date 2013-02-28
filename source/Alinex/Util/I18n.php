@@ -11,6 +11,8 @@
 
 namespace Alinex\Util;
 
+use Alinex\Template;
+
 /**
  * Internationalization and translation methods.
  *
@@ -39,12 +41,15 @@ class I18n
         // only strings may be translated
         assert(is_string($msgid));
 
-        if (!function_exists('gettext'))
-            return $msgid; // Fallback
-
-        self::setDomain();
-        $trans = gettext($msgid); // call native php function
-        return self::replaceParams($trans, $params);
+        if (function_exists('gettext')) {
+            self::setDomain();
+            // call native php function
+            $trans = gettext($msgid); // call native php function
+        } else {
+            // fallback keep english
+            $trans = $msgid;
+        }
+        return Template\Simple::run($trans, $params);
     }
 
     /**
@@ -71,13 +76,15 @@ class I18n
         // have to be a positive integer
         assert(is_int($num) && $num >= 0);
 
-        if (!function_exists('gettext'))
-            return $num != 1 ? $msgSingular : $msgPlural; // Fallback
-
-        self::setDomain();
-        // call native php function
-        $trans = ngettext($msgSingular, $msgPlural, $num);
-        return self::replaceParams($trans, $params);
+        if (function_exists('gettext')) {
+            self::setDomain();
+            // call native php function
+            $trans = ngettext($msgSingular, $msgPlural, $num);
+        } else {
+            // fallback keep english
+            $trans = $num != 1 ? $msgSingular : $msgPlural;
+        }
+        return Template\Simple::run($trans, $params);
     }
 
     /**
@@ -110,31 +117,10 @@ class I18n
     }
 
     /**
-     * Replace parameters with the given values.
-     *
-     * @param string $text translated text with variables
-     * @param array $params params with vars which should be replaced
-     * (enclosed with {})
-     *
-     * @return string replaced text
+     * Prefix used to create unique names for the data in global cache and
+     * session.
      */
-    private static function replaceParams($text, $params)
-    {
-        // return if no parameters
-        if (!isset($params) && !count($params))
-            return $text;
-        // replace parameters in text
-        $search = array();
-        foreach (array_keys($params) as $element)
-            $search[] = '{' . $element . '}';
-        return str_replace($search, $params, $text);
-    }
-
-  /**
-   * Prefix used to create unique names for the data in global cache and
-   * session.
-   */
-  const PREFIX = 'i18n_';
+    const PREFIX = 'i18n_';
 
     /**
      * Set the system local.
