@@ -1,17 +1,17 @@
 /** @page roadmap Roadmap
 
 This page shows the current status of the system and the further planned versions and ideas:
-- \ref current
+- \ref version01
 - \ref version02
 - \ref version03
 - \ref ideas
 
-@section current Current Version 0.1-devel
+@section version01 Version 0.1-devel
 
-@note Planned to be finished in February 2013
+@note Finished in 28th February 2013
 
-@warning This is a development Version and should not be used for productive 
-purpose. It is never approved nor completed, yet.
+@warning This is a development Version and should not be used for productive
+purpose. It is never completely approved nor completed, yet.
 
 This Version has the following abilities:
 - well documented concept
@@ -22,27 +22,33 @@ This Version has the following abilities:
 - complete unit test coverage
 
 The server implements:
-- autloloading
-- value validation
+- Autloloading
+- value Validation
 - Registry, Cache
+- Simple template engine
 - multilingual support
-- Logging
+- basic Logger
 
-@section version02 Next Version will be 0.2-devel
+@section version02 Current Development Version is 0.2-devel
 
 @note Planned to be finished in May 2013
 
+@warning This is a development Version and should not be used for productive
+purpose. It is never completely approved nor completed, yet.
+
 Planned abilities:
 - rudimentary server running
-- first test client working
 
-The server application has:
-- session management
+The server application has now also:
+- Session management
+- Message Queue
+- Cache cleanup
+- completed Logger
+- Proc management
 - integrated database abstraction
 - object-relation-mapper database integration
-- security system integrated
-- performance optimization
-- flexible rpc server with service system
+
+
 
 @section version03 Next Version will be 0.3-devel
 
@@ -50,6 +56,15 @@ The server application has:
 
 Planned abilities:
 - first test client working
+
+The server application has now also:
+- Request routing
+- flexible rpc server with service system
+- Task management
+
+@section version04 Next Version will be 0.4-devel
+
+@note Planned to be finished in November 2013
 
 The server application has:
 - installer program
@@ -61,9 +76,9 @@ The client is just now very thin and can only:
 - integrated help system
 - basic authentication call
 
-@section version04 Next Version will be 0.4-devel
+@section version05 Next Version will be 0.5
 
-@note Planned to be finished in November 2013
+@note Planned to be finished in January 2014
 
 In this version the basic system is completed:
 - authentication should be working
@@ -71,19 +86,8 @@ In this version the basic system is completed:
 - registration should be done in client and server
 
 
-@section version04 Version 0.5-devel
+@section version04 Version 0.6
 
 This should contain a user management application.
-
-@section ideas More Ideas to be done anytime
-
-Online Help
- - integrate link checker
-
-Login
-- Encrypt passwort on client side before sending
-- LDAP, IMAP, POP3, NNTP, Radius, Externe Datenbank, PAM Passwortprüfung
-- CAS  Anmeldung über Anmeldedienst
-- SSO Integration
 
 */

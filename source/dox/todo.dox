@@ -7,6 +7,10 @@ This list contains all things to be done in the system:
 
 @section next Next steps (for current release)
 
+- simple template engine
+  - use in tr
+  - use in formatter
+
 - Engine Redis
   - coding
   - test
@@ -21,6 +25,17 @@ Logging class
 - create providers
 - complete test
 
+Session management
+
+Storage
+- Message Queue
+- Cache cleanup
+
+Proc management
+
+database abstraction
+- ORM mapper
+
 @section later Things to do later (in future releases)
 
 Documentation (doxygen)
@@ -30,18 +45,6 @@ Documentation (doxygen)
 Tooling
 - kcachegrind
 - phar archiv as pack
-
-Serverbase
-- Sytsem
-  - IPC, Parallel Processing
-- Task
-  - RPC Server
-
-DB
-- simple db
-- orm doctrine
-  - initialization
-  - setup database
 
 Multitenancy (Mandantenfähigkeit auch multi client capability)
 - Kennung
