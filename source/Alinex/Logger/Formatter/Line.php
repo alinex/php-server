@@ -12,8 +12,9 @@
 
 namespace Alinex\Logger\Formatter;
 
-use \Alinex\Logger\Message;
-use \Alinex\Logger\Formatter;
+use Alinex\Logger\Message;
+use Alinex\Logger\Formatter;
+use Alinex\Template;
 
 /**
  * Formatter writing message as single line.
@@ -31,14 +32,17 @@ class Line extends Formatter
      */
     public function format(Message $message)
     {
-        $replace = array(
-            'message' => $message->message,
+        // create the available data object
+        $values = array_merge(
+            $message->data,
+            array(
+                'message' => $message->message,
+                'context' => $message->context,
+            )
         );
         // set the final structure
-        $message->formatted = str_replace(
-            array_keys($replace),
-            array_values($replace),
-            $this->formatString
+        $message->formatted = Template\Simple::run(
+            $this->formatString, $values
         );
         return true;
     }
