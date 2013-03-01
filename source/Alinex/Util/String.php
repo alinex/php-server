@@ -112,6 +112,35 @@ class String
     }
 
     /**
+     * Replacement list for escape method.
+     * @var array
+     */
+    private static $_escape = array(
+        '\\' => '\\\\', 
+        '"' => '\\"', 
+        "\n" => '\\n', 
+        "\r" => '\\r', 
+        "\b" => '\\b', 
+        "\f" => '\\f', 
+        "\t" => '\\r', 
+        '/' => '\\/', 
+        '\\\\u' => '\\u'
+    );
+
+    /**
+     * Escape special string characters to be printed insteas interpreted.
+     *
+     * @param string $value string to be masked
+     * @return string optimized string
+     */
+    static function escape($value)
+    {
+        return str_replace(
+            array_keys(self::$_escape), array_values(self::$_escape), $value
+        );
+    }
+
+    /**
      * Break text into multiple lines using wordwrap.
      *
      * @param string $string

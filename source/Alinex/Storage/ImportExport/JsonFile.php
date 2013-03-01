@@ -12,6 +12,8 @@
 
 namespace Alinex\Storage\ImportExport;
 
+use Alinex\Util\String;
+
 /**
  * Import and export hashtable values using json file.
  *
@@ -116,41 +118,25 @@ class JsonFile extends File
      *
      * @param string $in json string to pretty print
      * @param int $indent current indention level
-     * @param \Closure $_escape escape function for string values
      * @return string in pretty indented format
-     *
-     * @todo remove $_escape closure with String:: call
      */
-    function json_readable_encode($in, $indent = 0, \Closure $_escape = null)
+    function json_readable_encode($in, $indent = 0)
     {
         $_myself = array($this, __FUNCTION__);
-        if (is_null($_escape)) {
-            $_escape = function ($str) {
-                return str_replace(
-                    array(
-'\\', '"', "\n", "\r", "\b", "\f", "\t", '/', '\\\\u'
-                    ),
-                    array(
-'\\\\', '\\"', "\\n", "\\r", "\\b", "\\f", "\\t", '\\/', '\\u'
-                    ),
-                    $str
-                );
-            };
-        }
         $out = '';
         foreach ($in as $key=>$value) {
             $out .= str_repeat("\t", $indent + 1);
-            $out .= "\"".$_escape((string)$key)."\": ";
+            $out .= "\"".String::escape((string)$key)."\": ";
 
             if (is_object($value) || is_array($value)) {
                 $out .= "\n";
-                $out .= call_user_func($_myself, $value, $indent + 1, $_escape);
+                $out .= call_user_func($_myself, $value, $indent + 1);
             } else if (is_bool($value)) {
                 $out .= $value ? 'true' : 'false';
             } else if (is_null($value)) {
                 $out .= 'null';
             } else if (is_string($value)) {
-                $out .= "\"" . $_escape($value) ."\"";
+                $out .= "\"" . String::escape($value) ."\"";
             } else {
                 $out .= $value;
             }

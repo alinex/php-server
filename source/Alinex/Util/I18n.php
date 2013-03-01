@@ -19,6 +19,9 @@ use Alinex\Template;
  * @todo maybe add context support ligke pgettext
  * http://www.gnu.org/software/gettext/manual/html_node/Contexts.html
  * https://github.com/azatoth/php-pgettext
+ * 
+ * test||note
+ * 
  */
 class I18n
 {

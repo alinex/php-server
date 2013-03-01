@@ -8,10 +8,6 @@
  * @license   All Alinex code is released under the GNU General Public \ref
  *            License.
  * @see       http://alinex.de Alinex Project
- *
- * @todo extend with XmlTransfer
- * @todo extend with DbTransfer
- * @todo extend with RestTransfer
  */
 
 namespace Alinex\Storage;

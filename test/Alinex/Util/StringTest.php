@@ -112,4 +112,9 @@ EOT;
         $this->assertEquals(gettype(true), gettype(String::convertType('true')));
     }
 
+    public function testEscape()
+    {
+        $this->assertEquals('\\n', String::escape("\n"));
+    }
+
 }
