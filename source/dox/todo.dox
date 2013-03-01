@@ -16,7 +16,6 @@ I18n
 - include vendor/php-gettext as alternative
 
 Logging class
-- formatter line format definer printf??
 - create filters
 - create providers
 - complete test

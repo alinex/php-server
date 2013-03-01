@@ -35,6 +35,12 @@ use Alinex\Util\ArrayStructure;
  * @verbatim
  * Files {start|printf %03d} till {end|printf %03d} are broken!
  * @endverbatim
+ * 
+ * Optional variables will be replaced with empty string if not existing. This
+ * is done by adding a '?' at the end of the variable name:
+ * @verbatim
+ * Files {start?} till {end|printf %03d} are broken!
+ * @endverbatim
  *
  * Therefore the following modifiers are possible:
  * - trim - strip whitespaces from start and end
@@ -105,9 +111,15 @@ class Simple
     {
         $parts = explode('|', $matches[1]);
         $variable = array_shift($parts);
-        if (!ArrayStructure::has($this->_values, $variable, '.'))
-            return $matches[0]; // keep variable if not found
+        // check if value has to be present
+        $optional = false;
+        if (substr($variable, -1) == '?') {
+            $variable = substr($variable, 0, -1);
+            $optional = true;
+        }
         $value = ArrayStructure::get($this->_values, $variable, '.');
+        if (!$optional && !isset($value))
+            return $matches[0]; // keep variable if not found
         foreach($parts as $modifier)
             $value = $this->modifier($value, $modifier);
         return $value;
@@ -181,4 +193,5 @@ class Simple
         // return formated
         return date($param, $value);
     }
+
 }

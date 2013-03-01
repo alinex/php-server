@@ -22,6 +22,8 @@ use Alinex\Util\I18n;
 ini_set('xdebug.collect_params', '4');
 ini_set('display_errors', false);
 
+date_default_timezone_set('Europe/Berlin');
+
 // autoloader
 
 require_once __DIR__.DIRECTORY_SEPARATOR

@@ -11,9 +11,11 @@
  */
 
 use Alinex\Code;
+use Alinex\Util\I18n;
 
 error_reporting(E_ALL);
-use Alinex\Util\I18n;
+
+date_default_timezone_set('Europe/Berlin');
 
 // autoloader
 

@@ -21,6 +21,14 @@ class SimpleTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+    function testOptional()
+    {
+        $this->assertEquals(
+            'A . test',
+            Simple::run('A {num?}. test', array())
+        );
+    }
+
     function testTrim()
     {
         $this->assertEquals(

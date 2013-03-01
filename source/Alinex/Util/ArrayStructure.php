@@ -71,6 +71,8 @@ class ArrayStructure
                 unset($ref[$key]);
                 unset($ref);
                 $ref = NULL;
+            } else if (!isset($ref[$key]) && !isset($value)) {
+                return null;
             } else {
                 if (!isset($ref[$key]))
                     $ref[$key] = array();

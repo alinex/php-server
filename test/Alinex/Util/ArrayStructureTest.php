@@ -117,4 +117,10 @@ class ArrayStructureTest extends \PHPUnit_Framework_TestCase
         ArrayStructure::has(array(), NULL);
     }
 
+    public function testGetNotExisting()
+    {
+        $data = array();
+        $this->assertNull(ArrayStructure::get($data, 'not.existing', '.'));
+    }
+
 }
