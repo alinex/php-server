@@ -12,6 +12,7 @@
 
 namespace Alinex\Logger\Handler;
 
+use Alinex\Logger\Message;
 use Alinex\Logger\Handler;
 use Alinex\Storage\Engine;
 

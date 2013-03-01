@@ -12,6 +12,8 @@
 
 namespace Alinex\Logger;
 
+use Alinex\Logger\Message;
+
 /**
  * Abstract handler for log managing.
  *
@@ -50,7 +52,7 @@ abstract class Handler
                 && !$filter->check($message))
                 return false;
         // write messages
-        $this->write($message->formatted);
+        $this->write($message);
         return true;
     }
 
@@ -159,7 +161,7 @@ abstract class Handler
 
     /**
      * Write the log message down.
-     * @param mixed $format formatted log message
+     * @param  Message  $message Log message object
      */
-    abstract protected function write($format);
+    abstract protected function write(Message $message);
 }

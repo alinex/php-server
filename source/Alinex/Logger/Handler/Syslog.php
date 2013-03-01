@@ -13,6 +13,7 @@
 namespace Alinex\Logger\Handler;
 
 use Alinex\Logger\Handler;
+use Alinex\Logger\Message;
 
 /**
  * Generate log messages that will be distributed by the system logger.
