@@ -13,6 +13,14 @@ class SimpleTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+    function testUndefined()
+    {
+        $this->assertEquals(
+            'A {num}. test',
+            Simple::run('A {num}. test', array())
+        );
+    }
+
     function testTrim()
     {
         $this->assertEquals(
@@ -65,4 +73,21 @@ class SimpleTest extends \PHPUnit_Framework_TestCase
             Simple::run('It worked on {start|date l}', array('start' => $start))
         );
     }
+
+    function testUpper()
+    {
+        $this->assertEquals(
+            'A 01. TEST',
+            Simple::run('A {num|printf %02d.} {name|upper}', array('num' => 1, 'name' => 'test'))
+        );
+    }
+
+    function testLower()
+    {
+        $this->assertEquals(
+            'A 01. test',
+            Simple::run('A {num|printf %02d.} {name|lower}', array('num' => 1, 'name' => 'TEST'))
+        );
+    }
+
 }

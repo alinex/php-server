@@ -45,6 +45,8 @@ use Alinex\Util\ArrayStructure;
  * http://www.php.net/manual/en/function.date.php the constants under
  * http://www.php.net/manual/en/class.datetime.php#datetime.constants.types
  * are also possible giving only the last part like 'RFC822'.
+ * - upper - convert to upper case
+ * - lower - convert to lower case
  */
 class Simple
 {
@@ -85,7 +87,7 @@ class Simple
     private function replace($text)
     {
         return preg_replace_callback(
-            '/\{(\s?\w[^}]+)\}/',
+            '/\{(\s?\w[^}]+?)\}/',
             array($this, 'replaceVariable'),
             $text
         );
@@ -103,7 +105,9 @@ class Simple
     {
         $parts = explode('|', $matches[1]);
         $variable = array_shift($parts);
-        $value = ArrayStructure::get($this->_values, $variable);
+        if (!ArrayStructure::has($this->_values, $variable, '.'))
+            return $matches[0]; // keep variable if not found
+        $value = ArrayStructure::get($this->_values, $variable, '.');
         foreach($parts as $modifier)
             $value = $this->modifier($value, $modifier);
         return $value;
@@ -119,6 +123,8 @@ class Simple
         'trim' => array('call' => 'trim'),
         'dump' => array('call' => array('\Alinex\Util\String', 'dump')),
         'printf' => array('call' => 'sprintf', 'reverse' => true),
+        'upper' => array('call' => 'strtoupper'),
+        'lower' => array('call' => 'strtolower'),
     );
 
     /**
@@ -159,6 +165,14 @@ class Simple
         );
     }
 
+    /**
+     * Special handling for date modifier.
+     *
+     * The shortcut of the system constants are supported as parameters.
+     * @param int $value timestamp to be formatted
+     * @param string $param format string or constant shortcut
+     * @return string formatted date string
+     */
     private function call_date($value, $param = DATE_ISO8601)
     {
         // allow use of DATE_XXX constants
