@@ -22,8 +22,6 @@ use Alinex\Util\I18n;
 ini_set('xdebug.collect_params', '4');
 ini_set('display_errors', false);
 
-date_default_timezone_set('Europe/Berlin');
-
 // autoloader
 
 require_once __DIR__.DIRECTORY_SEPARATOR
@@ -48,8 +46,9 @@ $registry = Registry::getInstance();
 
 // @todo init and select locale from user
 setlocale(LC_MESSAGES, 'de_DE');
+setlocale(LC_ALL, 'de_DE');
 
-// @todo set timezone
+date_default_timezone_set('Europe/Berlin');
 
 
 return $loader;
