@@ -12,49 +12,57 @@
 
 namespace Alinex\Logger;
 
+use Alinex\Logger;
+
 /**
  * Log message object.
  *
  * This is only used internally in the logger to pass messages through the
  * chain and collect data.
+ *
+ * The general data elements are:
+ * - time.sec - only the unixtem (seconds)
+ * - time.msec - microseconds
+ * - level.num - level number
+ * - level.name - name of the log severity
+ * - message - original message
+ * - context.... - attributes from message call
+ *
+ * More data elements will be added using the Provider classes.
  */
 class Message
 {
     /**
-     * Severity type of message.
-     * @var int
+     * Get i18n title for the log level.
+     * @param int $level log level
+     * @return string title for level
      */
-    public $level = null;
+    static function levelName($level)
+    {
+        $title = array(
+            Logger::EMERGENCY => tr('Emergency'),
+            Logger::ALERT => tr('Alert'),
+            Logger::CRITICAL => tr('Critcal'),
+            Logger::ERROR => tr('Error'),
+            Logger::WARNING => tr('Warning'),
+            Logger::NOTICE => tr('Notice'),
+            Logger::INFO => tr('Info'),
+            Logger::DEBUG => tr('Debug')
+        );
+        return $title[$level];
+    }
 
     /**
-     * Original message text
-     * @var string
-     */
-    public $message = null;
-
-    /**
-     * Context information
-     * @var array
-     */
-    public $context = null;
-
-    /**
-     * Formatted message for output
-     * @var mixed
-     */
-    public $formatted = null;
-
-    /**
-     * Additional information from data Provider or Filter
+     * Information structure.
      * @var array
      */
     public $data = array();
 
     /**
-     * Additional messages to output.
-     * @var array
+     * Formatted message.
+     * @var mixed
      */
-    public $buffer = null;
+    public $formatted = null;
 
     /**
      * Create new message object to work with.
@@ -64,8 +72,21 @@ class Message
      */
     public function __construct($level, $message, array $context = array())
     {
-        $this->level = $level;
-        $this->message = $message;
-        $this->context = $context;
+        // set the time
+        list($sec, $msec) = explode('.', microtime(true));
+        $this->data['time'] = array(
+            'sec' => $sec,
+            'msec' => $msec
+        );
+        // set the level
+        $this->data['level'] = array(
+            'num' => $level,
+            'name' => self::levelName($level)
+        );
+        // set message
+        $this->data['message'] = $message;
+        // set context data
+        if ($context)
+            $this->data['context'] = $context;
     }
 }

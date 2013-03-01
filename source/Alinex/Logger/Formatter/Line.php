@@ -18,11 +18,22 @@ use Alinex\Template;
 
 /**
  * Formatter writing message as single line.
+ *
+ * Any containing newlines within the message or values will be automatically
+ * removed by spaces.
  */
 class Line extends Formatter
 {
+    /**
+     * Default format
+     */
+    const COMMON = '{time.sec|date} {level.name|upper}: {message}.';
 
-    public $formatString = '{message}';
+    /**
+     * Used format string to create message.
+     * @var string
+     */
+    public $formatString = self::COMMON;
 
     /**
      * Format the log line.
@@ -32,18 +43,12 @@ class Line extends Formatter
      */
     public function format(Message $message)
     {
-        // create the available data object
-        $values = array_merge(
-            $message->data,
-            array(
-                'message' => $message->message,
-                'context' => $message->context,
-            )
-        );
         // set the final structure
-        $message->formatted = Template\Simple::run(
-            $this->formatString, $values
+        $formatted = Template\Simple::run(
+            $this->formatString, $message->data
         );
+        // replace all newlines with spaces
+        $message->formatted = preg_replace('/[\n\r]+/', ' ', $formatted);
         return true;
     }
 

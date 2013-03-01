@@ -12,8 +12,8 @@
 
 namespace Alinex\Logger\Formatter;
 
-use \Alinex\Logger\Message;
-use \Alinex\Logger\Formatter;
+use Alinex\Logger\Message;
+use Alinex\Logger\Formatter;
 
 /**
  * Formatter storing messages as Array structure.
@@ -31,13 +31,8 @@ class ArrayStructure extends Formatter
      */
     public function format(Message $message)
     {
-        $result = array('level' => $message->level, 'message' => $message->message);
-        if (isset($message->context))
-            $result['context'] = $message->context;
-        if (isset($message->data))
-            $result['data'] = $message->data;
         // set the final structure
-        $message->formatted = $result;
+        $message->formatted = $message->data;
         return true;
     }
 
