@@ -41,4 +41,28 @@ class SimpleTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+    function testDate()
+    {
+        $start = 1362143511;
+        $this->assertEquals(
+            'It worked on 1362143511',
+            Simple::run('It worked on {start}', array('start' => $start))
+        );
+        $this->assertEquals(
+            'It worked on 2013-03-01T14:11:51+0100',
+            Simple::run('It worked on {start|date}', array('start' => $start))
+        );
+        $this->assertEquals(
+            'It worked on 2013-03-01T14:11:51+0100',
+            Simple::run('It worked on {start|date Y-m-d\TH:i:sO}', array('start' => $start))
+        );
+        $this->assertEquals(
+            'It worked on 2013-03-01T14:11:51+0100',
+            Simple::run('It worked on {start|date ISO8601}', array('start' => $start))
+        );
+        $this->assertEquals(
+            'It worked on Friday',
+            Simple::run('It worked on {start|date l}', array('start' => $start))
+        );
+    }
 }

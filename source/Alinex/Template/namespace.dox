@@ -1,0 +1,15 @@
+/** @namespace Alinex\Template
+
+Template engine for proccessing textfile templates.
+
+Different Types of Template Engines will be added here. They may allow:
+- simple variable validation
+- modifiers to change the variable data or format
+- control structures
+
+And certenly they have different syntax formats.
+
+The directly integrated engine is the Simple template, which allows variable
+substitution with modifiers and is used in the core of alinex server.
+
+*/

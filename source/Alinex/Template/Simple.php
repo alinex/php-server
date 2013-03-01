@@ -22,7 +22,7 @@ use Alinex\Util\ArrayStructure;
  *
  * @attention
  * It isn't a full fledged template engine to create page templates or other
- * complex documents.
+ * complex documents. And it misses control structures.
  *
  * The syntax is really simple, you may add variables in the text using curly
  * braces:
@@ -41,6 +41,10 @@ use Alinex\Util\ArrayStructure;
  * - dump &lt;depth&gt; - dump the variable
  * - printf &lt;format&gt; - print a formated value see
  * http://www.php.net/manual/en/function.sprintf.php
+ * - date &lt;format&gt; - output date using format specified under
+ * http://www.php.net/manual/en/function.date.php the constants under
+ * http://www.php.net/manual/en/class.datetime.php#datetime.constants.types
+ * are also possible giving only the last part like 'RFC822'.
  */
 class Simple
 {
@@ -107,6 +111,8 @@ class Simple
 
     /**
      * List of possible modifiers with callbacks and other options.
+     * - call - contains the real callback
+     * - reverse=true - will send the value as last (2nd) value
      * @var array
      */
     private $_modifier = array(
@@ -129,9 +135,36 @@ class Simple
         $param = array($value);
         if (isset($parts[1]))
             $param[] = $parts[1];
-        if (isset($this->_modifier[$function]['reverse'])
-            && $this->_modifier[$function]['reverse'])
-            $param = array_reverse($param);
-        return call_user_func_array($this->_modifier[$function]['call'], $param);
+        // call method
+        if (method_exists($this, 'call_'.$function)) {
+            return call_user_func_array(
+                array($this, 'call_'.$function), $param
+            );
+        }
+        // use definitions
+        if (isset($this->_modifier[$function])) {
+            if (isset($this->_modifier[$function]['reverse'])
+                && $this->_modifier[$function]['reverse'])
+                $param = array_reverse($param);
+            return call_user_func_array(
+                $this->_modifier[$function]['call'], $param
+            );
+        }
+        // no definition found
+        throw new \BadMethodCallException(
+            tr(
+                'No modifier {modifier} defined in Simple Template.',
+                array('name' => $modifier)
+            )
+        );
+    }
+
+    private function call_date($value, $param = DATE_ISO8601)
+    {
+        // allow use of DATE_XXX constants
+        if (defined('DATE_'.$param))
+            $param = constant('DATE_'.$param);
+        // return formated
+        return date($param, $value);
     }
 }
