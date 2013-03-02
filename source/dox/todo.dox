@@ -12,19 +12,23 @@ This list contains all things to be done in the system:
   - test
 
 I18n
-- bootstrap set local
+- bootstrap set local using i18n
 - include vendor/php-gettext as alternative
-
+- context using \004 as separator go to *.pot
+  - remove context on fallback method
+- specify fix local setting for specific namespaces
+ 
 Logging class
 - create filters
 - create providers
+- complete handlers
 - complete test
-
-Session management
 
 Storage
 - Message Queue
 - Cache cleanup
+
+Session management
 
 Proc management
 

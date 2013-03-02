@@ -27,13 +27,13 @@ namespace Alinex;
  * digraph G {
  *      subgraph process {
  *          node [style=filled];
- *          pre_Filter -> Provider -> Formatter -> buffer_Filter
+ *          pre_Filter -> Provider -> Formatter -> post_Filter
  *              -> Output [weight=4];
  *          pre_Filter -> pre_Filter [label=loop];
  *          Provider -> Provider [label=loop];
- *          buffer_Filter -> buffer_Filter [label=loop];
+ *          post_Filter -> post_Filter [label=loop];
  *          pre_Filter -> Handler_2 [label="filtered out"];
- *          buffer_Filter -> Handler_2 [label="buffered"];
+ *          post_Filter -> Handler_2 [label="buffered"];
  *      }
  *      Logger [shape=box];
  *      Logger -> Handler -> Handler_2 -> Handler_n

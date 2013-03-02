@@ -13,6 +13,7 @@
 namespace Alinex\Logger;
 
 use Alinex\Logger\Message;
+use Alinex\Validator;
 
 /**
  * Abstract handler for log managing.
@@ -38,7 +39,7 @@ abstract class Handler
     {
         // call prefilter
         foreach($this->_filter as $filter)
-            if (!$filter->hasBuffer()
+            if (!$filter::isPostfilter
                 && !$filter->check($message))
                 return false;
         // evaluate providers
@@ -48,7 +49,7 @@ abstract class Handler
         $this->_formatter->format($message);
         // rotate through buffer filters
         foreach($this->_filter as $filter)
-            if ($filter->hasBuffer()
+            if ($filter::isPostfilter
                 && !$filter->check($message))
                 return false;
         // write messages
@@ -78,43 +79,53 @@ abstract class Handler
     private $_filter = array();
 
     /**
-     * Add filter to the end of the list
-     * @param Filter $filter
-     * @return int number of filters in list
+     * Add filter onto stack.
+     * @param string $filter class name
+     * @return Filter new filter instance
      */
-    public function filterPush(Filter $filter)
+    public function addFilter($class)
     {
-        return array_push($this->_filter, $filter);
+        $class = Validator\Code::phpClass(
+            $class, 'filter', array('relative' => '\Alinex\Logger\Filter')
+        );
+        // check if filter already set
+        if (isset($this->_filter[$class]))
+            return $this->_filter[$class];
+        // create new filter
+        $filter = new $class;
+        $this->_filter[$class] = $filter;
+        // also add needed providers
+        foreach($filter::needProvider as $provider)
+            $this->addProvider ($provider);
+        // return filter
+        return $filter;
     }
 
     /**
-     * Remove filter from the end of the list
-     * @return Filter last filter of stack
+     * Get the filter instance.
+     * @param string $filter class name
+     * @return Filter instance or null if not set
      */
-    public function filterPop()
+    public function getFilter($class)
     {
-        return array_pop($this->_filter);
+        $class = Validator\Code::phpClass(
+            $class, 'filter', array('relative' => '\Alinex\Logger\Filter')
+        );
+        return isset($this->_filter[$class]) ? $this->_filter[$class] : null;
     }
-
+    
     /**
-     * Add filter to the start of the list
-     * @param Filter $filter
-     * @return int number of filters in list
+     * Remove filter from stack.
+     * @param string $filter class name
      */
-    public function filterUnshift(Filter $filter)
+    public function removeFilter($class)
     {
-        return array_unshift($this->_filter, $filter);
+        $class = Validator\Code::phpClass(
+            $class, 'filter', array('relative' => '\Alinex\Logger\Filter')
+        );
+        unset($this->_filter[$class]);
     }
-
-    /**
-     * Rdmove first filter from list
-     * @return Filter first filter of stack
-     */
-    public function filterShift()
-    {
-        return array_shift($this->_filter);
-    }
-
+    
     /**
      * Stack of filters to use.
      * @var array
@@ -122,43 +133,51 @@ abstract class Handler
     private $_provider = array();
 
     /**
-     * Push provider onto stack.
-     * @param Provider $provider
-     * @return int number of filters in list
+     * Add provider onto stack.
+     * @param string $provider class name
+     * @return Provider instance of this provider
      */
-    public function providerPush(Provider $provider)
+    public function addProvider($class)
     {
-        array_push($this->_provider, $provider);
+        $class = Validator\Code::phpClass(
+            $class, 'provider', array('relative' => '\Alinex\Logger\Provider')
+        );
+        // check if provider already set
+        if (isset($this->_provider[$class]))
+            return $this->_provider[$class];
+        // create new provider
+        $provider = new $class;
+        $this->_provider[$class] = $provider;
+        // return provider
+        return $provider;
     }
 
     /**
-     * Pop provider from the stack.
-     * @return Provider last provider of stack
+     * Get the provider if set.
+     * @param string $class provider class name
+     * @return Provider instance or null if not set
      */
-    public function providerPop()
+    public function getProvider($class)
     {
-        return array_pop($this->_provider);
+        $class = Validator\Code::phpClass(
+            $class, 'provider', array('relative' => '\Alinex\Logger\Provider')
+        );
+        return isset($this->_provider[$class]) 
+            ? $this->_provider[$class] : null;
     }
-
+    
     /**
-     * Push provider to the start of the stack.
-     * @param Provider $provider
-     * @return int number of filters in list
+     * Remove the provider.
+     * @param string $class provider class name
      */
-    public function providerUnshift(Provider $provider)
+    public function removeProvider($class)
     {
-        array_unshift($this->_provider, $provider);
+        $class = Validator\Code::phpClass(
+            $class, 'provider', array('relative' => '\Alinex\Logger\Provider')
+        );
+        unset($this->_provider[$class]);
     }
-
-    /**
-     * Pop provider from the stack.
-     * @return Provider first provider of stack
-     */
-    public function providerShift()
-    {
-        return array_shift($this->_provider);
-    }
-
+    
     /**
      * Write the log message down.
      * @param  Message  $message Log message object

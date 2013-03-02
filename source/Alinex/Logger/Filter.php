@@ -18,18 +18,19 @@ namespace Alinex\Logger;
 abstract class Filter
 {
     /**
-     * Does this filter use a message buffer.
-     * @return boolean
+     * Does this filter use provider data or message buffer.
      */
-    public function hasBuffer()
-    {
-        return false;
-    }
-
+    const isPostfilter = false;
+    
+    /**
+     * Providers which should be added automatically.
+     */
+    const needProvider = array();
+    
     /**
      * Check if this Message should  be further processed.
      *
-     * Buffer filters may also store some messages locally to add them later.
+     * Post filters may also store some messages locally to add them later.
      *
      * @param  Message  $message Log message object
      * @return Boolean Whether the record has been processed
