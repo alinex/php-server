@@ -20,6 +20,9 @@ Thumbs.db
 /nbproject/
 
 # application specific
-/translation/
+/vendor/
+/vnd/
 /www/
 /Manifest.json
+/translation/mo/
+/translation/pot/

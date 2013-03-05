@@ -12,6 +12,7 @@ This defines the top structure.
     example/...     example code used in documentation
     translation/... translation files
     vendor/...      foreign libraries
+    vnd/...         selection of foreign library files to include
     www/...         static files
   /client/...    qooxdoo client development
     source/...      code
@@ -33,7 +34,7 @@ This can be used withouz time consuming build processes direct while coding.
   /index.php     Start page
   /res/...       Resources for start page
   /app/...       UserInterface based on qooxdoo
-  /srv/...       Json Server (PHP)
+  /srv/...       Alinex Server (PHP)
     lib/...      code library
     vnd/...      vendor libraries
     tr/...       translation files

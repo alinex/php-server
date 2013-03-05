@@ -17,6 +17,9 @@ To support multi language applications the gettext library is used.
 - debbuging gettext can be hard in PHP
 - restart of webserver needed to activate new translations (not in cgi version)
 
+If two threads use different locales they have to use the same environment 
+variable which will interfere.
+
 @note
 As alternative the thread safe fallback using PHP only can be used. This
 functions won't need the gettext support compiled in, but are a lot slower.

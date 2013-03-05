@@ -1,0 +1,574 @@
+# Alinex Web Application Platform.
+# Copyright (C) 2013 Alexander Schilling <info@alinex.de>
+# This file is distributed under the same license as the Alinex package.
+# Automatically generated, 2013.
+#
+msgid   ""
+msgstr  "Project-Id-Version: Alinex Server\n"
+        "Report-Msgid-Bugs-To: \n"
+        "POT-Creation-Date: 2013-03-05 16:34+0100\n"
+        "PO-Revision-Date: 2013-03-05 16:05+0100\n"
+        "Last-Translator: Automatically generated\n"
+        "Language-Team: none\n"
+        "Language: de\n"
+        "MIME-Version: 1.0\n"
+        "Content-Type: text/plain; charset=UTF-8\n"
+        "Content-Transfer-Encoding: 8bit\n"
+        "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: source/Alinex/Validator.php:111
+msgid   "Specification for '{name}': "
+msgstr  ""
+
+#: source/Alinex/Validator/Date.php:60 source/Alinex/Validator/Type.php:70
+msgid   "Value unknown for boolean"
+msgstr  ""
+
+#: source/Alinex/Validator/Date.php:77 source/Alinex/Validator/Type.php:101
+msgid   "The value has to be a boolean. The value will be true for 1, \"true"
+        "\", \"on\", \"yes\" and it will be considered as false for 0, \"false"
+        "\", \"off\", \"no\", \"\". Other values are not allowed."
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:190
+msgid   "Value {value} is not an valid integer"
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:323
+msgid   "The value has to be an integer."
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:329
+msgid   "All characters except digits, plus and minus sign are removed."
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:336 source/Alinex/Validator/Type.php:557
+msgid   "The value has to be between {min} and {max}."
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:343 source/Alinex/Validator/Type.php:564
+msgid   "The value has to be equal or larger than {min}."
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:349 source/Alinex/Validator/Type.php:570
+msgid   "The value has to be equal or smaller than {max}."
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:356
+msgid   "Optionally the number can be given in octal notation starting with "
+        "'0...'."
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:361
+msgid   "Optionally the number can be given in hexa decimal notation starting "
+        "with '0x...' or '0X...'."
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:366
+msgid   "Floating point notation is also allowed."
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:371
+msgid   "If the value evaluates not to a whole number it is rounded."
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:426
+msgid   "Value {value} is not an valid float"
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:439
+msgid   "Value {value} is out of range"
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:527
+msgid   "The value has to be a floating point number."
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:533
+msgid   "The decimal separator has to be {separator}."
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:540
+msgid   "All characters except digits, plus, minus and {separator} are "
+        "removed."
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:549
+msgid   "The value will be rounded to {number} digits after decimal point."
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:707
+msgid   "Value has to be of type string but {type} given"
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:735 source/Alinex/Validator/Type.php:1198
+msgid   "Value {value} is not allowed"
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:744
+msgid   "Text is to short"
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:750
+msgid   "Text is to long"
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:760
+msgid   "Invalid character {char} found"
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:772
+msgid   "Invalid character found"
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:787
+msgid   "Mandatory match not reached"
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:801
+msgid   "Forbidden match found"
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:810
+msgid   "String don't start with {start}"
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:819
+msgid   "String don't start with {end}"
+msgstr  ""
+
+#. TRANS: description for the possible values for type boolean
+#: source/Alinex/Validator/Type.php:840 source/Alinex/Validator/Type.php:1224
+msgid   "The value has to be a text."
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:844
+msgid   "The value can only be one of {values}."
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:854
+msgid   "Control characters excluding newline and carriage return will be "
+        "removed."
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:859
+msgid   "HTML tags will be removed."
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:864
+msgid   "Whitespaces will be striped from the start and end of text."
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:869
+msgid   "The following replacement will be done: "
+msgid_plural    "The following replacements will be done: "
+msgstr[0]       ""
+msgstr[1]       ""
+
+#: source/Alinex/Validator/Type.php:879
+msgid   "The value has to be between {min} and {max} characters long."
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:886
+msgid   "The value has to be equal or longer than {min} characters."
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:892
+msgid   "The value has to be equal or shorter than {max} characters."
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:899
+msgid   "Only the characters {list} are allowed."
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:905
+msgid   "The characters {list} are not allowed."
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:911
+msgid   "The expression {match} have to be matched."
+msgid_plural    "The expressions {match} have to be matched."
+msgstr[0]       ""
+msgstr[1]       ""
+
+#: source/Alinex/Validator/Type.php:922
+msgid   "The expressions {match} is forbidden to match."
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:928
+msgid   "The value have to start with {text}."
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:935
+msgid   "The value have to end with {text}."
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:1027
+msgid   "Value is not an array"
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:1033 source/Alinex/Validator/Type.php:1185
+msgid   "Value is an empty array"
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:1043
+msgid   "Array is missing the mandatory {key} key"
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:1058
+msgid   "The key {key} is not allowed"
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:1067
+msgid   "Array has to few elements"
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:1073
+msgid   "Array has to much elements"
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:1092
+msgid   "Multiple values can be added as array or with {delimiter} as "
+        "delimiter."
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:1098
+msgid   "The value has to be an array."
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:1103
+msgid   "An empty array is not allowed."
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:1108
+msgid   "The keys {list} have to be present."
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:1114
+msgid   "Additionally the keys {list} are allowed."
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:1120
+msgid   "Only the keys {list} are allowed."
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:1127
+msgid   "The array has to consist of {min} to {max} elements."
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:1134
+msgid   "The array has to have {min} or more elements."
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:1140
+msgid   "The array has to have {max} or less elements."
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:1209
+msgid   "Value is not allowed"
+msgstr  ""
+
+#: source/Alinex/Validator/Type.php:1227
+msgid   "The value can only be one of {list}."
+msgstr  ""
+
+#. TRANS: default name of variables if not given in options
+#: source/Alinex/Validator/Exception.php:76
+msgid   "variable"
+msgstr  ""
+
+#: source/Alinex/Validator/Exception.php:80
+msgid   " in check '{method}' for variable '{name}'."
+msgstr  ""
+
+#: source/Alinex/Validator/IO.php:82
+msgid   "Relative path {value} is not allowed"
+msgstr  ""
+
+#: source/Alinex/Validator/IO.php:93
+msgid   "Absolute path {value} is not allowed"
+msgstr  ""
+
+#: source/Alinex/Validator/IO.php:104
+msgid   "Backreferences in path {value} are not allowed"
+msgstr  ""
+
+#: source/Alinex/Validator/IO.php:147
+msgid   "The path {value} didn't exist"
+msgstr  ""
+
+#: source/Alinex/Validator/IO.php:156
+msgid   "The path {value} should be writable"
+msgstr  ""
+
+#: source/Alinex/Validator/IO.php:165
+msgid   "The path {value} should be readable"
+msgstr  ""
+
+#: source/Alinex/Validator/IO.php:174
+msgid   "The parent directory for {value} didn't exist"
+msgstr  ""
+
+#: source/Alinex/Validator/IO.php:185
+msgid   "The path {value} should be a file"
+msgstr  ""
+
+#: source/Alinex/Validator/IO.php:194
+msgid   "The path {value} should be a directory"
+msgstr  ""
+
+#: source/Alinex/Validator/IO.php:203
+msgid   "The path {value} should be a softlink"
+msgstr  ""
+
+#: source/Alinex/Validator/IO.php:215
+msgid   "The file's mimetype {type} is not allowed"
+msgstr  ""
+
+#: source/Alinex/Validator/IO.php:349
+msgid   "The value has to be a file reference."
+msgstr  ""
+
+#: source/Alinex/Validator/IO.php:354
+msgid   "The value has to be a directory reference."
+msgstr  ""
+
+#: source/Alinex/Validator/IO.php:359
+msgid   "The value has to be a reference to a softlink."
+msgstr  ""
+
+#: source/Alinex/Validator/IO.php:364
+msgid   "The value has to be a filesystem path."
+msgstr  ""
+
+#: source/Alinex/Validator/IO.php:370
+msgid   "The file have to be one of the following mimetypes: {list}"
+msgstr  ""
+
+#: source/Alinex/Validator/IO.php:377
+msgid   "An absolute path starting with '/' is not allowed."
+msgstr  ""
+
+#: source/Alinex/Validator/IO.php:383
+msgid   "Only an absolute path starting with '/' is allowed."
+msgstr  ""
+
+#: source/Alinex/Validator/IO.php:389
+msgid   "Backreferences in the path are not allowed."
+msgstr  ""
+
+#: source/Alinex/Validator/IO.php:394
+msgid   "Relative paths will be based at {base}."
+msgstr  ""
+
+#: source/Alinex/Validator/IO.php:401
+msgid   "Paths will be rewritten as absolute path."
+msgstr  ""
+
+#: source/Alinex/Validator/IO.php:406
+msgid   "Backreferences in the path will be resolved."
+msgstr  ""
+
+#: source/Alinex/Validator/IO.php:411
+msgid   "The path should point to an existing path entry."
+msgstr  ""
+
+#: source/Alinex/Validator/IO.php:416
+msgid   "The path should be readable."
+msgstr  ""
+
+#: source/Alinex/Validator/IO.php:421
+msgid   "The path or the parent directory should be writable."
+msgstr  ""
+
+#: source/Alinex/Validator/IO.php:427
+msgid   "The parent directory in the path have to be existing."
+msgstr  ""
+
+#: source/Alinex/Validator/Code.php:77
+msgid   "The value has to be a php namespace."
+msgstr  ""
+
+#: source/Alinex/Validator/Code.php:78
+msgid   "It can also contain the class name."
+msgstr  ""
+
+#: source/Alinex/Validator/Code.php:157
+msgid   "Class {name} didn't exist and can't be loaded"
+msgstr  ""
+
+#: source/Alinex/Validator/Code.php:218
+msgid   "The value has to be a php class name."
+msgstr  ""
+
+#: source/Alinex/Validator/Code.php:219
+msgid   "The namespace can be prepended."
+msgstr  ""
+
+#: source/Alinex/Validator/Code.php:224
+msgid   "The class have to exists and may be loaded."
+msgstr  ""
+
+#: source/Alinex/Validator/Code.php:229
+msgid   "The class have to exists and be already loaded."
+msgstr  ""
+
+#: source/Alinex/Validator/Code.php:234
+msgid   "Full class name will be calculated from relative {namespace}"
+msgstr  ""
+
+#: source/Alinex/Validator/Code.php:307
+msgid   "Method {method} didn't exist in class {class}"
+msgstr  ""
+
+#: source/Alinex/Validator/Code.php:318
+msgid   "Function {name} didn't exist"
+msgstr  ""
+
+#: source/Alinex/Validator/Code.php:326
+msgid   "Method {name} is not callable"
+msgstr  ""
+
+#: source/Alinex/Validator/Code.php:339
+msgid   "The value has to be a callable php method or function."
+msgstr  ""
+
+#: source/Alinex/Validator/Code.php:342
+msgid   "A callback method can be specified using static method call as a "
+        "string or an array with class name or object and method name"
+msgstr  ""
+
+#: source/Alinex/Validator/Code.php:347
+msgid   "For static methods the class name may be relative to {base}."
+msgstr  ""
+
+#: source/Alinex/Validator/Code.php:354
+msgid   "Function names are also possible."
+msgstr  ""
+
+#: source/Alinex/Validator/Code.php:466
+msgid   "{num} replacement parameter are too much."
+msgstr  ""
+
+#: source/Alinex/Validator/Code.php:475
+msgid   "{num} replacement parameter are too less."
+msgstr  ""
+
+#: source/Alinex/Validator/Code.php:499
+msgid   "The value has to be a php sprintf format string."
+msgstr  ""
+
+#: source/Alinex/Validator/Code.php:502
+msgid   "Parameters are maked in the text like described under {url}."
+msgstr  ""
+
+#: source/Alinex/Validator/Code.php:510
+msgid   "Exactly {num} replacement parameter are needed."
+msgstr  ""
+
+#: source/Alinex/Validator/Code.php:517
+msgid   "At least {num} replacement parameter are needed."
+msgstr  ""
+
+#: source/Alinex/Validator/Code.php:523
+msgid   "Not more than {num} replacement parameter are allowed."
+msgstr  ""
+
+#: source/Alinex/Validator/Code.php:532
+msgid   "The replacement parameters are: "
+msgstr  ""
+
+#: source/Alinex/Template/Simple.php:175
+msgid   "No modifier {modifier} defined in Simple Template."
+msgstr  ""
+
+#: source/Alinex/Storage/ImportExport.php:60
+msgid   "No storage engine connected"
+msgstr  ""
+
+#: source/Alinex/Storage/Cache.php:160
+msgid   "No engine found to use for the value."
+msgstr  ""
+
+#: source/Alinex/Storage/ImportExport/File.php:74
+msgid   "The file {file} is not readable"
+msgstr  ""
+
+#: source/Alinex/Storage/ImportExport/File.php:91
+msgid   "The file {path} is not writable"
+msgstr  ""
+
+#: source/Alinex/Storage/ImportExport/IniFile.php:82
+msgid   "The ini-values from {file} could not be read"
+msgstr  ""
+
+#: source/Alinex/Storage/ImportExport/YamlFile.php:68
+msgid   "Could not parse the YAML in {file}"
+msgstr  ""
+
+#: source/Alinex/Storage/Registry.php:378
+msgid   "No validatore storage set in constructor"
+msgstr  ""
+
+#. TRANS: header in output file
+#: source/Alinex/Storage/Registry.php:534
+msgid   "Registry data"
+msgstr  ""
+
+#. TRANS: header in output file
+#: source/Alinex/Storage/Registry.php:561
+msgid   "Registry validators"
+msgstr  ""
+
+#: source/Alinex/Storage/Engine/Redis.php:146
+#: source/Alinex/Storage/Engine/Memcache.php:158
+msgid   "No servers set to connect to memcache"
+msgstr  ""
+
+#: source/Alinex/Storage/Engine/Directory.php:106
+#: source/Alinex/Storage/Engine/Directory.php:140
+#: source/Alinex/Storage/Engine/Directory.php:182
+#: source/Alinex/Storage/Engine/Directory.php:200
+#: source/Alinex/Storage/Engine/Directory.php:245
+msgid   "Directory for engine not set"
+msgstr  ""
+
+#: source/Alinex/Storage/Engine/Directory.php:116
+msgid   "Engine not configured, need directory to store"
+msgstr  ""
+
+#: source/Alinex/Util/I18n.php:22 source/Alinex/Util/I18n.php:27
+msgid   "Test entry"
+msgstr  ""
+
+#: source/Alinex/Logger/Message.php:43
+msgid   "Emergency"
+msgstr  ""
+
+#: source/Alinex/Logger/Message.php:44
+msgid   "Alert"
+msgstr  ""
+
+#: source/Alinex/Logger/Message.php:45
+msgid   "Critical"
+msgstr  ""
+
+#: source/Alinex/Logger/Message.php:46
+msgid   "Error"
+msgstr  ""
+
+#: source/Alinex/Logger/Message.php:47
+msgid   "Warning"
+msgstr  ""
+
+#: source/Alinex/Logger/Message.php:48
+msgid   "Notice"
+msgstr  ""
+
+#: source/Alinex/Logger/Message.php:49
+msgid   "Info"
+msgstr  ""
+
+#: source/Alinex/Logger/Message.php:50
+msgid   "Debug"
+msgstr  ""

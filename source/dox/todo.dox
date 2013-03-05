@@ -17,8 +17,11 @@ Engine Redis
 - test
 
 I18n
-- bootstrap set local using i18n
 - include vendor/php-gettext as alternative
+  - drop in for unsupported locales
+  - alternative for gettext
+  - gettext setlocale before each gettext call
+- setlocale alternatives specializations
 - specify fix local setting for specific namespaces
 
 Logging class
