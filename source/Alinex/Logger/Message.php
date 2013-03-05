@@ -40,14 +40,14 @@ class Message
     static function levelName($level)
     {
         $title = array(
-            Logger::EMERGENCY => tr('Emergency'),
-            Logger::ALERT => tr('Alert'),
-            Logger::CRITICAL => tr('Critcal'),
-            Logger::ERROR => tr('Error'),
-            Logger::WARNING => tr('Warning'),
-            Logger::NOTICE => tr('Notice'),
-            Logger::INFO => tr('Info'),
-            Logger::DEBUG => tr('Debug')
+            Logger::EMERGENCY => tr(__NAMESPACE__, 'Emergency'),
+            Logger::ALERT => tr(__NAMESPACE__, 'Alert'),
+            Logger::CRITICAL => tr(__NAMESPACE__, 'Critical'),
+            Logger::ERROR => tr(__NAMESPACE__, 'Error'),
+            Logger::WARNING => tr(__NAMESPACE__, 'Warning'),
+            Logger::NOTICE => tr(__NAMESPACE__, 'Notice'),
+            Logger::INFO => tr(__NAMESPACE__, 'Info'),
+            Logger::DEBUG => tr(__NAMESPACE__, 'Debug')
         );
         return $title[$level];
     }

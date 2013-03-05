@@ -19,28 +19,32 @@ To support multi language applications the gettext library is used.
 
 @note
 As alternative the thread safe fallback using PHP only can be used. This
-functions won't need the gettext support compiled in, but are slower.
+functions won't need the gettext support compiled in, but are a lot slower.
 
 This library uses an optimized version of the default gettext support
-which allows named arguments using the easy <code>{var}</code> syntax.
+which allows named arguments using the easy Alinex\Template\Simple syntax.
 This makes it easy for translators to change the word order...
 
-@section gettextUsage Usgae
+@section gettextUsage Usage
 
 To support the variable substitution only use the following function
 instead of the gettext() call:
 @code
 // TRANS: Welcome message for each user.
-echo tr('Hello {name}!', array('name' => 'Alex'));
+echo tr(__NAMESPACE__, '', 'Hello {name}!', array('name' => 'Alex'));
 @endcode
 The additional comment starting with <code>TRANS:</code> will be added
 to the translation file as comment for the translators. This can be
-used to give a context help to them.
+used to give a context help to them. The namespace is used to separate the
+translation files into separate domain files using the toplevel namespace.
+The second argument may be used as context specifier, if different translations
+for the same phrase or word are needed on different positions.
 
 Also it is possible to use plural forms as easy as normal text:
 @code
 // TRANS: Welcome message for returning user.
 echo trn(
+    __NAMESPACE__, '',
     'You get {number} point for login!',
     'You get {number} points for login!',
     2, array('number' => 2)

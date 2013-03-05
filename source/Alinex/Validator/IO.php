@@ -78,7 +78,8 @@ class IO
             && $options['disallowRelative'] === true)
             throw new Exception(
                 tr(
-                    "Relative path {value} is not allowed",
+                    __NAMESPACE__,
+                    'Relative path {value} is not allowed',
                     array('value' => String::dump($value))
                 ), $value, $name, __METHOD__, $options
             );
@@ -88,7 +89,8 @@ class IO
             && $options['disallowAbsolute'] === true)
             throw new Exception(
                 tr(
-                    "Absolute path {value} is not allowed",
+                    __NAMESPACE__,
+                    'Absolute path {value} is not allowed',
                     array('value' => String::dump($value))
                 ), $value, $name, __METHOD__, $options
             );
@@ -98,7 +100,8 @@ class IO
             || $options['allowBackreferences'] === false))
             throw new Exception(
                 tr(
-                    "Backreferences in path {value} are not allowed",
+                    __NAMESPACE__,
+                    'Backreferences in path {value} are not allowed',
                     array('value' => String::dump($value))
                 ), $value, $name, __METHOD__, $options
             );
@@ -140,7 +143,8 @@ class IO
             && !file_exists($realpath))
             throw new Exception(
                 tr(
-                    "The path {value} didn't exist",
+                    __NAMESPACE__,
+                    'The path {value} didn\'t exist',
                     array('value' => String::dump($value))
                 ), $value, $name, __METHOD__, $options
             );
@@ -148,7 +152,8 @@ class IO
             && !is_writable(dirname($realpath)) && !is_writable($realpath))
             throw new Exception(
                 tr(
-                    "The path {value} should be writable",
+                    __NAMESPACE__,
+                    'The path {value} should be writable',
                     array('value' => String::dump($value))
                 ), $value, $name, __METHOD__, $options
             );
@@ -156,7 +161,8 @@ class IO
             && !is_readable($realpath))
             throw new Exception(
                 tr(
-                    "The path {value} should be readable",
+                    __NAMESPACE__,
+                    'The path {value} should be readable',
                     array('value' => String::dump($value))
                 ), $value, $name, __METHOD__, $options
             );
@@ -164,7 +170,8 @@ class IO
             && !file_exists(dirname($realpath)))
             throw new Exception(
                 tr(
-                    "The parent directory for {value} didn't exist",
+                    __NAMESPACE__,
+                    'The parent directory for {value} didn\'t exist',
                     array('value' => String::dump($value))
                 ), $value, $name, __METHOD__, $options
             );
@@ -174,7 +181,8 @@ class IO
                 && !is_file($realpath))
                 throw new Exception(
                     tr(
-                        "The path {value} should be a file",
+                        __NAMESPACE__,
+                        'The path {value} should be a file',
                         array('value' => String::dump($value))
                     ), $value, $name, __METHOD__, $options
                 );
@@ -182,7 +190,8 @@ class IO
                 && !is_dir($realpath))
                 throw new Exception(
                     tr(
-                        "The path {value} should be a directory",
+                        __NAMESPACE__,
+                        'The path {value} should be a directory',
                         array('value' => String::dump($value))
                     ), $value, $name, __METHOD__, $options
                 );
@@ -190,7 +199,8 @@ class IO
                 && !is_link($realpath))
                 throw new Exception(
                     tr(
-                        "The path {value} should be a softlink",
+                        __NAMESPACE__,
+                        'The path {value} should be a softlink',
                         array('value' => String::dump($value))
                     ), $value, $name, __METHOD__, $options
                 );
@@ -201,7 +211,8 @@ class IO
             if (!in_array($mimetype, $options['mimetype']))
             throw new Exception(
                 tr(
-                    "The file's mimetype {type} is not allowed",
+                    __NAMESPACE__,
+                    'The file\'s mimetype {type} is not allowed',
                     array('type' => String::dump($mimetype))
                 ), $value, $name, __METHOD__, $options
             );
@@ -333,64 +344,87 @@ class IO
         // create message
         if (isset($options['filetype'])) {
             if ($options['filetype'] == 'file')
-                $desc = tr("The value has to be a file reference.");
+                $desc = tr(
+                    __NAMESPACE__,
+                    'The value has to be a file reference.'
+                );
             else if ($options['filetype'] == 'file')
-                $desc = tr("The value has to be a directory reference.");
+                $desc = tr(
+                    __NAMESPACE__,
+                    'The value has to be a directory reference.'
+                );
             else
-                $desc = tr("The value has to be a reference to a softlink.");
+                $desc = tr(
+                    __NAMESPACE__,
+                    'The value has to be a reference to a softlink.'
+                );
         } else {
-            $desc = tr("The value has to be a filesystem path.");
+            $desc = tr(
+                __NAMESPACE__,
+                'The value has to be a filesystem path.'
+            );
         }
         if (isset($options['mimetype']))
             $desc .= ' '.tr(
-                "The file have to be one of the following mimetypes: {list}",
+                __NAMESPACE__,
+                'The file have to be one of the following mimetypes: {list}',
                 array('list' => String::dump($options['mimetype']))
             );
         if (!isset($options['disallowAbsolute'])
             || $options['disallowAbsolute'] === true)
             $desc .= ' '.tr(
-                "An absolute path starting with '/' is bot allowed."
-            );
-
-        if (!isset($options['disallowAbsolute'])
-            || $options['disallowAbsolute'] === true)
-            $desc .= ' '.tr(
-                "An absolute path starting with '/' is bot allowed."
+                __NAMESPACE__,
+                'An absolute path starting with \'/\' is not allowed.'
             );
         if (!isset($options['disallowRelative'])
             || $options['disallowRelative'] === true)
             $desc .= ' '.tr(
-                "Only an absolute path starting with '/' is allowed."
+                __NAMESPACE__,
+                'Only an absolute path starting with \'/\' is allowed.'
             );
         if (!isset($options['allowBackreferences'])
             || $options['allowBackreferences'] === false)
-            $desc .= ' '.tr("Backreferences in the path are not allowed.");
+            $desc .= ' '.tr(
+                __NAMESPACE__,
+                'Backreferences in the path are not allowed.'
+            );
         if (isset($options['base']) && $options['base'] !== false)
             $desc .= ' '.tr(
-                "Relative paths will be based at {base}.",
+                __NAMESPACE__,
+                'Relative paths will be based at {base}.',
                 array('base' => $options['base'])
             );
         if (isset($options['makeAbsolute'])
             && $options['makeAbsolute'] === true)
             $desc .= ' '.tr(
-                "Paths will be rewritten as absolute path."
+                __NAMESPACE__,
+                'Paths will be rewritten as absolute path.'
             );
         if (isset($options['resolve']) && $options['resolve'] === true)
             $desc .= ' '.tr(
-                "Backreferences in the path will be resolved."
+                __NAMESPACE__,
+                'Backreferences in the path will be resolved.'
             );
         if (isset($options['exists']) && $options['exists'] === true)
-            $desc .= ' '.tr("The path should point to an existing path entry.");
+            $desc .= ' '.tr(
+                __NAMESPACE__,
+                'The path should point to an existing path entry.'
+            );
         if (isset($options['readable']) && $options['readable'] === true)
-            $desc .= ' '.tr("The path should be readable.");
+            $desc .= ' '.tr(
+                __NAMESPACE__,
+                'The path should be readable.'
+            );
         if (isset($options['writable']) && $options['writable'] === true)
             $desc .= ' '.tr(
-                "The path or the parent directory should be writable."
+                __NAMESPACE__,
+                'The path or the parent directory should be writable.'
             );
         if (isset($options['parentExists'])
             && $options['parentExists'] === true)
             $desc .= ' '.tr(
-                "The parent directory in the path have to be existing."
+                __NAMESPACE__,
+                'The parent directory in the path have to be existing.'
             );
         // return description
         return $desc;

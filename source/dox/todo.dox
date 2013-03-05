@@ -7,18 +7,23 @@ This list contains all things to be done in the system:
 
 @section next Next steps (for current release)
 
-- Engine Redis
-  - coding
-  - test
+Documenting Util Namespace
+- ArrayStructure with example
+- String util examples
+- I18n
+
+Engine Redis
+- coding
+- test
 
 I18n
 - bootstrap set local using i18n
 - include vendor/php-gettext as alternative
-- context using \004 as separator go to *.pot
-  - remove context on fallback method
 - specify fix local setting for specific namespaces
- 
+
 Logging class
+- formatter add provider?
+- code provider
 - create filters
 - create providers
 - complete handlers

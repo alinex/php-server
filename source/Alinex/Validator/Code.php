@@ -16,11 +16,6 @@ use Alinex\Util\String;
 
 /**
  * Validating php code formats.
- *
- * @todo Alinex\Validator\Code::phpmethod
- * @todo Alinex\Validator\Code::function
- * @todo Alinex\Validator\Code::regexp (zend)
- * @todo Alinex\Validator\Code::loglevel (alinex:Sys)
  */
 class Code
 {
@@ -79,9 +74,9 @@ class Code
      */
     static function phpNamespaceDescription()
     {
-        $desc = tr("The value has to be a php namespace.");
-        $desc .= ' '.tr("It can also contain the class name.");
-        $desc .= ' '.Type::stringDescription(
+        $desc = tr(__NAMESPACE__, 'The value has to be a php namespace.')
+            .' '.tr(__NAMESPACE__, 'It can also contain the class name.')
+            .' '.Type::stringDescription(
             array('match' => self::$_namespaceMatch)
         );
         return $desc;
@@ -158,7 +153,8 @@ class Code
                 }
                 throw new Exception(
                     tr(
-                        "Class {name} didn't exist and can't be loaded",
+                        __NAMESPACE__,
+                        'Class {name} didn\'t exist and can\'t be loaded',
                         array('name' => $value)
                     ), $value, $name, __METHOD__
                 );
@@ -219,19 +215,23 @@ class Code
     static function phpClassDescription(array $options = null)
     {
         $options = self::phpClassOptions($options);
-        $desc = tr("The value has to be a php class name.");
-        $desc .= ' '.tr("The namespace can be prepended.");
+        $desc = tr(__NAMESPACE__, 'The value has to be a php class name.')
+            .' '.tr(__NAMESPACE__, 'The namespace can be prepended.');
         if (isset($options['exists']) && $options['exists'] === true) {
             if (isset($options['autoload']) && $options['autoload'] === true)
-                $desc .= ' '.tr("The class have to exists and may be loaded.");
+                $desc .= ' '.tr(
+                    __NAMESPACE__,
+                    'The class have to exists and may be loaded.'
+                );
             else
                 $desc .= ' '.tr(
-                    "The class have to exists and be already loaded."
+                    __NAMESPACE__,
+                    'The class have to exists and be already loaded.'
                 );
             if (isset($options['relative']) && $options['relative'])
                 $desc .= ' '.tr(
-                    "Full class name will be calculated from relative ".
-                    "{namespace}",
+                    __NAMESPACE__,
+                    'Full class name will be calculated from relative {namespace}',
                     array('namespace' => String::dump($options['relative']))
                 );
         }
@@ -303,7 +303,8 @@ class Code
             if (!method_exists($value[0], $value[1]))
                 throw new Exception(
                     tr(
-                        "Method {method} didn't exist in class {class}",
+                        __NAMESPACE__,
+                        'Method {method} didn\'t exist in class {class}',
                         array('class' => $value[0], 'method' => $value[1])
                     ), $value, $name, __METHOD__, $options
                 );
@@ -313,14 +314,16 @@ class Code
             if (!function_exists($value))
                 throw new Exception(
                     tr(
-                        "Function {name} didn't exist",
+                        __NAMESPACE__,
+                        'Function {name} didn\'t exist',
                         array('name' => $value.'()')
                     ), $value, $name, __METHOD__, $options
                 );
         } else {
             throw new Exception(
                 tr(
-                    "Method {name} is not callable",
+                    __NAMESPACE__,
+                    'Method {name} is not callable',
                     array('name' => is_array($value)
                         ? implode('::', $value) : $value.'()')
                 ), $value, $name, __METHOD__, $options
@@ -331,19 +334,25 @@ class Code
 
     static function callableDescription(array $options = null)
     {
-        $desc = tr("The value has to be a callable php method or function.");
-        $desc .= ' '.tr(
-            "A callback method can be specified using static method call as ".
-            "a string or an array with class name or object and method name"
+        $desc = tr(
+            __NAMESPACE__,
+            'The value has to be a callable php method or function.'
+        ).' '.tr(
+            __NAMESPACE__,
+            'A callback method can be specified using static method call as a string or an array with class name or object and method name'
         );
         if (isset($options['relative']) && $options['relative'])
             $desc .= ' '.tr(
-                "For static methods the class name may be relative to {base}.",
+                __NAMESPACE__,
+                'For static methods the class name may be relative to {base}.',
                 array('base' => $options['relative'])
             );
         if (isset($options['allowFunction'])
             && $options['allowFunction'] === true)
-            $desc .= ' '.tr("Function names are also possible.");
+            $desc .= ' '.tr(
+                __NAMESPACE__,
+                'Function names are also possible.'
+            );
         return $desc;
     }
 
@@ -453,7 +462,8 @@ class Code
             && $count > $options['maxParameter'])
             throw new Exception(
                 tr(
-                    "{num} replacement parameter are too much.",
+                    __NAMESPACE__,
+                    '{num} replacement parameter are too much.',
                     array('num' => $count)
                 ), $value, $name, __METHOD__, $options
             );
@@ -461,7 +471,8 @@ class Code
             && $count < $options['minParameter'])
             throw new Exception(
                 tr(
-                    "{num} replacement parameter are too less.",
+                    __NAMESPACE__,
+                    '{num} replacement parameter are too less.',
                     array('num' => $count)
                 ), $value, $name, __METHOD__, $options
             );
@@ -484,34 +495,42 @@ class Code
         if (isset($options['replace']) && !isset($options['paramter']))
             $options['paramter'] = $options['replace'];
         // create output text
-        $desc = tr("The value has to be a php sprintf format string.");
-        $desc .= tr(
-            "Parameters are maked in the text like described under {url}.",
+        $desc = tr(
+            __NAMESPACE__, 'The value has to be a php sprintf format string.'
+        ).tr(
+            __NAMESPACE__,
+            'Parameters are maked in the text like described under {url}.',
             array('url' => 'http://php.net/manual/en/function.sprintf.php')
         );
         $desc .= ' '.Type::stringDescription();
         if (isset($options['maxParameter']) && isset($options['minParameter'])
             && $options['minParameter'] == $options['maxParameter']) {
             $desc .= ' '.tr(
-                "Exactly {num} replacement parameter are needed.",
+                __NAMESPACE__,
+                'Exactly {num} replacement parameter are needed.',
                 array('num' => $options['maxParameter'])
             );
         } else {
             if (isset($options['minParameter']))
                 $desc .= ' '.tr(
-                    "At least {num} replacement parameter are needed.",
+                    __NAMESPACE__,
+                    'At least {num} replacement parameter are needed.',
                     array('num' => $options['minParameter'])
                 );
             if (isset($options['maxParameter']))
                 $desc .= ' '.tr(
-                    "Not more than {num} replacement parameter are allowed.",
+                    __NAMESPACE__,
+                    'Not more than {num} replacement parameter are allowed.',
                     array('num' => $options['maxParameter'])
                 );
         }
         if (!isset($options['paramter']) && isset($options['replace']))
             $options['paramter'] = $options['replace'];
         if (isset($options['paramter'])) {
-            $desc .= ' '.tr("The replacement parameter are: ");
+            $desc .= ' '.tr(
+                __NAMESPACE__,
+                'The replacement parameters are: '
+            );
             foreach ($options['paramter'] as $n => $v)
                 $desc .= ($n+1)." => '".$v."'; ";
         }

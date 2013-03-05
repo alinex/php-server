@@ -373,7 +373,10 @@ class Registry implements \Countable, \ArrayAccess
     {
         if (!isset($this->_validator))
             throw new \UnderflowException(
-                tr("No validatore storage set in constructor")
+                tr(
+                    __NAMESPACE__,
+                    'No validatore storage set in constructor'
+                )
             );
         return true;
     }
@@ -527,7 +530,8 @@ class Registry implements \Countable, \ArrayAccess
     public function export(ImportExport $exporter)
     {
         $exporter->setStorage($this->_data);
-        $exporter->addHeader(tr("Registry data"));
+        // TRANS: header in output file
+        $exporter->addHeader(tr(__NAMESPACE__, 'Registry data'));
         $exporter->setCommentCallback(array($this, 'validatorDescription'));
         return $exporter->export();
     }
@@ -553,7 +557,8 @@ class Registry implements \Countable, \ArrayAccess
     public function validatorExport(ImportExport $exporter)
     {
         $exporter->setStorage($this->_validator);
-        $exporter->addHeader(tr("Registry validators"));
+        // TRANS: header in output file
+        $exporter->addHeader(tr(__NAMESPACE__, 'Registry validators'));
         return $exporter->export();
     }
 

@@ -18,7 +18,7 @@ namespace Alinex\Storage;
  * The cache will hold a list of engines which may be used. Which engine to use
  * for a specific value will be decided automatically based on the engine's
  * scope, performance, persistence and its value size settings.
- * 
+ *
  * @see Registry for storage with validation
  */
 class Cache implements \Countable, \ArrayAccess
@@ -106,7 +106,7 @@ class Cache implements \Countable, \ArrayAccess
     protected function searchEngines($key, $all = false)
     {
         assert(is_bool($all));
-        
+
         $list = array();
         foreach ($this->_engines as $test) {
             if ($test->has($key)) {
@@ -155,7 +155,11 @@ class Cache implements \Countable, \ArrayAccess
             }
         }
         if ($bestScore == 0)
-            throw new Exception(tr("No engine found to use for the value."));
+            throw new Exception(
+                tr(
+                    __NAMESPACE__, 'No engine found to use for the value.'
+                )
+            );
         // set value using the best alternative
         return $bestEngine->set($key, $value);
     }

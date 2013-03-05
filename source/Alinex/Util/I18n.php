@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Internationalization and translation methods.
+ * Internationalization and translation helper methods.
  *
  * @author    Alexander Schilling <info@alinex.de>
  * @copyright 2009-2013 Alexander Schilling (\ref Copyright)
@@ -11,83 +11,20 @@
 
 namespace Alinex\Util;
 
-use Alinex\Template;
-
 /**
- * Internationalization and translation methods.
- *
- * @todo maybe add context support ligke pgettext
- * http://www.gnu.org/software/gettext/manual/html_node/Contexts.html
- * https://github.com/azatoth/php-pgettext
- * 
- * test||note
- * 
+ * Internationalization and translation helper methods.
  */
 class I18n
 {
 
-    /**
-     * Gettext translate function
-     *
-     * This function uses the gettext library which should be enabled in PHP.
-     * If not installed, no translations will be available and the original text
-     * will be shown.
-     *
-     * @param string $msgid text which should be translated
-     * @param array $params params with vars which should be replaced
-     * (enclosed with {})
-     *
-     * @return   string   translated text
-     */
-    static function tr($msgid, array $params = null)
+    static function init()
     {
-        // only strings may be translated
-        assert(is_string($msgid));
-
-        if (function_exists('gettext')) {
-            self::setDomain();
-            // call native php function
-            $trans = gettext($msgid); // call native php function
-        } else {
-            // fallback keep english
-            $trans = $msgid;
-        }
-        return Template\Simple::run($trans, $params);
+        require_once 'tr.php';
     }
 
-    /**
-     * Gettext translate function (with plural)
-     *
-     * This function uses the gettext library which should be enabled in PHP.
-     * If not installed, no translations will be available and the original text
-     * will be shown.
-     *
-     * @param string $msgSingular singular text which should be translated
-     * @param string $msgPlural plural text which should be translated
-     * @param integer $num number to decide between singular and plural
-     * @param array $params params with vars which should be replaced
-     * (enclosed with {})
-     *
-     * @return   string   translated text
-     */
-    static function trn($msgSingular, $msgPlural, $num, array $params = null)
+    static function test()
     {
-        // only strings may be translated
-        assert(is_string($msgSingular));
-        // only strings may be translated
-        assert(is_string($msgPlural));
-        // have to be a positive integer
-        assert(is_int($num) && $num >= 0);
-
-        if (function_exists('gettext')) {
-            self::setDomain();
-            // call native php function
-            $trans = ngettext($msgSingular, $msgPlural, $num);
-        } else {
-            // fallback keep english
-            $trans = $num != 1 ? $msgSingular : $msgPlural;
-        }
-        return Template\Simple::run($trans, $params);
+        return tr(__NAMESPACE__, "Test entry");
     }
 
     /**
@@ -96,39 +33,33 @@ class I18n
      * The base namespace will be used as domain. It will be set if not
      * already done.
      *
+     * @note This will be called from tr() and trn() automatically, so there
+     * is no need to invoke this directly.
+     *
+     * @param string $namespace namespace of calling class
      * @throws \RuntimeException if given domain was not set
      */
-    private static function setDomain()
+    public static function setDomain($namespace)
     {
-        // get caller
-        $callers=debug_backtrace();
-        list($domain) = explode('\\', $callers[3]['class']);
-        if (!$domain)
-            $domain = 'Alinex';
+        if (!function_exists('gettext'))
+            return;
+        // get top namespace
+        list($domain) = explode('\\', $namespace, 2);
         if (textdomain(null) == $domain)
             return;
 
         // closing slash for windows neccessary
-        bindtextdomain($domain, __DIR__.'/../../../tr/');
+        if (!bindtextdomain($domain, __DIR__.'/../../../tr/'))
+            throw new \Exception('Could not bind translation directory under /tr');
         // set the dopmain
-        textdomain($domain);
+        if (!textdomain($domain) == $domain)
+            throw new \Exception('Could not set translation domain to '.$domain.' under /tr');
         // set codeset to use UTF-8 (optional)
         bind_textdomain_codeset($domain, "UTF-8");
-#        if (textdomain(null) != $domain)
-# only warning in logger because system may run in english//
-#            throw new \RuntimeException("Could not set gettext " .__DIR__.'/../../../tr/'." domain '$domain'.");
     }
 
     /**
-     * Prefix used to create unique names for the data in global cache and
-     * session.
-     */
-    const PREFIX = 'i18n_';
-
-    /**
      * Set the system local.
-     *
-     * You also should set the message local through setNamespace().
      *
      * @param string $locale user provided locale
      * @return the local which is set
@@ -136,10 +67,18 @@ class I18n
     public static function setLocale($locale)
     {
         // set system setting
-        $locale = setLocale(LC_ALL, self::getLocales($locale));
+        if ($locale)
+            $locale = setlocale(LC_ALL, $locale);
+        // try extended search for possible locale
+        if (!$locale)
+            $locale = setlocale(LC_ALL, self::getLocales());
+        // locale could not be set
+        if (!$locale)
+            return false;
+        // set the locale in environment, too
+        putenv('LC_ALL='.$locale);
         putenv('LANG='.$locale);
-        // remove old package cache
-        unset($_SESSION[self::PREFIX.'packageLocale']);
+        // return used locale
         return $locale;
     }
 
@@ -309,4 +248,3 @@ class I18n
     }
 
 }
-

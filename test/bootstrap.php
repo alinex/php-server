@@ -29,44 +29,9 @@ $loader = new Code\Autoloader();
 $loader->add('Alinex', __DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'source');
 $loader->register();
 
+// internationalization
+
+I18n::init();
+I18n::setLocale("en_US");
+
 return $loader;
-
-
-/**
- * Gettext translate function
- *
- * This function uses the gettext library which should be enabled in PHP. If not
- * installed, no translations will be available and the original text will be
- * shown.
- *
- * @param string $msgid text which should be translated
- * @param array $params params with vars which should be replaced
- * (enclosed with {})
- *
- * @return   string   translated text
- */
-function tr($msgid, array $params = array())
-{
-    return I18n::tr($msgid, $params);
-}
-
-/**
- * Gettext translate function (with plural)
- *
- * This function uses the gettext library which should be enabled in PHP. If not
- * installed, no translations will be available and the original text will be
- * shown.
- *
- * @param string $msgSingular singular text which should be translated
- * @param string $msgPlural plural text which should be translated
- * @param integer $num number to decide between singular and plural
- * @param array $params params with vars which should be replaced
- * (enclosed with {})
- *
- * @return   string   translated text
- */
-function trn($msgSingular, $msgPlural, $num, array $params = array())
-{
-    return I18n::trn($msgSingular, $msgPlural, $num, $params);
-}
-

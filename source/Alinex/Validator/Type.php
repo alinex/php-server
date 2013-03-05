@@ -65,7 +65,10 @@ class Type
         if ($res === null)
             // TRANS: Title for the error message if value is not an boolean
             throw new Exception(
-                tr("Value unknown for boolean"), $value, $name, __METHOD__
+                tr(
+                    __NAMESPACE__,
+                    'Value unknown for boolean'
+                ), $value, $name, __METHOD__
             );
         // return result
         return $res;
@@ -94,9 +97,8 @@ class Type
 
         // TRANS: description for the possible values for type boolean
         return tr(
-            'The value has to be a boolean. The value will be true for '.
-            '1, "true", "on", "yes" and it will be considered as false for '.
-            '0, "false", "off", "no", "". Other values are not allowed.'
+            __NAMESPACE__,
+            'The value has to be a boolean. The value will be true for 1, "true", "on", "yes" and it will be considered as false for 0, "false", "off", "no", "". Other values are not allowed.'
         );
     }
 
@@ -184,7 +186,8 @@ class Type
         if ($res === false)
             throw new Exception(
                 tr(
-                    "Value {value} is not an valid integer",
+                    __NAMESPACE__,
+                    'Value {value} is not an valid integer',
                     array('value' => String::dump($value))
                 ), $value, $name, __METHOD__, $options
             );
@@ -315,47 +318,57 @@ class Type
     {
         $options = self::integerOptions($options);
         // TRANS: description for the possible values for type integer
-        $desc = tr("The value has to be an integer.");
+        $desc = tr(
+            __NAMESPACE__,
+            'The value has to be an integer.'
+        );
         // sanitize
         if (isset($options['sanitize']) && $options['sanitize'] === true)
             $desc .= ' '.tr(
-                "All characters except digits, plus and minus sign are removed."
+                __NAMESPACE__,
+                'All characters except digits, plus and minus sign are removed.'
             );
         // add range description
         if (isset($options['minRange'])
                 && isset($options['maxRange']))
             $desc .= ' '.tr(
-                "The value has to be between {min} and {max}.",
+                __NAMESPACE__,
+                'The value has to be between {min} and {max}.',
                 array('min' => $options['minRange'],
                       'max' => $options['maxRange'])
             );
         elseif (isset($options['minRange']))
             $desc .= ' '.tr(
-                "The value has to be equal or larger than {min}.",
+                __NAMESPACE__,
+                'The value has to be equal or larger than {min}.',
                 array('min' => $options['minRange'])
             );
         elseif (isset($options['maxRange']))
             $desc .= ' '.tr(
-                "The value has to be equal or smaller than {max}.",
+                __NAMESPACE__,
+                'The value has to be equal or smaller than {max}.',
                 array('max' => $options['maxRange'])
             );
         // optional number systems
         if (isset($options['allowOctal']) && $options['allowOctal'] === true)
             $desc .= ' '.tr(
-                "Optionally the number can be given in octal notation "
-                ."starting with '0...'."
+                __NAMESPACE__,
+                'Optionally the number can be given in octal notation starting with \'0...\'.'
             );
         if (isset($options['allowHex']) && $options['allowHex'] === true)
             $desc .= ' '.tr(
-                "Optionally the number can be given in hexa decimal notation "
-                ."starting with '0x...' or '0X...'."
+                __NAMESPACE__,
+                'Optionally the number can be given in hexa decimal notation starting with \'0x...\' or \'0X...\'.'
             );
         if (isset($options['allowFloat']) && $options['allowFloat'] === true) {
-            $desc .= ' '.tr("Floating point notation is also allowed.");
+            $desc .= ' '.tr(
+                __NAMESPACE__,
+                'Floating point notation is also allowed.'
+            );
             if (isset($options['round']) && $options['round'] === true) {
                 $desc .= ' '.tr(
-                    "If the value evaluates not to a whole number ".
-                    "it is rounded."
+                    __NAMESPACE__,
+                    'If the value evaluates not to a whole number it is rounded.'
                 );
             }
         }
@@ -409,7 +422,8 @@ class Type
         if ($res === false)
             throw new Exception(
                 tr(
-                    "Value {value} is not an valid float",
+                    __NAMESPACE__,
+                    'Value {value} is not an valid float',
                     array('value' => String::dump($value))
                 ), $value, $name, __METHOD__, $options
             );
@@ -421,7 +435,8 @@ class Type
             || (isset($options['maxRange']) && $options['maxRange'] < $res))
             throw new Exception(
                 tr(
-                    "Value {value} is out of range",
+                    __NAMESPACE__,
+                    'Value {value} is out of range',
                     array('value' => String::dump($value))
                 ), $value, $name, __METHOD__, $options
             );
@@ -507,18 +522,22 @@ class Type
     static function floatDescription(array $options = null)
     {
         $options = self::floatOptions($options);
-        $desc = tr("The value has to be a floating point number.");
+        $desc = tr(
+            __NAMESPACE__,
+            'The value has to be a floating point number.'
+        );
         // optionas
         if (isset($options['decimal']))
             $desc .= ' '.tr(
-                "The decimal separator has to be {separator}.",
+                __NAMESPACE__,
+                'The decimal separator has to be {separator}.',
                 array('separator' => String::dump($options['decimal']))
             );
         // sanitize
         if (isset($options['sanitize']) && $options['sanitize'] === true)
             $desc .= ' '.tr(
-                "All characters except digits, plus, minus and {separator} ".
-                "are removed.",
+                __NAMESPACE__,
+                'All characters except digits, plus, minus and {separator} are removed.',
                 array('separator' => isset($options['decimal'])
                     ? $options['decimal']
                     : '.')
@@ -526,26 +545,29 @@ class Type
         // round
         if (isset($options['round']))
             $desc .= ' '.tr(
-                "The value will be rounded to {number} digits after decimal ".
-                "point.",
+                __NAMESPACE__,
+                'The value will be rounded to {number} digits after decimal point.',
                 array('number' => $options['round'])
             );
         // add range description
         if (isset($options['minRange'])
                 && isset($options['maxRange']))
             $desc .= ' '.tr(
-                "The value has to be between {min} and {max}.",
+                __NAMESPACE__,
+                'The value has to be between {min} and {max}.',
                 array('min' => $options['minRange'],
                       'max' => $options['maxRange'])
             );
         elseif (isset($options['minRange']))
             $desc .= ' '.tr(
-                "The value has to be equal or larger than {min}.",
+                __NAMESPACE__,
+                'The value has to be equal or larger than {min}.',
                 array('min' => $options['minRange'])
             );
         elseif (isset($options['maxRange']))
             $desc .= ' '.tr(
-                "The value has to be equal or smaller than {max}.",
+                __NAMESPACE__,
+                'The value has to be equal or smaller than {max}.',
                 array('max' => $options['maxRange'])
             );
         // return description text
@@ -681,7 +703,8 @@ class Type
         if (!is_string($value))
             throw new Exception(
                 tr(
-                    "Value has to be of type string but {type} given",
+                    __NAMESPACE__,
+                    'Value has to be of type string but {type} given',
                     array('type' => gettype($value))
                 ), $value, $name, __METHOD__, $options
             );
@@ -708,7 +731,8 @@ class Type
             if (!in_array($value, $options['values'], true))
                 throw new Exception(
                     tr(
-                        "Value {value} is not allowed",
+                        __NAMESPACE__,
+                        'Value {value} is not allowed',
                         array('value' => String::dump($value))
                     ), $value, $name, __METHOD__, $options
                 );
@@ -717,13 +741,13 @@ class Type
         if (isset($options['minLength'])
             && strlen($value) < $options['minLength'])
             throw new Exception(
-                tr("Text is to short"),
+                tr(__NAMESPACE__, 'Text is to short'),
                 $value, $name, __METHOD__, $options
             );
         if (isset($options['maxLength'])
             && strlen($value) > $options['maxLength'])
             throw new Exception(
-                tr("Text is to long"),
+                tr(__NAMESPACE__, 'Text is to long'),
                 $value, $name, __METHOD__, $options
             );
         if (isset($options['whitelist'])) {
@@ -732,7 +756,8 @@ class Type
             if (\preg_match('/([^'.$reg.'])/', $value, $matches))
                 throw new Exception(
                     tr(
-                        "Invalid character {char} found",
+                        __NAMESPACE__,
+                        'Invalid character {char} found',
                         array('char' => String::dump($matches[0]))
                     ), $value, $name, __METHOD__, $options
                 );
@@ -743,7 +768,8 @@ class Type
             if (\preg_match('/(['.$reg.'])/', $value, $matches))
                 throw new Exception(
                     tr(
-                        "Invalid character found",
+                        __NAMESPACE__,
+                        'Invalid character found',
                         array('char' => $matches[0])
                     ), $value, $name, __METHOD__, $options
                 );
@@ -756,8 +782,10 @@ class Type
                     ? strpos($value, $test) === false
                     : !preg_match($test, $value))
                     throw new Exception(
-                        tr("Mandatory match not reached"),
-                        $value, $name, __METHOD__, $options
+                        tr(
+                            __NAMESPACE__,
+                            'Mandatory match not reached'
+                        ), $value, $name, __METHOD__, $options
                     );
         }
         if (isset($options['matchNot'])) {
@@ -768,15 +796,18 @@ class Type
                     ? strpos($value, $test) !== false
                     : preg_match($test, $value))
                     throw new Exception(
-                        tr("Forbidden match found"),
-                        $value, $name, __METHOD__, $options
+                        tr(
+                            __NAMESPACE__,
+                            'Forbidden match found'
+                        ), $value, $name, __METHOD__, $options
                     );
         }
         if (isset($options['startsWith'])
             && !String::startsWith($value, $options['startsWith']))
             throw new Exception(
                 tr(
-                    "String don't start with {start}",
+                    __NAMESPACE__,
+                    'String don\'t start with {start}',
                     array('start' => String::dump($options['startsWith']))
                 ), $value, $name, __METHOD__, $options
             );
@@ -784,7 +815,8 @@ class Type
             && !String::endsWith($value, $options['endsWith']))
             throw new Exception(
                 tr(
-                    "String don't start with {end}",
+                    __NAMESPACE__,
+                    'String don\'t start with {end}',
                     array('end' => String::dump($options['endsWith']))
                 ), $value, $name, __METHOD__, $options
             );
@@ -805,10 +837,11 @@ class Type
             $options = array();
 
         // TRANS: description for the possible values for type boolean
-        $desc = tr("The value has to be a text.");
+        $desc = tr(__NAMESPACE__, 'The value has to be a text.');
         if (isset($options['values'])) {
             $desc .= ' '.tr(
-                "The value can only be one of {values}.",
+                __NAMESPACE__,
+                'The value can only be one of {values}.',
                 array('values' => String::dump($options['values']))
             );
             return $desc;
@@ -817,19 +850,24 @@ class Type
         if (!isset($options['allowControls'])
             || $options['allowControls'] === false)
             $desc .= ' '.tr(
-                "Control characters excluding newline and carriage return ".
-                "will be removed."
+                __NAMESPACE__,
+                'Control characters excluding newline and carriage return will be removed.'
             );
         if (isset($options['stripTags']) && $options['stripTags'] === true)
-            $desc .= ' '.tr("HTML tags will be removed.");
+            $desc .= ' '.tr(
+                __NAMESPACE__,
+                'HTML tags will be removed.'
+            );
         if (isset($options['trim']) && $options['trim'] === true)
             $desc .= ' '.tr(
-                "Whitespaces will be striped from the start and end of text."
+                __NAMESPACE__,
+                'Whitespaces will be striped from the start and end of text.'
             );
         if (isset($options['replace'])) {
             $desc .= ' '.trn(
-                "The following replacement will be done: ",
-                "The following replacements will be done: ",
+                __NAMESPACE__,
+                'The following replacement will be done: ',
+                'The following replacements will be done: ',
                 count($options['replace'])
             );
             $desc .= String::dump($options['replace']) . '.';
@@ -837,35 +875,41 @@ class Type
         // add range description
         if (isset($options['minLength']) && isset($options['maxLength']))
             $desc .= ' '.tr(
-                "The value has to be between {min} and {max} characters long.",
+                __NAMESPACE__,
+                'The value has to be between {min} and {max} characters long.',
                 array('min' => $options['minLength'],
                       'max' => $options['maxLength'])
             );
         elseif (isset($options['minLength']))
             $desc .= ' '.tr(
-                "The value has to be equal or longer than {min} characters.",
+                __NAMESPACE__,
+                'The value has to be equal or longer than {min} characters.',
                 array('min' => $options['minLength'])
             );
         elseif (isset($options['maxLength']))
             $desc .= ' '.tr(
-                "The value has to be equal or shorter than {max} characters.",
+                __NAMESPACE__,
+                'The value has to be equal or shorter than {max} characters.',
                 array('max' => $options['maxLength'])
             );
         // matching
         if (isset($options['whitelist']))
             $desc .= ' '.tr(
-                "Only the characters {list} are allowed.",
+                __NAMESPACE__,
+                'Only the characters {list} are allowed.',
                 array('list' => String::dump($options['whitelist']))
             );
         if (isset($options['blacklist']))
             $desc .= ' '.tr(
-                "The characters {list} are not allowed.",
+                __NAMESPACE__,
+                'The characters {list} are not allowed.',
                 array('list' => String::dump($options['blacklist']))
             );
         if (isset($options['match']))
             $desc .= ' '.trn(
-                "The expression {match} have to be matched.",
-                "The expressions {match} have to be matched.",
+                __NAMESPACE__,
+                'The expression {match} have to be matched.',
+                'The expressions {match} have to be matched.',
                 count($options['match']), array(
                     'match' => count($options['match']) == 1
                     ? String::dump($options['match'][0])
@@ -874,18 +918,21 @@ class Type
             );
         if (isset($options['matchNot']))
             $desc .= ' '.tr(
-                "The expressions {match} is forbidden to match.",
+                __NAMESPACE__,
+                'The expressions {match} is forbidden to match.',
                 array('match' => String::dump($options['matchNot']))
             );
         if (isset($options['startsWith'])) {
             $desc .= ' '.tr(
-                "The value have to start with {text}.",
+                __NAMESPACE__,
+                'The value have to start with {text}.',
                 array('text' => String::dump($options['startsWith']))
             );
         }
         if (isset($options['endsWith'])) {
             $desc .= ' '.tr(
-                "The value have to end with {text}.",
+                __NAMESPACE__,
+                'The value have to end with {text}.',
                 array('text' => String::dump($options['endsWith']))
             );
         }
@@ -977,13 +1024,13 @@ class Type
         if (!is_array($value))
             // TRANS: Title for the error message if value is not an array
             throw new Exception(
-                tr("Value is not an array"),
+                tr(__NAMESPACE__, 'Value is not an array'),
                 $value, $name, __METHOD__, $options
             );
         if (isset($options['notEmpty']) && $options['notEmpty'] === true
             && empty($value))
             throw new Exception(
-                tr("Value is an empty array"),
+                tr(__NAMESPACE__, 'Value is an empty array'),
                 $value, $name, __METHOD__, $options
             );
         if (isset($options['mandatoryKeys'])) {
@@ -992,7 +1039,8 @@ class Type
                 if (!isset($value[$key]))
                     throw new Exception(
                         tr(
-                            "Array is missing the mandatory {key} key",
+                            __NAMESPACE__,
+                            'Array is missing the mandatory {key} key',
                             array('key' => $key)
                         ), $value, $name, __METHOD__, $options
                     );
@@ -1006,7 +1054,8 @@ class Type
                         || !\in_array($key, $options['mandatoryKeys'])))
                     throw new Exception(
                         tr(
-                            "The key {key} is not allowed",
+                            __NAMESPACE__,
+                            'The key {key} is not allowed',
                             array('key' => $key)
                         ), $value, $name, __METHOD__, $options
                     );
@@ -1015,13 +1064,13 @@ class Type
         if (isset($options['minLength'])
             && \count($value) < $options['minLength'])
             throw new Exception(
-                tr("Array has to few elements"),
+                tr(__NAMESPACE__, 'Array has to few elements'),
                 $value, $name, __METHOD__, $options
             );
         if (isset($options['maxLength'])
             && \count($value) > $options['maxLength'])
             throw new Exception(
-                tr("Array has to much elements"),
+                tr(__NAMESPACE__, 'Array has to much elements'),
                 $value, $name, __METHOD__, $options
             );
         // return it
@@ -1039,44 +1088,56 @@ class Type
     {
         if (isset($options['delimiter']))
             $desc = tr(
-                'Multiple values can be added as array or with {delimiter} '.
-                'as delimiter.',
+                __NAMESPACE__,
+                'Multiple values can be added as array or with {delimiter} as delimiter.',
                 array('delimiter' => $options['delimiter'])
             );
         else
-            $desc = tr("The value has to be an array.");
+            $desc = tr(
+                __NAMESPACE__,
+                'The value has to be an array.'
+            );
         if (isset($options['notEmpty']) && $options['notEmpty'] === true)
-            $desc .= ' '.tr("An empty array is not allowed.");
+            $desc .= ' '.tr(
+                __NAMESPACE__,
+                'An empty array is not allowed.'
+            );
         if (isset($options['mandatoryKeys']))
             $desc .= ' '.tr(
-                "The keys {list} have to be present.",
+                __NAMESPACE__,
+                'The keys {list} have to be present.',
                 array('list' => String::dump($options['mandatoryKeys']))
             );
         if (isset($options['mandatoryKeys']) && isset($options['allowedKeys']))
             $desc .= ' '.tr(
-                "Additionally the keys {list} are allowed.",
+                __NAMESPACE__,
+                'Additionally the keys {list} are allowed.',
                 array('list' => String::dump($options['allowedKeys']))
             );
         else if (isset($options['allowedKeys']))
             $desc .= ' '.tr(
-                "Only the keys {list} are allowed.",
+                __NAMESPACE__,
+                'Only the keys {list} are allowed.',
                 array('list' => String::dump($options['allowedKeys']))
             );
         // range description
         if (isset($options['minLength']) && isset($options['maxLength']))
             $desc .= ' '.tr(
-                "The array has to consist of {min} to {max} elements.",
+                __NAMESPACE__,
+                'The array has to consist of {min} to {max} elements.',
                 array('min' => $options['minLength'],
                       'max' => $options['maxLength'])
             );
         else if (isset($options['minLength']))
             $desc .= ' '.tr(
-                "The array has to have {min} or more elements.",
+                __NAMESPACE__,
+                'The array has to have {min} or more elements.',
                 array('min' => $options['minLength'])
             );
         else if (isset($options['maxLength']))
             $desc .= ' '.tr(
-                "The array has to have {max} or less elements.",
+                __NAMESPACE__,
+                'The array has to have {max} or less elements.',
                 array('max' => $options['maxLength'])
             );
         return $desc;
@@ -1121,7 +1182,7 @@ class Type
         if (isset($options['allowList']) && $options['allowList'] === true) {
             if (empty($value))
                 throw new Exception(
-                    tr("Value is an empty array"),
+                    tr(__NAMESPACE__, 'Value is an empty array'),
                     $value, $name, __METHOD__, $options
                 );
             if (!isset($options['delimiter'])) $options['delimiter'] = ',';
@@ -1133,7 +1194,8 @@ class Type
                 if (!isset($options['values'][$entry]))
                     throw new Exception(
                         tr(
-                            "Value {value} is not allowed",
+                            __NAMESPACE__,
+                            'Value {value} is not allowed',
                             array('value' => $entry)
                         ), $value, $name, __METHOD__, $options
                     );
@@ -1144,7 +1206,7 @@ class Type
         // process single value
         if (!isset($options['values'][$value]))
             throw new Exception(
-                tr("Value is not allowed"),
+                tr(__NAMESPACE__, 'Value is not allowed'),
                 $value, $name, __METHOD__, $options
             );
         return $options['values'][$value];
@@ -1159,9 +1221,10 @@ class Type
      */
     static function enumDescription(array $options)
     {
-        $desc = tr("The value has to be a text.");
+        $desc = tr(__NAMESPACE__, 'The value has to be a text.');
         $desc .= ' '.tr(
-            "The value can only be one of {list}.",
+            __NAMESPACE__,
+            'The value can only be one of {list}.',
             array('list' => String::dump($options['values']))
         );
         if (isset($options['allowList']) && $options['allowList'] === true) {

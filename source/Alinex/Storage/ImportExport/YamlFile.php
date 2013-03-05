@@ -64,7 +64,8 @@ class YamlFile extends File
         if ($import === false)
             throw new Exception(
                 tr(
-                    "Could not parse the YAML in {file}",
+                    __NAMESPACE__,
+                    'Could not parse the YAML in {file}',
                     array('file' => $this->_file)
                 )
             );

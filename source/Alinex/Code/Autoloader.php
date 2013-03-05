@@ -35,7 +35,10 @@ namespace Alinex\Code;
  * directory, and it will then fallback to the framework/ directory if not
  * found before giving up.
  *
- * This class is loosely based on the Symfony UniversalClassLoader.
+ * @note
+ * You may additionally register specific classloaders for some libraries
+ * but this one can easily be setup to work for nearly every third party
+ * library, too.
  *
  * @see https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md
  */
@@ -193,6 +196,10 @@ class Autoloader
      */
     public function loadClass($class)
     {
+        // check if class is already loaded
+        if (class_exists($class))
+            return true;
+        // find class file
         $file = $this->findFile($class);
 #error_log($class.'->'.$file);
         $backtrace = debug_backtrace();

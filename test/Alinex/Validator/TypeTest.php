@@ -161,9 +161,9 @@ class TypeTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(5, Type::float("+5", 'test'), 'positive integer as string used');
         $this->assertEquals(-5, Type::float("-5", 'test'), 'negative integer as string used');
         $this->assertEquals(5.0, Type::float("5.0", 'test'), 'float as string used');
-        $this->assertEquals(5.199, Type::float("5.199", 'test'), 'floa as string used');
+        $this->assertEquals(5.199, Type::float("5.199", 'test'), 'float as string used');
         $this->setExpectedException('Alinex\Validator\Exception');
-        Type::float('one point nine million', 'boolean should not be possible');
+        Type::float('one point nine million', 'free text should not be possible');
     }
 
     function testFloatSanitize()

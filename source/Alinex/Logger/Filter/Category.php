@@ -24,27 +24,27 @@ class Category extends Filter
      * Does this filter use provider data or message buffer.
      */
     const isPostfilter = false;
-    
+
     /**
      * Providers which should be added automatically.
      */
     const needProvider = array('Code');
-    
+
     /**
      * List of namespaces to log.
      * @var array
      */
     private $_allow = array();
-    
+
     /**
      * Enable the given namespace for logging.
-     * @param int $level severity level to add for logging
+     * @param int $namespace namespace to be enabled
      */
     public function enable($namespace)
     {
         $this->_allow[$namespace] = true;
     }
-    
+
     /**
      * Check if this Message should  be further processed.
      *

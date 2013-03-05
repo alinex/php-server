@@ -102,14 +102,19 @@ class Directory extends Engine
     function set($key, $value = null)
     {
         if (!isset($this->_dir))
-            throw new Exception(tr("Directory for engine not set"));
+            throw new Exception(
+                tr(__NAMESPACE__, 'Directory for engine not set')
+            );
         if (!isset($value)) {
             $this->remove($key);
             return null;
         }
         if (!isset($this->_dir))
             throw new Exception(
-                tr("Engine not configured, need directory to store")
+                tr(
+                    __NAMESPACE__,
+                    'Engine not configured, need directory to store'
+                )
             );
         // get path and dir
         $path = $this->_dir.$this->keyToPath($this->checkKey($key));
@@ -130,7 +135,11 @@ class Directory extends Engine
     public function remove($key)
     {
         if (!isset($this->_dir))
-            throw new Exception(tr("Directory for engine not set"));
+            throw new Exception(
+                tr(
+                    __NAMESPACE__, 'Directory for engine not set'
+                )
+            );
         $path = $this->_dir.$this->keyToPath($this->checkKey($key));
         if (!file_exists($path))
             return false;
@@ -169,7 +178,9 @@ class Directory extends Engine
     public function has($key)
     {
         if (!isset($this->_dir))
-            throw new Exception(tr("Directory for engine not set"));
+            throw new Exception(
+                tr(__NAMESPACE__, 'Directory for engine not set')
+            );
         $path = $this->_dir.$this->keyToPath($this->checkKey($key));
         return file_exists($path);
     }
@@ -185,7 +196,9 @@ class Directory extends Engine
     public function keys()
     {
         if (!isset($this->_dir))
-            throw new Exception(tr("Directory for engine not set"));
+            throw new Exception(
+                tr(__NAMESPACE__, 'Directory for engine not set')
+            );
         error_log(print_r($this->fileKeys($this->_dir),1));
         return $this->fileKeys($this->_dir);
     }
@@ -210,8 +223,6 @@ class Directory extends Engine
                 $result[] = $this->pathToKey(
                     substr($dir.$f, strlen($this->_dir))
                 );
-            else
-                error_log('trash:'.$f);
         }
 
       return $result;
@@ -230,7 +241,9 @@ class Directory extends Engine
         assert(is_string($group));
 
         if (!isset($this->_dir))
-            throw new Exception(tr("Directory for engine not set"));
+            throw new Exception(
+                tr(__NAMESPACE__, 'Directory for engine not set')
+            );
         $dir = dirname($this->keyToPath($group));
         if ($dir)
             return parent::groupGet($group);

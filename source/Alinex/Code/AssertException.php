@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Exception if assert calle failed
+ * Exception if assert call failed
  *
  * @author    Alexander Schilling <info@alinex.de>
  * @copyright 2009-2013 Alexander Schilling (\ref Copyright)
@@ -13,7 +13,10 @@
 namespace Alinex\Code;
 
 /**
- * Exception if assert calle failed
+ * Exception if assert call failed.
+ *
+ * Additional information in this exceptions are the code which could not be
+ * asserted and if found the comment line above the assertion as description.
  */
 class AssertException extends \Exception
 {

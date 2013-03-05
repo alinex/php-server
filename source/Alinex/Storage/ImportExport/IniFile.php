@@ -78,7 +78,8 @@ class IniFile extends File
         if ($content === false)
             throw new Exception(
                 tr(
-                    "The ini-values from {file} could not be read",
+                    __NAMESPACE__,
+                    'The ini-values from {file} could not be read',
                     array('file' => String::dump($this->_file))
                 )
             );

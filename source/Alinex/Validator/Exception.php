@@ -73,10 +73,11 @@ class Exception extends \Exception
         array $options = null, \Exception $previous = null)
     {
         // TRANS: default name of variables if not given in options
-        if (!isset($name)) $name = tr("variable");
+        if (!isset($name)) $name = tr(__NAMESPACE__, 'variable');
         $func = preg_replace('#^.*?(\w+(::|->)?\w+)$#', '$1', $method);
         $location = tr(
-            " in check '{method}' for variable '{name}'.",
+            __NAMESPACE__,
+            ' in check \'{method}\' for variable \'{name}\'.',
             array('method' => $func, 'name' => $name)
         ) . PHP_EOL;
         parent::__construct($message.$location, null, $previous);

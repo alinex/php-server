@@ -35,7 +35,7 @@ use Alinex\Util\ArrayStructure;
  * @verbatim
  * Files {start|printf %03d} till {end|printf %03d} are broken!
  * @endverbatim
- * 
+ *
  * Optional variables will be replaced with empty string if not existing. This
  * is done by adding a '?' at the end of the variable name:
  * @verbatim
@@ -171,6 +171,7 @@ class Simple
         // no definition found
         throw new \BadMethodCallException(
             tr(
+                __NAMESPACE__,
                 'No modifier {modifier} defined in Simple Template.',
                 array('name' => $modifier)
             )

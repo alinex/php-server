@@ -154,7 +154,9 @@ class Memcache extends Engine
         }
         $this->checkKey($key);
         if (!isset($this->_memcache))
-            throw new Exception(tr("No servers set to connect to memcache"));
+            throw new Exception(
+                tr(__NAMESPACE__, 'No servers set to connect to memcache')
+            );
         return $this->_memcache->set($this->_context.$key, $value, $this->_ttl);
     }
 
@@ -242,5 +244,5 @@ class Memcache extends Engine
         100000 => 0.5,
         10000 => 0.8
     );
-    
+
 }

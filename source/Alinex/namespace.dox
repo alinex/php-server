@@ -2,7 +2,7 @@
 
 Base platform for generating cloud applications.
 
-To use this platform you have to add the Alinex::Autoloader within your
+To use this platform you have to add the \Alinex\Code\Autoloader within your
 bootstrap.php file.
 
 */

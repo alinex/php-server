@@ -55,7 +55,10 @@ class Date
         if ($res === null)
             // TRANS: Title for the error message if value is not an boolean
             throw new Exception(
-                tr("Value unknown for boolean"), $value, $name, __METHOD__
+                tr(
+                    __NAMESPACE__,
+                    'Value unknown for boolean'
+                ), $value, $name, __METHOD__
             );
         // return result
         return $res;
@@ -70,9 +73,8 @@ class Date
     {
         // TRANS: description for the possible values for type boolean
         return tr(
-            'The value has to be a boolean. The value will be true for '.
-            '1, "true", "on", "yes" and it will be considered as false for '.
-            '0, "false", "off", "no", "". Other values are not allowed.'
+            __NAMESPACE__,
+            'The value has to be a boolean. The value will be true for 1, "true", "on", "yes" and it will be considered as false for 0, "false", "off", "no", "". Other values are not allowed.'
         );
     }
 

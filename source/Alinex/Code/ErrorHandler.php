@@ -20,7 +20,20 @@ namespace Alinex\Code;
  * Alinex\Util\ErrorHandler::register();
  * @endcode
  *
- * After tthat all normal errors will be converted into exceptions.
+ * After that all normal errors will be converted into an ErrorException.
+ *
+ * The error will look like:
+ *
+ * @verbatim
+ * Fatal error: Uncaught exception 'ErrorException': 'Wrong parameter count for strpos()' in ex.php:8
+ * Stack trace:
+ * #0 [internal function]: exception_error_handler(2, 'Wrong parameter...', '/php...', 8, Array)
+ * #1 /test.php(8): strpos()
+ * #2 {main}
+  thrown in /ex.php on line 8
+ * @endverbatim
+ *
+ * This helps in development because it can be thrown and catched anywhere.
  */
 class ErrorHandler
 {

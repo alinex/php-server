@@ -70,7 +70,8 @@ abstract class File extends Storage\ImportExport
         if (!is_readable($this->_file))
             throw new Exception(
                 tr(
-                    "The file {file} is not readable",
+                    __NAMESPACE__,
+                    'The file {file} is not readable',
                     array('file' => String::dump($this->_file))
                 )
             );
@@ -86,7 +87,8 @@ abstract class File extends Storage\ImportExport
         if (!is_writable($this->_file) && !is_writable(dirname($this->_file)))
             throw new Exception(
                 tr(
-                    "The file {path} is not writable",
+                    __NAMESPACE__,
+                    'The file {path} is not writable',
                     array('path' => String::dump($this->_file))
                 )
             );

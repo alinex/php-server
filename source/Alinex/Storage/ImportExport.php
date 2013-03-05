@@ -57,7 +57,7 @@ abstract class ImportExport
     {
         if (!isset($this->_data))
             throw new \UnderflowException(
-                tr("No storage engine connected")
+                tr(__NAMESPACE__, 'No storage engine connected')
             );
         return true;
     }

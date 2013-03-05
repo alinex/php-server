@@ -229,6 +229,7 @@ class RegistryTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array(1,2,3), $this->object->get('array.simple'));
         $this->assertEquals(array(array(1,2,3),array(4,5,6)), $this->object->get('array.array'));
         $this->assertEquals(array('eins' => 1, 'zwei' => 2, 'drei' => 3), $this->object->get('array.hash'));
+        error_log($this->object->validatorDescription('float'));
         $this->assertEquals("Eine kleine Zahl.\nThe value has to be a floating point number. The value will be rounded to 2 digits after decimal point. The value has to be between 1 and 10.", $this->object->validatorDescription('float'));
     }
 

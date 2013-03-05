@@ -80,7 +80,7 @@ abstract class Handler
 
     /**
      * Add filter onto stack.
-     * @param string $filter class name
+     * @param string $class class name
      * @return Filter new filter instance
      */
     public function addFilter($class)
@@ -103,7 +103,7 @@ abstract class Handler
 
     /**
      * Get the filter instance.
-     * @param string $filter class name
+     * @param string $class class name
      * @return Filter instance or null if not set
      */
     public function getFilter($class)
@@ -113,10 +113,10 @@ abstract class Handler
         );
         return isset($this->_filter[$class]) ? $this->_filter[$class] : null;
     }
-    
+
     /**
      * Remove filter from stack.
-     * @param string $filter class name
+     * @param string $class class name
      */
     public function removeFilter($class)
     {
@@ -125,7 +125,7 @@ abstract class Handler
         );
         unset($this->_filter[$class]);
     }
-    
+
     /**
      * Stack of filters to use.
      * @var array
@@ -134,7 +134,7 @@ abstract class Handler
 
     /**
      * Add provider onto stack.
-     * @param string $provider class name
+     * @param string $class class name
      * @return Provider instance of this provider
      */
     public function addProvider($class)
@@ -162,10 +162,10 @@ abstract class Handler
         $class = Validator\Code::phpClass(
             $class, 'provider', array('relative' => '\Alinex\Logger\Provider')
         );
-        return isset($this->_provider[$class]) 
+        return isset($this->_provider[$class])
             ? $this->_provider[$class] : null;
     }
-    
+
     /**
      * Remove the provider.
      * @param string $class provider class name
@@ -177,7 +177,7 @@ abstract class Handler
         );
         unset($this->_provider[$class]);
     }
-    
+
     /**
      * Write the log message down.
      * @param  Message  $message Log message object

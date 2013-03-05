@@ -26,11 +26,42 @@ namespace Alinex\Code;
  * If this class is not activated using the AssertHandler::set() method it will
  * send the assert problems as error.
  *
- * If activated using AssertHandler::set(true) the handler will extract the
- * asserted code from source code and the comment line before, if given.
+ * @code
+ * AssertHandler::set(true);
+ * @endcode
  *
- * If deactivated using AssertHandler::set(false) the code will run faster and
- * the assert code won't be run.
+ * This will enable the handler to send exceptions instead of errors and
+ * extract the asserted code and the comment line before from source code.
+ * This setting should be used while in development/test mode, not for
+ * production system (see below).
+ *
+ * @verbatim
+ * Uncaught exception: 'Assertion check for integer range
+ * (is_integer($minRange)) failed.'
+ * @endverbatim
+ *
+ * This will be send as an AssertException.
+ *
+ * @code
+ * AssertHandler::set(true);
+ * @endcode
+ *
+ * This will disable assertions, that means the code run faster but the
+ * assertions won't be checkt and won'T throw any error or exception.
+ * This setting should be used in production mode.
+ *
+ * @section assertiuons What belongs into assertions
+ *
+ * As more things checked in assertions as earlier you may find some development
+ * errors. So don't spare on this.
+ *
+ * @attention Don't check things using assertion which comes from out of
+ * the development system because this may change:
+ * - user input
+ * - system variables
+ * - file contents
+ * - database settings
+ * - interface data
  *
  * @codeCoverageIgnore
  */

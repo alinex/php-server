@@ -18,22 +18,6 @@ use Alinex\Validator;
  * Validator helper functions.
  *
  * This functions will help to easy use and call all the validation methods.
- *
- * @todo Alinex\Validator\Text::word (alinex)
- * @todo Alinex\Validator\Text::char
- * @todo Alinex\Validator\Date::date (zend)
- * @todo Alinex\Validator\Date::timerange (alinex, zend-datestep)
- * @todo Alinex\Validator\IO::ip (alinex:net)
- * @todo Alinex\Validator\IO::host (alinex:net)
- * @todo Alinex\Validator\IO::port (alinex:net)
- * @todo Alinex\Validator\IO::url (old)
- * @todo Alinex\Validator\IO::email (alinex)
- * @todo Alinex\Validator\Security::Csrf
- * @todo Alinex\Validator\Security::Hash
- * @todo Alinex\Validator\I18n::float
- * @todo Alinex\Validator\I18n::date
- * @todo AlinexValidator\I18n::timerange
- * @todo Alinex\Validator\I18n::enum
  */
 class Validator
 {
@@ -123,7 +107,8 @@ class Validator
         // predefined help
         if (isset($name))
             $message .= tr(
-                "Specification for '{name}': ",
+                __NAMESPACE__,
+                'Specification for \'{name}\': ',
                 array('name' => $name)
             ).PHP_EOL;
         if (isset($options['description']))
