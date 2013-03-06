@@ -10,6 +10,7 @@
 *~
 
 # OS or Editor folders
+._*
 .DS_Store
 Thumbs.db
 .cache
@@ -20,9 +21,10 @@ Thumbs.db
 /nbproject/
 
 # application specific
-/vendor/
-/vnd/
 /www/
 /Manifest.json
-/translation/mo/
 /translation/pot/
+/source/dox/
+/vendor/
+/composer.lock
+/composer.phar

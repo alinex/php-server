@@ -16,12 +16,20 @@ namespace Alinex\Util;
  */
 class I18n
 {
-
+    /**
+     * Initialise the internationalization system.
+     * 
+     * This will include the tr() and trn() functions to be used.
+     */
     static function init()
     {
         require_once 'tr.php';
     }
 
+    /**
+     * Only for testing.
+     * @return string
+     */
     static function test()
     {
         return tr(__NAMESPACE__, "Test entry");
@@ -59,6 +67,12 @@ class I18n
     }
 
     /**
+     * Current locale
+     * @var string
+     */
+    private static $_locale = null;
+    
+    /**
      * Set the system local.
      *
      * @param string $locale user provided locale
@@ -71,10 +85,11 @@ class I18n
             $locale = setlocale(LC_ALL, $locale);
         // try extended search for possible locale
         if (!$locale)
-            $locale = setlocale(LC_ALL, self::getLocales());
+            $locale = setlocale(LC_ALL, self::extendLocales($locale));
         // locale could not be set
         if (!$locale)
             return false;
+        self::$_locale = $locale;
         // set the locale in environment, too
         putenv('LC_ALL='.$locale);
         putenv('LANG='.$locale);
@@ -82,6 +97,60 @@ class I18n
         return $locale;
     }
 
+    /**
+     * Extend the list of locales by getting alternatives.
+     *
+     * This is done in 3 steps:
+     * <ol>
+     * <li>add the locale with utf8 encoding
+     * <li>add specializations (extended with country...)
+     * <li>add generalization (only language code)
+     * </ol>
+     *
+     * The modifier is not added on the possible tests.
+     * 
+     * @param string $locale locale to find alternatives
+     * @param bool $onlyExtend this is used in continued calls to not 
+     * generalize again
+     * @return extended list of locales
+     */
+    private static function extendLocales($locale, $onlyExtend = false)
+    {
+        assert(is_string($locale));
+        
+        $extended = array();
+        // analyse locale
+        $part = array();
+        if (!preg_match("/^(?P<lang>[a-z]{2,3})"              // language code
+                       ."(?:_(?P<country>[A-Z]{2}))?"           // country code
+                       ."(?:\.(?P<charset>[-A-Za-z0-9_]+))?"    // charset
+                       ."(?:@(?P<modifier>[-A-Za-z0-9_]+))?$/",  // @ modifier
+                       $locale, $part))
+            return array(); // no POSIX style language
+        // add alternatives
+        if (isset($part['modifier'])) {
+            if ($country) {
+                if ($charset)
+                    array_push($extended, "${lang}_$country.$charset@$modifier");
+                array_push($extended, "${lang}_$country@$modifier");
+            } elseif ($charset)
+                array_push($extended, "${lang}.$charset@$modifier");
+            array_push($extended, "$lang@$modifier");
+        }
+        if ($country) {
+            if ($charset)
+                array_push($extended, "${lang}_$country.$charset");
+            array_push($extended, "${lang}_$country");
+        } elseif ($charset)
+            array_push($extended, "${lang}.$charset");
+        array_push($extended, $lang);
+        // return result
+        return $extended;
+    }
+    
+
+    
+    
     /**
      * Get specific locals to be used.
      *
@@ -160,91 +229,5 @@ class I18n
         'en_US', 'en_GB','de_DE'
     );
 
-    /**
-     * Extend the list of locales by adding alternatives.
-     *
-     * This is done in 4 steps:
-     * <ol>
-     * <li>add the locale with utf encoding
-     * <li>add the normal locale
-     * <li>add specializations (extended with country...)
-     * <li>add generalization (only language code)
-     * </ol>
-     *
-     * The available system locales will be stored statically and in APC through
-     * direct call.
-     *
-     * The list of supported system locales will be stored in APC under key
-     * 'i18n_systemLocales'.
-     *
-     * @param array $locales list of locales
-     * @return extended list of locales
-     */
-    private static function extendLocales(array $locales)
-    {
-        $extended = array();
-        $lastLang = false;
-        foreach ($locales as $l) {
-            // add generalization of previous
-            if ($lastLang !== false) {
-                $lang = substr($l, 0, 2);
-                if ($lang != $lastLang)
-                    // also add the specialization of generalization
-                    $extended[] = self::extendLocales(array($lastLang));
-                $lastLang = false;
-            }
-            if (!in_array($l.'.utf8', $extended))
-                $extended[] = $l.'.utf8';   // add with utf encoding
-            if (!in_array($l, $extended))
-                $extended[] = $l;           // normal
-            if (strlen($l) == 2) {
-                // specialization
-                // use static variable as request cache
-                static $systemLocales = null;
-                // check in apc cache if not defined
-                $cacheName = "i18n_systemLocales";
-                if (!isset($systemLocales) && function_exists('apc_fetch'))
-                    $systemLocales = apc_fetch($cacheName);
-                // analyze, if not in cache, too
-                if ($systemLocales === false || !isset($systemLocales)) {
-                    // get system locales
-                    ob_start();
-                    passthru('locale -a');
-                    $str = ob_get_contents();
-                    ob_end_clean();
-                    // order default first
-                    $systemLocales = preg_split("/\\n/", trim($str));
-                    $list = array();
-                    // add matched locales first
-                    foreach (self::$_defaultLocales as $default) {
-                        $len = \strlen($default);
-                        foreach ($systemLocales as $test)
-                            if ($default == substr($test, 0, $len)
-                                && !in_array($test, $list))
-                                $list[] = $test;
-                    }
-                    // add the not matched locales
-                    foreach ($systemLocales as $test)
-                        if (!in_array($test, $list))
-                            $list[] = $test;
-                    $systemLocales = $list;
-                    // store in static variable and cache
-                    if (function_exists('apc_store'))
-                        apc_store($cacheName, $systemLocales, 0);
-                }
-                foreach ($systemLocales as $test) {
-                    if ($l == substr($test, 0, 2))
-                        if (!in_array($test, $extended))
-                            $extended[] = $test;
-                }
-            } else {
-            $lastLang = substr($l, 0, 2);
-            }
-        }
-        if ($lastLang !== false)
-            // add generalization and spezialization of generalization from last
-            $extended[] = self::extendLocales(array($lastLang));
-        return $extended;
-    }
 
 }

@@ -1,0 +1,48 @@
+{
+    "name": "alinex/php-server",
+    "version": "0.2-dev",
+    "type": "library",
+    "description": "Alinex Web Applications Platform",
+    "keywords": ["framework","logging"],
+    "homepage": "http://alinex.de/server",
+    "license": "GPL-3.0",
+    "authors": [
+        {
+            "name": "Alexander Schilling",
+            "email": "info@alinex.de",
+            "homepage": "http://alinex.de/"
+        }
+    ],
+    "support": {
+        "email": "info@alinex.de",
+        "source": "https://github.com/alinex/php-server"
+    },
+    "repositories": [
+        {
+            "type": "package",
+            "package": {
+                "name": "launchpad/php-gettext",
+                "version": "1.0.11",
+                "dist": {
+                    "url": "https://launchpad.net/php-gettext/trunk/1.0.11/+download/php-gettext-1.0.11.tar.gz",
+                    "type": "tar"
+                }
+            }
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "launchpad/php-gettext": "*"
+    },
+    "suggest": {
+        "ext-gettext": "*"
+    },
+    "require-dev": {
+        "ext-gettext": "*"
+    },
+    "autoload": {
+        "psr-0": {
+            "Alinex" : "../source"
+        }
+    }
+}
