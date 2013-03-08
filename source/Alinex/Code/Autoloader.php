@@ -19,7 +19,7 @@ namespace Alinex\Code;
  *     $loader = new \Alinex\Autoloader();
  *
  *     // register classes with namespaces
- *     $loader->add('Symfony\Component', __DIR__.'/component');
+ *     $loader->add('Symfony\\Component', __DIR__.'/component');
  *     $loader->add('Symfony',           __DIR__.'/framework');
  *
  *     // activate the autoloader
