@@ -15,6 +15,16 @@ namespace Alinex\Storage;
 use Alinex\Validator;
 
 /**
+ * Use of the Registry in default mode without any specification. This is the 
+ * most used case. Access to the registry is done using the get() and set() 
+ * methods.
+ * @example Registry-default.php
+ */
+/**
+ * This shows how to access the registry like a normal array.
+ * @example Registry-arrayAccess.php
+ */
+/**
  * Registry to pass global information and objects between classes.
  *
  * The registry is aimed to hold configuration data and specific settings in
@@ -22,16 +32,13 @@ use Alinex\Validator;
  * the import/export possibilities is best to be used with file based
  * configuration management.
  *
- * Let's look at an example:
- *
- * @include Alinex/Storage/Registry.php
  * The ArrayRegistry is used as one of the simplest, but any other can be used
  * in the same way.
  *
  * Additionally checks may be defined using the Alinex::Validator class methods
  * which will be called on set(). Add this checks using setValidator().
  *
- * <b>Array Access<</b>
+ * <b>Array Access</b>
  *
  * The registry is also usable like normal Arrays with:
  * @code
@@ -41,12 +48,16 @@ use Alinex\Validator;
  * $registry[$offset] = $value;
  * unset($registry[$offset]);
  * @endcode
- *
+ * 
  * <b>Group</b>
  *
  * A group is a subpart of the registry with the same group name as key start
  * in storage. This will be prepended on set and removed on get to use with
  * shorter array keys.
+ * 
+ * @note Keys with exact the name of a given group are not included in ti. A
+ * group may only include keys which start with the group name but are longer 
+ * with at least one character.
  *
  * <b>Validation</b>
  *
@@ -92,7 +103,7 @@ class Registry implements \Countable, \ArrayAccess
     /**
      * Get an instance of registry class
      *
-     * For the default instance he best choice for local registry will be
+     * For the default instance the best choice for local registry will be
      * detected based on the environment. The decision is made by one of:
      * - ArrayList (if in CLI mode)
      * - Apc (if possible)
