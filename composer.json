@@ -35,7 +35,9 @@
         "launchpad/php-gettext": "*"
     },
     "suggest": {
-        "ext-gettext": "*"
+        "ext-gettext": "*",
+        "ext-apc": "*",
+        "ext-memcached": "*"
     },
     "require-dev": {
         "ext-gettext": "*"

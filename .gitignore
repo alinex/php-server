@@ -28,3 +28,4 @@ Thumbs.db
 /vendor/
 /composer.lock
 /composer.phar
+/source/example/

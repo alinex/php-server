@@ -10,7 +10,6 @@
  */
 
 use Alinex\Util\I18n;
-use Alinex\Template;
 
 /**
  * Gettext translate function
@@ -28,21 +27,7 @@ use Alinex\Template;
  */
 function tr($namespace, $msgid, array $params = array())
 {
-    // domain has to be set
-    assert(is_string($namespace));
-    // only strings may be translated
-    assert(is_string($msgid));
-
-    I18n::setDomain($namespace);
-    // get the message
-    if (function_exists('gettext'))
-        // call native php function
-        $trans = gettext($msgid); // call native php function
-    else
-        // fallback keep english
-        $trans = $msgid;
-    // replace variables and return
-    return Template\Simple::run($trans, $params);
+    return i18n::tr($namespace, $msgid, $params);
 }
 
 /**
@@ -63,23 +48,7 @@ function tr($namespace, $msgid, array $params = array())
  */
 function trn(
     $namespace, $msgSingular, $msgPlural, $num, array $params = array()
-) {
-    // domain has to be set
-    assert(is_string($namespace));
-    // only strings may be translated
-    assert(is_string($msgSingular));
-    // only strings may be translated
-    assert(is_string($msgPlural));
-    // have to be a positive integer
-    assert(is_int($num) && $num >= 0);
-
-    I18n::setDomain($namespace);
-    if (function_exists('gettext'))
-        // call native php function
-        $trans = ngettext($msgSingular, $msgSingular, $num);
-    else
-        // fallback keep english
-        $trans = $num != 1 ? $msgSingular : $msgPlural;
-    // replace variables and return
-    return Template\Simple::run($trans, $params);
+)
+{
+    return I18n::trn($namespace, $msgSingular, $msgPlural, $num, $params);
 }
