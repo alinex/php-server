@@ -17,17 +17,18 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with this program's \ref License.
+You should have received a copy of the GNU General Public License along with this program's \ref License.\n
 If not, please see http://www.gnu.org/licenses/gpl-3.0.txt
 
 <hr>
 
 Alinex includes works under other copyright notices and distributed according to the terms of the
 GNU General Public License or a compatible license, including:
-- qooxdoo - Copyright (c) 2004-2009 1&1 Internet AG, Germany, http://www.1und1.de
-- Doctrine - Copyright http://www.doctrine-project.org
+- \b php-gettext - Copyright 2003, 2006, 2009 Danilo Segan - Licensed under GPLv2
+- \b Doctrine - Copyright http://www.doctrine-project.org
+- \b qooxdoo - Copyright (c) 2004-2009 1&1 Internet AG, Germany, http://www.1und1.de
 
 Within the development process the following third party systems and tools are used:
-- doctrine - for API documentation generation
+- \b doxygen - for API documentation generation
 
 */
