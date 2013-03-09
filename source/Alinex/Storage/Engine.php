@@ -341,8 +341,7 @@ abstract class Engine implements \Countable, \ArrayAccess
 
         $result = false;
         foreach ($this->keys() as $key) {
-            if (!String::startsWith($key, $group)
-                || strlen($key) = strlen($group))
+            if (!String::startsWith($key, $group))
                 continue;
             $this->remove($key);
             $result = true;

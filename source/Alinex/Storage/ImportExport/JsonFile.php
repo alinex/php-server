@@ -21,7 +21,7 @@ use Alinex\Util\String;
  * conform to the JSON definition but will be removed on import. To use standard
  * conform JSON you may switch comments off.
  *
- * @verbinclude Alinex/Storage/ImportExport/storage.json
+ * @verbinclude Alinex/Storage/ImportExport/storage.json.txt
  */
 class JsonFile extends File
 {

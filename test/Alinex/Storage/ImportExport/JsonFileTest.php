@@ -25,7 +25,7 @@ class JsonFileTest extends \PHPUnit_Framework_TestCase
         $storage->set('array.hash', array('eins' => 1, 'zwei' => 2, 'drei' => 3));
         $storage->set('array.array', array(array(1,2,3),array(4,5,6)));
         // export
-        $file = __DIR__.'/../../../data/storage.json';
+        $file = __DIR__.'/../../../data/storage.json.txt';
         $exporter = new JsonFile($storage);
         $exporter->setFile($file);
         $exporter->addHeader("Test of storage export/import");
@@ -46,7 +46,7 @@ class JsonFileTest extends \PHPUnit_Framework_TestCase
         $storage = Engine\ArrayList::getInstance();
         $storage->clear();
         // import
-        $file = __DIR__.'/../../../data/storage.json';
+        $file = __DIR__.'/../../../data/storage.json.txt';
         $importer = new JsonFile($storage);
         $importer->setFile($file);
         $importer->import();

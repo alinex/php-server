@@ -31,16 +31,18 @@
         }
     ],
     "require": {
-        "php": ">=5.3.0",
-        "launchpad/php-gettext": "*"
+        "php": ">=5.3.0"
     },
     "suggest": {
         "ext-gettext": "*",
         "ext-apc": "*",
-        "ext-memcached": "*"
+        "ext-memcached": "*",
+        "ext-yaml": "*",
+        "ext-phpiredis": "*"
     },
     "require-dev": {
-        "ext-gettext": "*"
+        "launchpad/php-gettext": "*",
+        "predis/predis": "*"
     },
     "autoload": {
         "psr-0": {

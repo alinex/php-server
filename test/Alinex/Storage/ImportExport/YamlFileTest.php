@@ -9,6 +9,12 @@ use Alinex\Storage\Engine;
  */
 class YamlFileTest extends \PHPUnit_Framework_TestCase
 {
+    function setUp()
+    {
+        if (!extension_loaded('yaml'))
+            $this->markTestSkipped('The yaml extension have to be loaded.');
+    }
+    
     function testExport()
     {
         // setup storage
