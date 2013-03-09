@@ -34,7 +34,6 @@ $loader->register();
 // internationalization
 
 I18n::init();
-I18n::setLocale("en_US.utf8");
 
 // error handler
 

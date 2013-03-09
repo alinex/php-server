@@ -253,8 +253,7 @@ class Directory extends Engine
             $key = $this->pathToKey($dir).$key;
             if (strlen($group) == 0)
                 $result[$key] = $this->get($key);
-            else if (String::startsWith($key, $group)
-                && strlen($key) > strlen($group))
+            else if (String::startsWith($key, $group))
                 $result[substr($key, strlen($group))] = $this->get($key);
         }
         return $result;

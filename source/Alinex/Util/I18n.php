@@ -17,6 +17,16 @@ use Alinex\Template;
 
 /**
  * Internationalization and translation helper methods.
+ * 
+ * a complete overview can be found in the architecture description for
+ * @ref codeI18n.
+ * 
+ * Using emulateGettext(true) you may activate the gettext alternative
+ * implementation also then  the extension is instaslled.
+ * 
+ * The setLocal() method may be used to explicitly set a specific locale.
+ * 
+ * The tr() and trn() methods can be used or their respective functions.
  */
 class I18n
 {
@@ -116,6 +126,7 @@ class I18n
      */
     public static function setLocale($locales = null)
     {
+        $set = false;
         if (is_string($locales))
             $locales = array($locales);
         // check if already selected in session
@@ -187,7 +198,7 @@ class I18n
         if (isset($_SERVER['REMOTE_HOST'])) {
             $locales[] = strtolower(end(explode('.',$_SERVER['REMOTE_HOST'])));
         }
-        return self::extendLocales($locales);
+        return self::localeExtend($locales);
     }
 
     /**
@@ -255,6 +266,8 @@ class I18n
      */
     private static function localeFilter($locales)
     {
+        if (!$locales)
+            return false;
         foreach (self::localesAlinex() as $check)
             if (String::startsWith($check, $locales))
                 return true;
@@ -281,7 +294,7 @@ class I18n
                 $registry->get(self::REGISTRY_LOCALES)
             );
         }
-        return locales;
+        return $locales;
     }
 
     /**
@@ -408,8 +421,8 @@ class I18n
         if (textdomain(null) == $domain)
             return;
         // closing slash for windows neccessary
-        if (!bindtextdomain($domain, __DIR__.'/../../../tr/'))
-            throw new \Exception('Could not bind translation directory under /tr');
+        if (!bindtextdomain($domain, __DIR__.'/../../tr/'))
+            throw new \Exception('Could not bind translation directory under '.__DIR__.'/../../../tr/');
         // set the dopmain
         if (!textdomain($domain) == $domain)
             throw new \Exception('Could not set translation domain to '.$domain.' under /tr');
@@ -417,5 +430,4 @@ class I18n
         bind_textdomain_codeset($domain, "UTF-8");
         return $domain;
     }
-
 }

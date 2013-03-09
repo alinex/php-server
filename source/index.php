@@ -26,11 +26,3 @@ include_once 'bootstrap.php';
 
 Alinex\Util\I18n::test();
 
-// try to run a rpc server
-#if (!\core\rpc\RpcServer::run())
-#    // forward to base page
-#    header("Location: ../");
-
-function trt($domain, $msg) {
-    return "";
-}
