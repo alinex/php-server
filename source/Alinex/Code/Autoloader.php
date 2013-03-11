@@ -16,7 +16,7 @@ namespace Alinex\Code;
  * ClassLoader implements a PSR-0 class loader
  *
  * @code
- *     $loader = new \Alinex\Autoloader();
+ *     $loader = \Alinex\Code\Autoloader::getInstance();
  *
  *     // register classes with namespaces
  *     $loader->add('Symfony\\Component', __DIR__.'/component');
@@ -44,6 +44,31 @@ namespace Alinex\Code;
  */
 class Autoloader
 {
+    /**
+     * Singleton instance.
+     * @var Autoloader
+     */
+    private static $_instance = null;
+    
+    /**
+     * Get the singleton autoloader instance.
+     * @return Autoloader singleton instance
+     */
+    static function getInstance()
+    {
+        if (!isset(self::$_instance))
+            self::$_instance = new self();
+        return self::$_instance;
+    }
+    
+    /**
+     * Private constructor.
+     */
+    private function __construct() 
+    {
+        // use getInstance
+    }
+    
     /**
      * List of prefixes with their search directories
      * @var array

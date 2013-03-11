@@ -27,7 +27,7 @@ require_once __DIR__.DIRECTORY_SEPARATOR
         .'Alinex'.DIRECTORY_SEPARATOR
         .'Code'.DIRECTORY_SEPARATOR
         .'Autoloader.php';
-$loader = new Code\Autoloader();
+$loader = Code\Autoloader::getInstance();
 $loader->add('Alinex', __DIR__);
 $loader->register();
 
