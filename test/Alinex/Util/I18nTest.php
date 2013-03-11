@@ -20,4 +20,9 @@ class I18nTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals('Test entry', I18n::test());
     }
+
+    function testSetLocale()
+    {
+        $this->assertEquals('en_US.utf8', I18n::setLocale('en_US.utf8'));
+    }
 }
