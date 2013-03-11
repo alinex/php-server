@@ -1,7 +1,6 @@
 /** @namespace Alinex\Util
+Additional utilities to enhance standard PHP types and functions.
 
-Additional utilities to work with standard PHP types.
-
-This classes will help and ease the use of standard types.
-
+This classes will help and ease the use of standard types. They may be used
+everywhere.
 */

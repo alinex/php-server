@@ -17,15 +17,15 @@ use Alinex\Template;
 
 /**
  * Internationalization and translation helper methods.
- * 
+ *
  * a complete overview can be found in the architecture description for
  * @ref codeI18n.
- * 
+ *
  * Using emulateGettext(true) you may activate the gettext alternative
  * implementation also then  the extension is instaslled.
- * 
+ *
  * The setLocal() method may be used to explicitly set a specific locale.
- * 
+ *
  * The tr() and trn() methods can be used or their respective functions.
  */
 class I18n
@@ -266,12 +266,14 @@ class I18n
      */
     private static function localeFilter($locales)
     {
+        $ok = array();
         if (!$locales)
             return false;
-        foreach (self::localesAlinex() as $check)
-            if (String::startsWith($check, $locales))
-                return true;
-        return false;
+        foreach ($locales as $locale)
+            foreach (self::localesAlinex() as $check)
+                if (String::startsWith($locale, $check))
+                    $ok[] = $locale;
+        return array_unique($ok);
     }
 
     /**
@@ -294,6 +296,12 @@ class I18n
                 $registry->get(self::REGISTRY_LOCALES)
             );
         }
+        usort(
+            $locales, function($a, $b)
+            {
+                return strlen($b) - strlen($a);
+            }
+        );
         return $locales;
     }
 
