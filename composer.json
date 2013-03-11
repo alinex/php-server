@@ -31,14 +31,15 @@
         }
     ],
     "require": {
-        "php": ">=5.3.0"
+        "php": ">=5.3.2"
     },
     "suggest": {
-        "ext-gettext": "*",
-        "ext-apc": "*",
-        "ext-memcached": "*",
-        "ext-yaml": "*",
-        "ext-phpiredis": "*"
+        "ext-gettext": "Allows fast non threaded internationalization",
+        "ext-apc": "Allows alternative opcode- and user-cache to be used.",
+        "ext-memcached": "Allows the memcache user-cahce to be used",
+        "ext-yaml": "Allows to export and import YAML data",
+        "ext-phpiredis": "Allows faster serialization and deserialization of the Redis protocol",
+        "ext-curl": "Allows access to Webdis when paired with phpiredis"
     },
     "require-dev": {
         "launchpad/php-gettext": "*",
