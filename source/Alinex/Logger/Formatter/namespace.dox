@@ -1,0 +1,6 @@
+/** @namespace Alinex\Logger\Formatter
+Formatting the log message.
+
+Each Handler has a specific Formatter assigned, through which it is possible
+to specify the concret log format using Alinex\Template\Simple syntax.
+*/

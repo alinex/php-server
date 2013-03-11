@@ -17,9 +17,9 @@ use Alinex\Logger\Message;
 
 /**
  * Check the message's severity level to decide if it should be logged.
- * 
+ *
  * You may setMinimum() level which will enable the given level and all higher
- * ones or enable() every single level alone.
+ * ones or enable()/disable() every single level alone.
  */
 class Level extends Filter
 {
@@ -28,20 +28,20 @@ class Level extends Filter
      * @var array
      */
     private $_allow = array();
-    
+
     /**
      * Set the minimum severity for logging.
-     * 
+     *
      * All messages with this or higher severity levels will be logged.
      * @param int $level minimum severity level
      */
     public function setMinimum($level)
     {
-        $this->_allow = array();
+        $this->_allow = array(); // cleanup
         for (; $level >= 0; $level--)
             $this->_allow[$level] = true;
     }
-    
+
     /**
      * Enable the given severity level for logging.
      * @param int $level severity level to add for logging
@@ -50,7 +50,16 @@ class Level extends Filter
     {
         $this->_allow[$level] = true;
     }
-    
+
+    /**
+     * Disable the given severity level for logging.
+     * @param int $level severity level to remove from logging
+     */
+    public function disable($level)
+    {
+        unset($this->_allow[$level]);
+    }
+
     /**
      * Check if this Message should  be further processed.
      *
@@ -62,6 +71,6 @@ class Level extends Filter
      */
     public function check(Message $message)
     {
-        return isset($this->_allow[$message->data['level.num']]);
+        return isset($this->_allow[$message->data['level']['num']]);
     }
 }

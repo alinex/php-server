@@ -17,31 +17,33 @@ use Alinex\Logger\Provider;
 
 /**
  * Abstract provider to get additional information for logging.
- * 
+ *
  * This will add information about the calling method:
  * - function - The current function name.
  * - line - The current line number.
  * - file - The current file name.
  * - class - The current class name.
  * - object - The current object.
- * - type - The current call type. If a method call "->" is returned. 
- * If a static method call "::" is returned. If a function call nothing is 
+ * - type - The current call type. If a method call "->" is returned.
+ * If a static method call "::" is returned. If a function call nothing is
  * returned.
  * - args - If inside a function, this lists the functions arguments. If inside
- * an included file, this lists the included file name(s). 
+ * an included file, this lists the included file name(s).
  * - trace - same information of the calling methods if required
+ *
+ * @codeCoverageIgnore because backtrace not possible through phpunit
  */
 class Code extends Provider
 {
     /**
      * Should the trace be included.
-     * 
+     *
      * If not set only the last call before Logger will be added. If set to
      * true, also the back trace will be added as \c code.trace array.
      * @var bool
      */
     public $_withTrace = false;
-    
+
     /**
      * Get additional information.
      *
@@ -63,6 +65,8 @@ class Code extends Provider
             if (strpos($entry['class'], 'Logger') !== false) // within Logger
                 continue;
             $message->data['code'] = $entry;
+#            error_log($entry['file'].':'.$entry['line']);
+#            continue;
             if ($this->_withTrace)
                 array_slice($trace, $offset);
             break;

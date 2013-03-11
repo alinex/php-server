@@ -39,7 +39,7 @@ abstract class Handler
     {
         // call prefilter
         foreach($this->_filter as $filter)
-            if (!$filter::isPostfilter
+            if (!$filter::IS_POSTFILTER
                 && !$filter->check($message))
                 return false;
         // evaluate providers
@@ -49,7 +49,7 @@ abstract class Handler
         $this->_formatter->format($message);
         // rotate through buffer filters
         foreach($this->_filter as $filter)
-            if ($filter::isPostfilter
+            if ($filter::IS_POSTFILTER
                 && !$filter->check($message))
                 return false;
         // write messages
@@ -95,7 +95,7 @@ abstract class Handler
         $filter = new $class;
         $this->_filter[$class] = $filter;
         // also add needed providers
-        foreach($filter::needProvider as $provider)
+        foreach($filter::$needProvider as $provider)
             $this->addProvider ($provider);
         // return filter
         return $filter;

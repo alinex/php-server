@@ -1,0 +1,6 @@
+/** @namespace Alinex\Logger
+Logging functionality.
+
+The Logger class enables easy and configurable logging with multiple Handlers
+using Filter, and specifiing the Formatter.
+*/

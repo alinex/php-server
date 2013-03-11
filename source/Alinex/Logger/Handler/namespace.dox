@@ -1,0 +1,5 @@
+/** @namespace Alinex\Logger\Handler
+Definition of logging destinations.
+
+Each handler can write or send the log entries to a specific ressource.
+*/
