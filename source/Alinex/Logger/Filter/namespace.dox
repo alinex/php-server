@@ -1,0 +1,6 @@
+/** @namespace Alinex\Logger\Filter
+Filtering of log messages.
+
+The Filter allows to specify which Message should go through. It can also buffer
+some messages till a certain circumstance is reached.
+*/

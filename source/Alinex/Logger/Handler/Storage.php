@@ -45,6 +45,9 @@ class Storage extends Handler
      */
     protected function write(Message $message)
     {
-        $this->_engine->set(microtime(true), $message->formatted);
+        $this->_engine->set(
+            $message->data['time']['sec'].'.'.$message->data['time']['msec'],
+            $message->formatted
+        );
     }
 }

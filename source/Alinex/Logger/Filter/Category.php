@@ -14,21 +14,27 @@ namespace Alinex\Logger\Filter;
 
 use Alinex\Logger\Filter;
 use Alinex\Logger\Message;
+use Alinex\Util\String;
 
 /**
  * Check the namespace to decide if it should be logged.
+ *
+ * This allows to enable or disable messages based on their namepspace and class
+ * name. To use you should at least enable one top range. You may also disable
+ * some ranges within an enabled category or also reenable in disabled sub
+ * ranges (but the last one will make it complicate to understand).
  */
 class Category extends Filter
 {
     /**
      * Does this filter use provider data or message buffer.
      */
-    const isPostfilter = false;
+    const IS_POSTFILTER = true;
 
     /**
      * Providers which should be added automatically.
      */
-    const needProvider = array('Code');
+    static $needProvider = array('Code');
 
     /**
      * List of namespaces to log.
@@ -37,12 +43,28 @@ class Category extends Filter
     private $_allow = array();
 
     /**
+     * List of namespaces to not log.
+     * @var array
+     */
+    private $_deny = array();
+
+    /**
      * Enable the given namespace for logging.
      * @param int $namespace namespace to be enabled
      */
     public function enable($namespace)
     {
         $this->_allow[$namespace] = true;
+        unset($this->_deny[$namespace]);
+    }
+
+    /**
+     * Disable the given namespace for logging.
+     * @param int $namespace namespace to be disabled
+     */
+    public function disable($namespace)
+    {
+        $this->_deny[$namespace] = true;
     }
 
     /**
@@ -56,6 +78,25 @@ class Category extends Filter
      */
     public function check(Message $message)
     {
-        return isset($this->_allow[$message->data['code.namespace']]);
+        if (!isset($message->data['code']['class']))
+            return false;
+        foreach (array_keys($this->_allow) as $allow) {
+            // allow if within given namespace
+            if (String::startsWith($message->data['code']['class'], $allow)) {
+                $ok = true;
+                foreach (array_keys($this->_deny) as $deny) {
+                    // disallow if in forbidden namespace, too
+                    if (strlen($deny) >= strlen($allow)
+                        && String::startsWith(
+                            $message->data['code']['class'], $deny
+                        )
+                    ) $ok = false;
+                }
+                if ($ok)
+                    return true;
+            }
+        }
+        // not defined -> disallow
+        return false;
     }
 }

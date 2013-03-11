@@ -1,5 +1,6 @@
 /** @namespace Alinex\Code
-
 Code management functionality like Autoloader, ErrorHandler and AssertHandler.
 
+This classes will help in easy and stable development. They are meant for easy
+error management and debugging.
 */

@@ -20,13 +20,13 @@ abstract class Filter
     /**
      * Does this filter use provider data or message buffer.
      */
-    const isPostfilter = false;
-    
+    const IS_POSTFILTER = false;
+
     /**
      * Providers which should be added automatically.
      */
-    const needProvider = array();
-    
+    static $needProvider = array();
+
     /**
      * Check if this Message should  be further processed.
      *
