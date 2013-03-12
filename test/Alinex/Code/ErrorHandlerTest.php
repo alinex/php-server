@@ -39,7 +39,7 @@ class ErrorHandlerTest extends \PHPUnit_Framework_TestCase
     public function testErrorHandlerRespectsAtOperator()
     {
         ErrorHandler::register();
-        ini_set('xdebug.scream', FALSE); 
+        ini_set('xdebug.scream', FALSE);
 
         @trigger_error('test', E_USER_NOTICE);
     }
