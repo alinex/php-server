@@ -49,7 +49,7 @@ class Autoloader
      * @var Autoloader
      */
     private static $_instance = null;
-    
+
     /**
      * Get the singleton autoloader instance.
      * @return Autoloader singleton instance
@@ -60,15 +60,7 @@ class Autoloader
             self::$_instance = new self();
         return self::$_instance;
     }
-    
-    /**
-     * Private constructor.
-     */
-    private function __construct() 
-    {
-        // use getInstance
-    }
-    
+
     /**
      * List of prefixes with their search directories
      * @var array
