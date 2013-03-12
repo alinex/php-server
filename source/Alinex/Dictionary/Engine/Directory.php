@@ -199,7 +199,6 @@ class Directory extends Engine
             throw new Exception(
                 tr(__NAMESPACE__, 'Directory for engine not set')
             );
-        error_log(print_r($this->fileKeys($this->_dir),1));
         return $this->fileKeys($this->_dir);
     }
 
