@@ -14,24 +14,24 @@ namespace Alinex\Logger\Handler;
 
 use Alinex\Logger\Message;
 use Alinex\Logger\Handler;
-use Alinex\Storage\Engine;
+use Alinex\Dictionary\Engine;
 
 /**
  * Handler storing logs in given storage engine.
  *
  * Each log message will be added under the unix timestamp with milliseconds.
  */
-class Storage extends Handler
+class Dictionary extends Handler
 {
     /**
-     * Storage engine to use.
-     * @var \Alinex\Storage\Engine
+     * Dictionary engine to use.
+     * @var \Alinex\Dictionary\Engine
      */
     private $_engine = null;
 
     /**
      * Set storage engine to use.
-     * @param \Alinex\Storage\Engine $engine storage engine
+     * @param \Alinex\Dictionary\Engine $engine storage engine
      */
     function __construct(Engine $engine)
     {

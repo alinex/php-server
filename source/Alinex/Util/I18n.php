@@ -12,7 +12,7 @@
 namespace Alinex\Util;
 
 use Alinex\Util\String;
-use Alinex\Storage\Registry;
+use Alinex\Dictionary\Registry;
 use Alinex\Template;
 
 /**
