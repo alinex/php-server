@@ -1,0 +1,5 @@
+/** @namespace Alinex\Dictionary\Engine
+
+This namespaces contains different storage engines for the Dictionary.
+
+*/

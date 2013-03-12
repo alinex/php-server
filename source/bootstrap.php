@@ -12,7 +12,7 @@
  * @see       http://alinex.de
  */
 
-use Alinex\Storage\Registry;
+use Alinex\Dictionary\Registry;
 use Alinex\Code;
 
 // general php configuration

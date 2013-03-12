@@ -3,15 +3,15 @@
 namespace Alinex\Logger\Handler;
 
 use Alinex\Logger;
-use Alinex\Storage;
+use Alinex\Dictionary;
 
-class StorageTest extends \PHPUnit_Framework_TestCase
+class DictionaryTest extends \PHPUnit_Framework_TestCase
 {
 
     function testInitial()
     {
-        $log = Storage\Engine\ArrayList::getInstance('testlog');
-        $handler = new Logger\Handler\Storage($log);
+        $log = Dictionary\Engine\ArrayList::getInstance('testlog');
+        $handler = new Logger\Handler\Dictionary($log);
         $message = new Logger\Message(
             Logger::ALERT, 'This is a Test'
         );
