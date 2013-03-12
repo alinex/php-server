@@ -16,7 +16,7 @@ class AutoloaderTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->object = new Autoloader;
+        $this->object = Autoloader::getInstance();
     }
 
     function testGetInitial()
