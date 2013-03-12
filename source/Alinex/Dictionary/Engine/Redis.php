@@ -17,9 +17,10 @@ use Alinex\Dictionary\Engine;
 /**
  * Dictionary keeping values in the Redis remote dictionary service.
  *
- * This may use the phpredis extension from
- * https://github.com/nicolasff/phpredis or the included Predis lib from
- * https://github.com/nrk/predis + https://github.com/nicolasff/phpredis.
+ * This will work using the credis library 
+ * (https://github.com/colinmollenhour/credis) and if available the native 
+ * extension phpredis (https://github.com/nicolasff/phpredis) is used if
+ * available.
  */
 class Redis extends Engine
 {
@@ -31,13 +32,13 @@ class Redis extends Engine
      */
     protected static function check()
     {
-        if (!extension_loaded('phpredis')) {
-            $loader = Code\Autoloader::getInstance();
-            $loader->add('Predis', __DIR__.'/../../../vnd/predis/lib');
-            if (!class_exists('Predis'))
-                throw new \BadMethodCallException(
-                    "PhpRedis extension or predis library should be available"
-                );
+        if (file_exists(__DIR__.'/../../../vnd/credis')) {
+            require_once __DIR__.'/../../../vnd/credis/Client.php';
+            require_once __DIR__.'/../../../vnd/credis/Cluster.php';
+        } else {
+            throw new \BadMethodCallException(
+                tr("Third party library 'credis' is not included")
+            );
         }
         return true;
     }
@@ -79,7 +80,7 @@ class Redis extends Engine
      * This can be done using a simple string with an hostname to connect to
      * this host on the default port:
      * @code
-     * $storage->addServer('localhost');
+     * $directory->addServer('localhost');
      * @endcode
      *
      * Or to take full control over all configuration entries give a list of
@@ -113,9 +114,8 @@ class Redis extends Engine
         }
         // converted string or array neccessary
         $this->_server = array_merge($this->_server, $server);
-        // reconnect if already connected
-        if (isset($this->_redis))
-            $this->connect();
+        // connect to new servers
+        $this->connect();
     }
 
     /**
@@ -132,8 +132,8 @@ class Redis extends Engine
      */
     protected function connect()
     {
-        // initialize memcache
-        $this->_redis = new Predis\Client($this->_server);
+        // initialize redis
+        $this->_redis = new \Credis_Cluster($this->_server);
     }
 
     /**
@@ -148,17 +148,17 @@ class Redis extends Engine
     function set($key, $value = null)
     {
         if (!isset($value)) {
-            $this->del($key);
+            $this->remove($key);
             return null;
         }
         $this->checkKey($key);
         if (!isset($this->_redis))
-            throw new Exception(
+            throw new \Exception(
                 tr(__NAMESPACE__, 'No servers set to connect to redis')
             );
         $result = $this->_redis->set($this->_context.$key, $value);
-        if ($this->ttl)
-            $this->_redis->expire($this->_context.$key, $this->ttl);
+        if ($this->_ttl)
+            $this->_redis->expire($this->_context.$key, $this->_ttl);
         return $result;
     }
 
@@ -171,7 +171,7 @@ class Redis extends Engine
     public function remove($key)
     {
         if (isset($this->_redis))
-            return $this->_redis->delete($mkey);
+            return (bool) $this->_redis->del($key);
         return false;
     }
 
@@ -184,8 +184,10 @@ class Redis extends Engine
     public function get($key)
     {
         $this->checkKey($key);
-        if (isset($this->_redis))
-            return $this->_redis->get($this->_context.$key);
+        if (isset($this->_redis)) {
+            $result = $this->_redis->get($this->_context.$key);
+            return $result ?: null;
+        }
         return null;
     }
 
@@ -199,7 +201,7 @@ class Redis extends Engine
     {
         $this->checkKey($key);
         if (isset($this->_redis))
-            return $this->_redis->exists($this->_context.$key);
+            return (bool) $this->_redis->exists($this->_context.$key);
         return false;
     }
 

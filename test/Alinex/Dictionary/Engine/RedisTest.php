@@ -14,13 +14,14 @@ class RedisTest extends \PHPUnit_Framework_TestCase
 
     function setUp()
     {
-        if (!Memcache::isAvailable())
-            $this->markTestSkipped('The memcache extension have to be loaded.');
+        if (!Redis::isAvailable())
+            $this->markTestSkipped('The redis library have to be included.');
     }
 
     function testInitial()
     {
-        $this->object = Memcache::getInstance();
+        $this->object = Redis::getInstance();
+        $this->object->addServer();
         $this->object->clear();
         $this->assertFalse($this->object->has('not_existing'));
         $this->assertNull($this->object->get('not_existing'));
@@ -31,7 +32,8 @@ class RedisTest extends \PHPUnit_Framework_TestCase
      */
     function testSetGet()
     {
-        $this->object = Memcache::getInstance();
+        $this->object = Redis::getInstance();
+        $this->object->addServer();
         $this->object->clear();
         $this->assertEquals(123, $this->object->set('normalValue', 123));
         $this->assertEquals(123, $this->object->get('normalValue'));
@@ -51,7 +53,8 @@ class RedisTest extends \PHPUnit_Framework_TestCase
      */
     function testContext()
     {
-        $this->object = Memcache::getInstance();
+        $this->object = Redis::getInstance();
+        $this->object->addServer();
         $this->object->clear();
         $this->assertEquals(123, $this->object->set('normalValue', 123));
         $this->assertTrue($this->object->has('normalValue'));
@@ -68,7 +71,8 @@ class RedisTest extends \PHPUnit_Framework_TestCase
      */
     function testArrayAccess()
     {
-        $this->object = Memcache::getInstance();
+        $this->object = Redis::getInstance();
+        $this->object->addServer();
         $this->object->clear();
         $this->assertEquals(123, $this->object['normalValue'] = 123);
         $this->assertEquals(123, $this->object['normalValue']);
@@ -83,7 +87,8 @@ class RedisTest extends \PHPUnit_Framework_TestCase
      */
     function testGroupSetGet()
     {
-        $this->object = Memcache::getInstance();
+        $this->object = Redis::getInstance();
+        $this->object->addServer();
         $this->object->clear();
         $this->assertTrue($this->object->groupSet('group_', array('v1' => 123, 'v2' => 234, 'v3' => 345)));
         $this->assertTrue($this->object->has('group_v1'));
@@ -101,7 +106,8 @@ class RedisTest extends \PHPUnit_Framework_TestCase
      */
     function testKeysClear()
     {
-        $this->object = Memcache::getInstance();
+        $this->object = Redis::getInstance();
+        $this->object->addServer();
         $this->object->clear();
         $this->object->set('firstValue', 1);
         $this->object->set('secondValue', 2);

@@ -38,12 +38,11 @@
         "ext-apc": "Allows alternative opcode- and user-cache to be used.",
         "ext-memcached": "Allows the memcache user-cahce to be used",
         "ext-yaml": "Allows to export and import YAML data",
-        "ext-phpiredis": "Allows faster serialization and deserialization of the Redis protocol",
-        "ext-curl": "Allows access to Webdis when paired with phpiredis"
+        "ext-PHPREDIS": "Allows faster access for credis library"
     },
     "require-dev": {
         "launchpad/php-gettext": "*",
-        "predis/predis": "*"
+        "colinmollenhour/credis": "*"
     },
     "autoload": {
         "psr-0": {
