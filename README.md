@@ -38,21 +38,21 @@ Platform Features
 
 In the moment the following parts are developed:
 
-- \b Autloloading
+- **Autloloading** 
 
   Universal and standard conform autoloader for platform, vendor and system
   files.
 
-- \b Value \b Validation
+- **Value Validation**
 
   This is a central point for stability, maintenance and security.
 
-- \b Multilingual \b Support
+- **Multilingual Support**
 
   Using an gettext approach for easy use and translation with thread safe
   alternative and included template language use (see below).
 
-- \b Dictionary
+- **Dictionary**
 
   An abstract layer for different key-value stores with lots of possibilities
   to use. A great list of engines will be supported.
@@ -60,12 +60,12 @@ In the moment the following parts are developed:
   The easy use for different scenarios are provided through the Registry,
   Cache,... classes.
 
-- \b Logging
+- **Logging**
 
   A framework for standard conform logging with lots of handlers, filter and
   the easy to use format specification through the simple template (see below).
 
-- \b Simple \b Template
+- **Simple Template**
 
   This is an easy template language which will work mostly on short text and is
   integrated into the internationalization, logging and error management
