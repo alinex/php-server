@@ -23,26 +23,7 @@ namespace Alinex;
  * you add a message to the logger, it traverses the handler stack. Each handler
  * decides whether it handle the message and how to record it.
  *
- * @dot
- * digraph G {
- *      subgraph process {
- *          node [style=filled];
- *          pre_Filter -> Provider -> Formatter -> post_Filter
- *              -> Output [weight=4];
- *          pre_Filter -> pre_Filter [label=loop];
- *          Provider -> Provider [label=loop];
- *          post_Filter -> post_Filter [label=loop];
- *          pre_Filter -> Handler_2 [label="filtered out"];
- *          post_Filter -> Handler_2 [label="buffered"];
- *      }
- *      Logger [shape=box];
- *      Logger -> Handler -> Handler_2 -> Handler_n
- *          -> Return [style=bold,weight=8];
- *      Handler -> pre_Filter;
- *      Output -> Handler_2;
- *      Return [shape=box];
- * }
- * @enddot
+ * @dotfile Logger/Handler
  *
  * Through the use of filters each handler may ignore the message or buffer
  * them. This brings the highest flexibility. The formatter defines the concrete
