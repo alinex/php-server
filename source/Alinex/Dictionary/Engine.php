@@ -144,7 +144,7 @@ abstract class Engine implements \Countable, \ArrayAccess
      * The context is mostly used as prefix for the real key name in the engine.
      *
      * @param string $context special name of this instance
-     * @return object Instance of storage class
+     * @return Engine Instance of storage class
      */
     public static function getInstance($context = '')
     {
@@ -469,7 +469,7 @@ abstract class Engine implements \Countable, \ArrayAccess
      *
      * The defined limit will be used from the Cache class to find the best
      * caching solution for specific values.
-     * 
+     *
      * To clean the limits call it with a size of 0 and no limit (percent = 1):
      * @code
      * $engine->limitSize(0, 1);
@@ -488,7 +488,7 @@ abstract class Engine implements \Countable, \ArrayAccess
     {
         if (!isset($size))
             return $this->_limitSize;
-        
+
         assert(is_int($size));
         assert(is_numeric($percent) && $percent >= 0 && $percent <= 1);
 
@@ -593,7 +593,7 @@ abstract class Engine implements \Countable, \ArrayAccess
     {
         if ($flags & $this->_persistence)
             return 1; // identical
-        if ($flags & ($this->_persistence * 2) 
+        if ($flags & ($this->_persistence * 2)
             && $this->_persistence < self::PERSISTENCE_LONG)
             return 0.5; // one step too low
         if ($flags & self::PERSISTENCE_LONG
