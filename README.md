@@ -38,19 +38,45 @@ Platform Features
 
 In the moment the following parts are developed:
 
-- autloloading - platform, vendor and system files
-- value validation - to be used for security checks
-- multilingual support - for easy use and translation
-- registry - global storage of general configuration settings
-- cache - configurable cache system supporting multiple engines
-- logging - configurable for advanced logging strategies
-- template - simple engine
+- \b Autloloading
+
+  Universal and standard conform autoloader for platform, vendor and system
+  files.
+
+- \b Value \b Validation
+
+  This is a central point for stability, maintenance and security.
+
+- \b Multilingual \b Support
+
+  Using an gettext approach for easy use and translation with thread safe
+  alternative and included template language use (see below).
+
+- \b Dictionary
+
+  An abstract layer for different key-value stores with lots of possibilities
+  to use. A great list of engines will be supported.
+
+  The easy use for different scenarios are provided through the Registry,
+  Cache,... classes.
+
+- \b Logging
+
+  A framework for standard conform logging with lots of handlers, filter and
+  the easy to use format specification through the simple template (see below).
+
+- \b Simple \b Template
+
+  This is an easy template language which will work mostly on short text and is
+  integrated into the internationalization, logging and error management
+  processes.
 
 API Documentation & More
 ---------------------
 
-A complete API documentation is included in the code and will be made available
+A complete API documentation is included in the code and is accessible
 under the projects homepage http://alinex.de/server.
+This will be updated with each version step only.
 
 Installation
 ------------
