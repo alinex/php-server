@@ -15,8 +15,8 @@ namespace Alinex\Dictionary;
 use Alinex\Validator;
 
 /**
- * Use of the Registry in default mode without any specification. This is the 
- * most used case. Access to the registry is done using the get() and set() 
+ * Use of the Registry in default mode without any specification. This is the
+ * most used case. Access to the registry is done using the get() and set()
  * methods.
  * @example Registry-default.php
  */
@@ -48,15 +48,15 @@ use Alinex\Validator;
  * $registry[$offset] = $value;
  * unset($registry[$offset]);
  * @endcode
- * 
+ *
  * <b>Group</b>
  *
  * A group is a subpart of the registry with the same group name as key start
  * in storage. This will be prepended on set and removed on get to use with
  * shorter array keys.
- * 
+ *
  * @note Keys with exact the name of a given group are not included in ti. A
- * group may only include keys which start with the group name but are longer 
+ * group may only include keys which start with the group name but are longer
  * with at least one character.
  *
  * <b>Validation</b>
@@ -71,11 +71,12 @@ use Alinex\Validator;
  * <b>Registries</b>
  *
  * The following registries are possible:
- * - ArrayRegistry
- * - SessionRegistry
- * - ApcRegistry
- * - XcacheRegistry
- * - Memcache Registry
+ * - ArrayStructure
+ * - Session
+ * - Apc
+ * - XCache
+ * - Redis
+ * - Memcache
  *
  * The best way is to use a registry  through the Factory class. This have
  * a fallback mechanism to ensure you use the best possible solution.
@@ -95,10 +96,46 @@ class Registry implements \Countable, \ArrayAccess
     const PREFIX = 'ax:reg-';
 
     /**
+     * Dictionary Engine to use for data storage.
+     * @registry
+     */
+    const REGISTRY_DATA_TYPE = 'registry.data.type';
+    
+    /**
+     * Prefix for the data storage-
+     * @registry
+     */
+    const REGISTRY_DATA_PREFIX = 'registry.data.prefix';
+    
+    /**
+     * Servers to use if multi server engine is used.
+     * @registry
+     */
+    const REGISTRY_DATA_SERVER = 'registry.data.server';
+    
+    /**
+     * Dictionary Engine to use for validator storage.
+     * @registry
+     */
+    const REGISTRY_VALIDATOR_TYPE = 'registry.validator.type';
+    
+    /**
+     * Prefix for the validator storage-
+     * @registry
+     */
+    const REGISTRY_VALIDATOR_PREFIX = 'registry.validator.prefix';
+
+    /**
+     * Servers to use if multi server engine is used.
+     * @registry
+     */
+    const REGISTRY_VALIDATOR_SERVER = 'registry.validator.server';
+
+    /**
      * Singleton instance of registry class
 	 * @var Registry
 	 */
-    protected static $_instance = NULL;
+    protected static $_instance = null;
 
     /**
      * Get an instance of registry class
@@ -116,39 +153,149 @@ class Registry implements \Countable, \ArrayAccess
      * The context names will be 'ax:reg-d:' for data entries and 'ax:reg-v:'
      * for validator entries.
      *
-     * @return \Alinex\Dictionary\Registry
-     * Instance of registry class
+     * If an import uri is given, the the registry is loaded with the stored
+     * information on the first call. The registry engine will be set like
+     * defined in the given file or by autodetecting.
+     *
+     * @dotfile Dictionary/Registry/getInstance
      *
      * @note Additionally you may create your own registry directly without
      * engine auto detection and the full choice of selection.
      *
+     * @param string $data uri to import data from see more at
+     * ImportExport\Autodetect
+     * @param string $validator uri to import validation rules from see more at
+     * ImportExport\Autodetect
+     * @return Registry Instance of registry class or null if not set
+     *
      * @codeCoverageIgnore
      */
-    public final static function getInstance()
+    public final static function getInstance($data = null, $validator = null)
+    {
+        // get instance if already set
+        if (isset(self::$_instance))
+            return self::$_instance;
+        $instance = null;
+        if (isset($data)) {
+            // load into temporary Registry
+            $temp = Engine\ArrayList::getInstance('reg-tmp:');
+            $temp->clear();
+            ImportExport\Autodetect::import($data, $temp);
+            // check for registry settings
+            if ($temp->has(self::REGISTRY_DATA_TYPE)) {
+                $type = $temp->get(self::REGISTRY_DATA_TYPE);
+                $prefix = $temp->has(self::REGISTRY_DATA_PREFIX)
+                    ? $temp->get(self::REGISTRY_DATA_PREFIX)
+                    : self::PREFIX.'d:';
+                # find class
+                $callback = Validator\Code::callable(
+                    $type.'::getInstance', self::REGISTRY_DATA_TYPE, 
+                    array('relative' => __NAMESPACE__)
+                );
+                # create engine
+                $dataEngine = call_user_func($callback, $prefix);
+                if ($temp->has(self::REGISTRY_DATA_SERVER)
+                    && method_exists($dataEngine, 'addServer'))
+                    call_user_func(
+                        array($dataEngine, 'addServer'),
+                        $temp->get(self::REGISTRY_DATA_SERVER)
+                    );
+                // analyze validator 
+                $validatorEngine = null;
+                if (isset($validator)) {
+                    $temp->clear();
+                    ImportExport\Autodetect::import($validator, $temp);
+                    if ($temp->has(self::REGISTRY_VALIDATOR_TYPE)) {
+                        $type = $temp->get(self::REGISTRY_VALIDATOR_TYPE);
+                        $prefix = $temp->has(self::REGISTRY_VALIDATOR_PREFIX)
+                            ? $temp->get(self::REGISTRY_VALIDATOR_PREFIX)
+                            : self::PREFIX.'v:';
+                        # find class
+                        $callback = Validator\Code::callable(
+                            $type.'::getInstance', self::REGISTRY_VALIDATOR_TYPE, 
+                            array('relative' => __NAMESPACE__)
+                        );
+                        # create engine
+                        $validatorEngine = call_user_func($callback, $prefix);
+                        if ($temp->has(self::REGISTRY_VALIDATOR_SERVER)
+                            && method_exists($validatorEngine, 'addServer'))
+                            call_user_func(
+                                array($validatorEngine, 'addServer'),
+                                $temp->get(self::REGISTRY_VALIDATOR_SERVER)
+                            );
+                    }
+                }
+                $instance = new Registry($dataEngine, $validatorEngine);
+            }
+        }
+        if (!isset($instance))
+            $instance = self::autodetectInstance();
+        // fill up registry if empty
+        if (!$instance->count()) {
+            if (isset($data)) {
+                $importer = ImportExport\Autodetect::findInstance($data);
+                $instance->import($importer);
+            }
+            if (isset($validator)) {
+                $importer = ImportExport\Autodetect::findInstance($validator);
+                $instance->validatorImport($importer);
+            }
+        }
+        // set instance and return
+        self::$_instance = $instance;
+        return self::$_instance;
+    }
+
+    /**
+     * Automatic detection of best registry instance.
+     *
+     * Only engines without special configuration nedds or preconfigured will
+     * be used.
+     *
+     * @return \Alinex\Dictionary\Registry new instance
+     */
+    private static function autodetectInstance()
+    {
+        if (php_sapi_name() == 'cli')
+            return new Registry(
+                Engine\ArrayList::getInstance(self::PREFIX.'d:'),
+                Engine\ArrayList::getInstance(self::PREFIX.'v:')
+            );
+        else if (Engine\Apc::isAvailable())
+            return new Registry(
+                Engine\Apc::getInstance(self::PREFIX.'d:'),
+                Engine\Apc::getInstance(self::PREFIX.'v:')
+            );
+        else if (Engine\XCache::isAvailable())
+            return new Registry(
+                Engine\Apc::getInstance(self::PREFIX.'d:'),
+                Engine\Apc::getInstance(self::PREFIX.'v:')
+            );
+        else
+            return new Registry(
+                Engine\ArrayList::getInstance(self::PREFIX.'d:'),
+                Engine\ArrayList::getInstance(self::PREFIX.'v:')
+            );
+    }
+
+    /**
+     * Set the dictionary engines for the default engine.
+     *
+     * This have to be done before the first call to getInstance().
+     *
+     * @param Engine $dataEngine place to store data entries
+     * @param Engine $validatorEngine place to store validation rules
+     * @return bool true on success
+     */
+    public static function setDefaultEngine(
+        Engine $dataEngine, Engine $validatorEngine = null
+    )
     {
         if (! isset(self::$_instance)) {
-            if (php_sapi_name() == 'cli')
-                self::$_instance = new Registry(
-                    Engine\ArrayList::getInstance(self::PREFIX.'d:'),
-                    Engine\ArrayList::getInstance(self::PREFIX.'v:')
-                );
-            else if (Engine\Apc::isAvailable())
-                self::$_instance = new Registry(
-                    Engine\Apc::getInstance(self::PREFIX.'d:'),
-                    Engine\Apc::getInstance(self::PREFIX.'v:')
-                );
-            else if (Engine\XCache::isAvailable())
-                self::$_instance = new Registry(
-                    Engine\Apc::getInstance(self::PREFIX.'d:'),
-                    Engine\Apc::getInstance(self::PREFIX.'v:')
-                );
-            else
-                self::$_instance = new Registry(
-                    Engine\ArrayList::getInstance(self::PREFIX.'d:'),
-                    Engine\ArrayList::getInstance(self::PREFIX.'v:')
-                );
+            self::$_instance = new self($dataEngine, $validatorEngine);
+            return true;
         }
-        return self::$_instance;
+        return false;
     }
 
     /**
@@ -169,15 +316,15 @@ class Registry implements \Countable, \ArrayAccess
      * This may be overwritten to implement some initialization of the storage
      * engine.
      *
-     * @param Engine $dataDictionary place to store data entries
-     * @param Engine $validatorDictionary place to store validation rules
+     * @param Engine $dataEngine place to store data entries
+     * @param Engine $validatorEngine place to store validation rules
      */
     function __construct(
-        Engine $dataDictionary, Engine $validatorDictionary = null
+        Engine $dataEngine, Engine $validatorEngine = null
     )
     {
-        $this->_data = $dataDictionary;
-        $this->_validator = $validatorDictionary;
+        $this->_data = $dataEngine;
+        $this->_validator = $validatorEngine;
     }
 
     /**
