@@ -426,6 +426,63 @@ abstract class Engine implements \Countable, \ArrayAccess
     }
 
     /**
+     * Increment value of given key.
+     * 
+     * @param string $key name of storage entry
+     * @param numeric $num increment value
+     * @return numeric new value of storage entry
+     * @throws \Exception if storage entry is not numeric
+     */
+    public function incr($key, $num = 1)
+    {
+        $value = $this->get($key);
+        if (!is_numeric($value))
+            throw new \Exception(
+                tr(
+                    __NAMESPACE__,
+                    'Incrementing a dictionary value is only possible using numeric values, {num} was given',
+                    array('num' => $num)
+                )
+            );
+        return $this->set($key, $value + $num);
+    }
+    
+    /**
+     * Decrement value of given key.
+     * 
+     * @param string $key name of storage entry
+     * @param numeric $num decrement value
+     * @return numeric new value of storage entry
+     * @throws \Exception if storage entry is not numeric
+     */
+    public function decr($key, $num = 1)
+    {
+        return $this->incr($key, -$num);
+    }
+
+    /**
+     * Append string to storage value.
+     * 
+     * @param string $key name of storage entry
+     * @param string $text text to be appended
+     * @return string new complete text entry
+     * @throws \Exception if storage entry is not a string
+     */
+    public function append($key, $text)
+    {
+        $value = $this->get($key);
+        if (!is_string($value))
+            throw new \Exception(
+                tr(
+                    __NAMESPACE__,
+                    'Appending to a dictionary value is only possible using string values, {text} was given',
+                    array('text' => $text)
+                )
+            );
+        return $this->set($key, $value . $text);
+    }
+    
+    /**
      * Estimate the size of the value.
      *
      * This may vary depending on the engine. This general method can only
