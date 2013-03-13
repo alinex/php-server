@@ -20,9 +20,14 @@ use Alinex\Util\String;
  *
  * The transfer classes enable the export and import into different external
  * file types or other systems:
- * - JsonTransfer
- * - IniTransfer
- * - XmlTransfer
+ * - ImportExport\IniFile
+ * - ImportExport\JsonFile
+ * - ImportExport\PhpFile
+ * - ImportExport\YamlFile
+ * - and more to come
+ *
+ * You may also use the easy ImportExport\Autodetect class with it's two static
+ * import and export methods.
  */
 abstract class ImportExport
 {
