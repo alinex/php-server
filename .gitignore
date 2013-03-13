@@ -24,9 +24,9 @@ Thumbs.db
 /www/
 /Manifest.json
 /translation/pot/
-/source/dox/
 /vendor/
 /composer.lock
 /composer.phar
 /source/example/
 /source/vnd/
+/doc/
