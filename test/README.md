@@ -1,5 +1,5 @@
-Unit Tests
-==========
+Alinex Server Unit Tests
+========================
 
 This directory contains several unit tests for the system to check.
 
