@@ -28,36 +28,36 @@ class Autodetect
     /**
      * Import registry entries from storage
      *
-     * @param Dictionary\Engine $data Dictionary class to import to
      * @param string $uri location of the import resource
+     * @param Dictionary\Engine $engine Dictionary class to import to
      * @return bool TRUE on success
      */
-    static function import(Dictionary\Engine $engine, $uri)
+    static function import($uri, Dictionary\Engine $engine)
     {
-        return self::findInstance($engine, $uri)->import();
+        return self::findInstance($uri, $engine)->import();
     }
 
     /**
      * Export registry entries to storage
      *
-     * @param Dictionary\Engine $data Dictionary class to export from
      * @param string $uri location of the export resource
+     * @param Dictionary\Engine $engine Dictionary class to export from
      * @return bool TRUE on success
      */
-    static function export(Dictionary\Engine $engine, $uri)
+    static function export($uri, Dictionary\Engine $engine)
     {
-        return self::findInstance($engine, $uri)->export();
+        return self::findInstance($uri, $engine)->export();
     }
 
     /**
      * Create an ImportExport instance for the given URI.
      *
-     * @param Dictionary\Engine $data Dictionary class to export or import
      * @param string $uri location of the external resource
+     * @param Dictionary\Engine $engine Dictionary class to export or import
      * @return Dictionary\ImportExport preset instance to work with
      * @throws Exception if no instance for this uri is found
      */
-    private static function findInstance(Dictionary\Engine $engine, $uri)
+    public static function findInstance($uri, Dictionary\Engine $engine = null)
     {
         $data = array();
         if (!preg_match(

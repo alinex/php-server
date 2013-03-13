@@ -25,7 +25,7 @@ class AutodetectTest extends \PHPUnit_Framework_TestCase
         $storage->set('array.hash', array('eins' => 1, 'zwei' => 2, 'drei' => 3));
         $storage->set('array.array', array(array(1,2,3),array(4,5,6)));
         // export
-        Autodetect::export($storage, 'file://'.__DIR__.'/../../../data/storage.ini');
+        Autodetect::export('file://'.__DIR__.'/../../../data/storage.ini', $storage);
         // check file
         $file = __DIR__.'/not/existing/not-existing-registry.ini';
     }
@@ -39,7 +39,7 @@ class AutodetectTest extends \PHPUnit_Framework_TestCase
         $storage = Engine\ArrayList::getInstance();
         $storage->clear();
         // import
-        Autodetect::import($storage, 'file://'.__DIR__.'/../../../data/storage.ini');
+        Autodetect::import('file://'.__DIR__.'/../../../data/storage.ini', $storage);
         // check registry
         $this->assertEquals(true, $storage->get('boolean')); // wrong datatype because of PHP lack
         $this->assertTrue($storage->get('integer') === 5);
