@@ -1,22 +1,10 @@
 /** @namespace Alinex\Dictionary
 
-This classes are used as simple data structure store for flat associative 
-arrays, hash tables or dictionaries. It will store a collection of key-value
-pairs.
+This classes are used as simple data structure store for flat associative
+arrays, hash tables or dictionaries.
 
-Operations associated with this data type are:
-- <b>simple accessors</b>: set, get, has, remove
-- <b>array access</b>: offsetSet, offsetGet, offsetExists, offsetUnset
-- <b>group access</b>: groupSet, groupGet, groupClear
-- <b>value editing</b>: incr, decr, append
-- <b>hash access</b>: hashSet, hashGet, hashHas, hashRemove, hashCount
-- <b>list access</b>: listPush, listPop, listShift, listUnshift, listGet, 
-listSet, listCount
-- <b>overall control</b>: count, keys, clear
-
-This implementation supports different storage engines which may be used the
-same way. All the above commands are available in all engines natively or
-emulated by wrapper functions.
+It will store a collection of key-value pairs in the Engine. A lot of different
+engines are possible to select from.
 
 The engines may be used directly but there are some high level classes for
 easy use of different/multiple engines (see below).
@@ -24,9 +12,9 @@ easy use of different/multiple engines (see below).
 Central Registry
 ----------------
 
-The Registry uses an engine to store configuration values. Optional Validator 
+The Registry uses an engine to store configuration values. Optional Validator
 rules may be used and the complete Registry may be imported and exported into
-different files. 
+different files.
 
 Cache System
 ------------

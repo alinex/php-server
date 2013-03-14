@@ -22,10 +22,20 @@ use Alinex\Validator;
  * backend engines. This implies different type of scope like request, server,
  * session, global or permanent.
  *
- * This storages are used as storage in Registry and Cache. Use one of this
+ * On each engine the following operations are possible:
+ * - <b>simple accessors</b>: set, get, has, remove
+ * - <b>array access</b>: offsetSet, offsetGet, offsetExists, offsetUnset
+ * - <b>group access</b>: groupSet, groupGet, groupClear
+ * - <b>value editing</b>: incr, decr, append
+ * - <b>hash access</b>: hashSet, hashGet, hashHas, hashRemove, hashCount
+ * - <b>list access</b>: listPush, listPop, listShift, listUnshift, listGet,
+ * listSet, listCount
+ * - <b>overall control</b>: count, keys, clear
+ *
+ * This engines are used as storage in Registry and Cache. Use one of this
  * class from the application level.
  *
- * <b>Array Access<</b>
+ * <b>Array Access</b>
  *
  * The storage is also usable like normal Arrays with:
  * @code
@@ -427,7 +437,7 @@ abstract class Engine implements \Countable, \ArrayAccess
 
     /**
      * Increment value of given key.
-     * 
+     *
      * @param string $key name of storage entry
      * @param numeric $num increment value
      * @return numeric new value of storage entry
@@ -446,10 +456,10 @@ abstract class Engine implements \Countable, \ArrayAccess
             );
         return $this->set($key, $value + $num);
     }
-    
+
     /**
      * Decrement value of given key.
-     * 
+     *
      * @param string $key name of storage entry
      * @param numeric $num decrement value
      * @return numeric new value of storage entry
@@ -462,7 +472,7 @@ abstract class Engine implements \Countable, \ArrayAccess
 
     /**
      * Append string to storage value.
-     * 
+     *
      * @param string $key name of storage entry
      * @param string $text text to be appended
      * @return string new complete text entry
@@ -481,7 +491,181 @@ abstract class Engine implements \Countable, \ArrayAccess
             );
         return $this->set($key, $value . $text);
     }
-    
+
+    /**
+     * Set an value in the hash specified by key.
+     * @param string $key name of storage entry
+     * @param string $name key name within the hash
+     * @param mixed $value data to be stored
+     * @return mixed value set in hash
+     */
+    public function hashSet($key, $name, $value)
+    {
+        $hash = $this->get($key);
+        if (!isset($hash))
+            $hash = array();
+        $hash[$name] = $value;
+        $this->set($key, $hash);
+        return $value;
+    }
+
+    /**
+     * Get an value from  the hash specified by key.
+     * @param string $key name of storage entry
+     * @param string $name key name within the hash
+     * @return mixed value from hash
+     */
+    public function hashGet($key, $name)
+    {
+        $hash = $this->get($key);
+        return isset($hash[$name]) ? $hash[$name] : null;
+    }
+
+    /**
+     * Check if the specified hash has the value
+     * @param string $key name of storage entry
+     * @param string $name key name within the hash
+     * @return boll entry in hash found
+     */
+    public function hashHas($key, $name)
+    {
+        $hash = $this->get($key);
+        return isset($hash[$name]);
+    }
+
+    /**
+     * Remove some entry from within the specified hash.
+     * @param string $key name of storage entry
+     * @param string $name key name within the hash
+     * @return bool true on success otherwise false
+     */
+    public function hashRemove($key, $name)
+    {
+        $hash = $this->get($key);
+        if (isset($hash[$name])) {
+            unset($hash[$name]);
+            $this->set($key, $hash);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Count the number of entries within the specified hash.
+     * @param string $key name of storage entry
+     * @return int number of entries within the hash
+     */
+    public function hashCount($key)
+    {
+        $hash = $this->get($key);
+        return isset($hash) ? $this->count($hash) : 0;
+    }
+
+    /**
+     * Add an element to the end of the list.
+     * @param string $key name of storage entry
+     * @param mixed $value data to be added
+     * @return int new number of elements
+     */
+    public function listPush($key, $value)
+    {
+        $list = $this->get($key);
+        if (!isset($list))
+            $list = array();
+        $result = array_push($list, $value);
+        $this->set($key, $list);
+        return $result;
+    }
+
+    /**
+     * Get the last element out of the list.
+     * @param string $key name of storage entry
+     * @return mixed removed last element of list
+     */
+    public function listPop($key)
+    {
+        $list = $this->get($key);
+        if (!isset($list))
+            $list = array();
+        $result = array_pop($list);
+        $this->set($key, $list);
+        return $result;
+    }
+
+    /**
+     * Get the first element out of the list.
+     * @param string $key name of storage entry
+     * @return mixed removed first element
+     */
+    public function listShift($key)
+    {
+        $list = $this->get($key);
+        if (!isset($list))
+            $list = array();
+        $result = array_shift($list, $value);
+        $this->set($key, $list);
+        return $result;
+    }
+
+    /**
+     * Add an element to the start of the list.
+     * @param string $key name of storage entry
+     * @param mixed $value data to be added
+     * @return int new number of elements
+     */
+    public function listUnshift($key, $value)
+    {
+        $list = $this->get($key);
+        if (!isset($list))
+            $list = array();
+        $result = array_unshift($list, $value);
+        $this->set($key, $list);
+        return $result;
+    }
+
+    /**
+     * Get a specified element from the list.
+     * @param string $key name of storage entry
+     * @param int $num number of element
+     * @return mixed value at the defined position
+     */
+    public function listGet($key, $num)
+    {
+        $list = $this->get($key);
+        return isset($list[$num]) ? $list[$num] : null;
+    }
+
+    /**
+     * Set the value of a specific list entry.
+     * @param string $key name of storage entry
+     * @param int $num number of element
+     * @param mixed $value data to be set
+     * @return mixed data which were set
+     */
+    public function listSet($key, $num, $value)
+    {
+        $list = $this->get($key);
+        if (!isset($list))
+            $list = array();
+        if (!isset($num))
+            $list[] = $value;
+        else
+            $list[$num] = $value;
+        $this->set($key, $list);
+        return $value;
+    }
+
+    /**
+     * Count the number of elements in list.
+     * @param string $key name of storage entry
+     * @return int number of list entries
+     */
+    public function listCount($key)
+    {
+        $list = $this->get($key);
+        return isset($list) ? count($list) : 0;
+    }
+
     /**
      * Estimate the size of the value.
      *
