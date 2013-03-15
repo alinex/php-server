@@ -28,5 +28,6 @@ Thumbs.db
 /composer.lock
 /composer.phar
 /source/example/
-/source/vnd/
 /doc/
+/test/data/
+/source/vnd/

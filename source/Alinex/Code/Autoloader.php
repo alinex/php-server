@@ -133,7 +133,7 @@ class Autoloader
      * All classe swith the defined prefix will be searched in the given
      * directories.
      *
-     * @note If no prefix is given th epaths will be added as general path for
+     * @note If no prefix is given the paths will be added as general path for
      * all lasses.
      *
      * @param string       $prefix The classes prefix
@@ -301,5 +301,35 @@ class Autoloader
 
         // notify in classmap if not found
         return $this->_classMap[$class] = false;
+    }
+
+    /**
+     * Add backport functions.
+     * 
+     * This will include backported classes from newer php version to make
+     * them available on older installations.
+     * The classes have to be available in directories named after their php 
+     * version number.
+     * 
+     * @param string $path to the backport directory
+     * @return bool true if backports added
+     */
+    public function addBackports($path)
+    {
+        $paths = array();
+        foreach (
+            new \FilesystemIterator(
+                $path, \FilesystemIterator::SKIP_DOTS
+            ) as $dir
+        ) {
+            if (!$dir->isDir())
+                continue;
+            // add if version lower than directory name
+            if (version_compare(PHP_VERSION, $dir->getFilename()) < 0)
+                $paths[] = $dir->getPathname();
+        }
+        // add as fallback
+        if (count($paths))
+            $this->add('', $paths);
     }
 }

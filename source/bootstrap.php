@@ -29,6 +29,7 @@ require_once __DIR__.DIRECTORY_SEPARATOR
         .'Autoloader.php';
 $loader = Code\Autoloader::getInstance();
 $loader->add('Alinex', __DIR__);
+$loader->addBackports(__DIR__.DIRECTORY_SEPARATOR.'backport');
 $loader->register();
 
 // internationalization
