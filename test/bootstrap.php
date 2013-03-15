@@ -20,13 +20,16 @@ date_default_timezone_set('Europe/Berlin');
 // autoloader
 
 require_once __DIR__.DIRECTORY_SEPARATOR
-        .'..'.DIRECTORY_SEPARATOR
-        .'source'.DIRECTORY_SEPARATOR
-        .'Alinex'.DIRECTORY_SEPARATOR
-        .'Code'.DIRECTORY_SEPARATOR
-        .'Autoloader.php';
+    .'..'.DIRECTORY_SEPARATOR
+    .'source'.DIRECTORY_SEPARATOR
+    .'Alinex'.DIRECTORY_SEPARATOR
+    .'Code'.DIRECTORY_SEPARATOR
+    .'Autoloader.php';
 $loader = Code\Autoloader::getInstance();
-$loader->add('Alinex', __DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'source');
+$loader->add('Alinex', __DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR
+    .'source');
+$loader->addBackports(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR
+    .'source'.DIRECTORY_SEPARATOR.'backport');
 $loader->register();
 
 // internationalization
