@@ -92,7 +92,7 @@ class JsonFile extends File
         if ($this->_comments)
             $content .= $this->getCommentHeader();
         // create export string
-        if (phpversion() >= 5.4)
+        if (version_compare(PHP_VERSION, '5.4.0') >= 0)
             $content .= json_encode(
                 $this->getValues(),
                 JSON_PRETTY_PRINT && JSON_UNESCAPED_UNICODE
