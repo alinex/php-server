@@ -91,7 +91,8 @@ class Apc extends Engine
             return null;
         }
         $this->checkKey($key);
-        return apc_store($this->_context.$key, $value, $this->_ttl);
+        return apc_store($this->_context.$key, $value, $this->_ttl)
+            ? $value : null;
     }
 
     /**
@@ -147,7 +148,7 @@ class Apc extends Engine
                 $keys[] = substr($entry['info'], strlen($this->_context));
         return $keys;
     }
-    
+
     /**
      * Persistence level of the engine.
      * @var int
@@ -170,5 +171,5 @@ class Apc extends Engine
         10000 => 0.5,
         1000 => 0.8
     );
-    
+
 }
