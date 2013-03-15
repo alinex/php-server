@@ -163,7 +163,7 @@ class Directory extends Engine
         if (!$this->has($key))
             return null;
         $path = $this->_dir.$this->keyToPath($this->checkKey($key));
-        $value = json_decode(file_get_contents($path));
+        $value = json_decode(file_get_contents($path), true);
         if (json_last_error())
             throw new Exception(json_last_error());
         return $value;
@@ -256,6 +256,36 @@ class Directory extends Engine
                 $result[substr($key, strlen($group))] = $this->get($key);
         }
         return $result;
+    }
+
+    /**
+     * Reset storage for this context
+     *
+     * This will be done in a common way by removing every single element.
+     * For storage engines, which allow easier purging this may be overwritten.
+     *
+     * @return bool    TRUE on success otherwise FALSE
+     */
+    public function clear()
+    {
+        if (!isset($this->_dir))
+            throw new Exception(
+                tr(__NAMESPACE__, 'Directory for engine not set')
+            );
+        if (!file_exists($this->_dir))
+            return false;
+        // recursive remove
+        $removed = 0;
+        foreach (
+            new \RecursiveIteratorIterator(
+                new \RecursiveDirectoryIterator(
+                    $this->_dir, \FilesystemIterator::SKIP_DOTS
+                ), \RecursiveIteratorIterator::CHILD_FIRST
+            ) as $path) {
+            $path->isFile() ? unlink($path->getPathname()) : rmdir($path->getPathname());
+            $removed++;
+        }
+        return (bool) $removed;
     }
 
     /**

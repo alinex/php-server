@@ -23,17 +23,23 @@ use Alinex\Validator;
  * session, global or permanent.
  *
  * On each engine the following operations are possible:
- * - <b>simple accessors</b>: set, get, has, remove
- * - <b>array access</b>: offsetSet, offsetGet, offsetExists, offsetUnset
- * - <b>group access</b>: groupSet, groupGet, groupClear
- * - <b>value editing</b>: incr, decr, append
- * - <b>hash access</b>: hashSet, hashGet, hashHas, hashRemove, hashCount
- * - <b>list access</b>: listPush, listPop, listShift, listUnshift, listGet,
- * listSet, listCount
- * - <b>overall control</b>: count, keys, clear
+ * - <b>simple accessors</b>: set(), get(), has(), remove()
+ * - <b>array access</b>: offsetSet(), offsetGet(), offsetExists(),
+ * offsetUnset()
+ * - <b>group access</b>: groupSet(), groupGet(), groupClear()
+ * - <b>value editing</b>: incr(), decr(), append()
+ * - <b>hash access</b>: hashSet(), hashGet(), hashHas(), hashRemove(),
+ * hashCount()
+ * - <b>list access</b>: listPush(), listPop(), listShift(), listUnshift(),
+ * listGet(), listSet(), listCount()
+ * - <b>overall control</b>: count(), keys(), clear()
  *
  * This engines are used as storage in Registry and Cache. Use one of this
  * class from the application level.
+ *
+ * For this to work some engine specifica are set by each enginelike $_scope,
+ * $_performance, $_persistence and the $_limitSize. This may be requested
+ * by the high level methods using the different allow() method.
  *
  * <b>Array Access</b>
  *
@@ -602,7 +608,7 @@ abstract class Engine implements \Countable, \ArrayAccess
         $list = $this->get($key);
         if (!isset($list))
             $list = array();
-        $result = array_shift($list, $value);
+        $result = array_shift($list);
         $this->set($key, $list);
         return $result;
     }
