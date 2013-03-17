@@ -86,13 +86,15 @@ an easy install mechanism.
 
 To install a development version you may download it from github using:
 
-    git co git@github.com:alinex/php-server.git
+    git co git@github.com:alinex/php-server.git server
 
-Then you have to add the requirements including third poarty libraries. This is
+Then you have to add the requirements including third party libraries. This is
 done using Composer:
 
+    cd server
     curl -s https://getcomposer.org/installer | php
     php composer.phar install
 
+The third party libraries are used through softlinks under source/vnd.
 
 A.Schilling
