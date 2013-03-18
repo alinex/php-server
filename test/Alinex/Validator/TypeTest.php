@@ -421,6 +421,17 @@ class TypeTest extends \PHPUnit_Framework_TestCase
         Type::arraylist(array('name' => 'alex', 'gender' => 'm', 'company' => 'ibm'), 'test', $options);
     }
 
+    function testArrayKeySpec()
+    {
+        $options = array(
+            'mandatoryKeys' => array('name'),
+            'keySpec' => array('name' => array('Type::string', array('minLength' => 3)))
+        );
+        $this->assertTrue(is_array(Type::arraylist(array('name' => 'alex', 'gender' => 'm'), 'test', $options)));
+        $this->setExpectedException('Alinex\Validator\Exception');
+        Type::arraylist(array('name' => 'a', 'gender' => 'm'), 'test', $options);
+    }
+
     function testArraylistDescription()
     {
         $this->assertTrue(is_string(Type::arraylistDescription(
@@ -430,7 +441,8 @@ class TypeTest extends \PHPUnit_Framework_TestCase
                 'mandatoryKeys' => array('name', 'gender'),
                 'allowedKeys' => array('company'),
                 'minLength' => 2,
-                'maxLength' => 3
+                'maxLength' => 3,
+                'keySpec' => array('name' => array('Type::string'))
             )
         )));
         $this->assertTrue(is_string(Type::arraylistDescription(

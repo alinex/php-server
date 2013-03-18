@@ -950,6 +950,9 @@ class Type
      * - \c allowedKeys - gives a list of elements which are also allowed
      * - \c minLength - minimum number of entries
      * - \c maxLength - maximum number of entries
+     * - \c keySpec - validators for each entry, use '' to specify for all
+     * entries. This is specifgied by a the key with an array of validator
+     * function as string, options array.
      *
      * All mandatory keys are automatically allowed keys if given, too.
      *
@@ -981,7 +984,8 @@ class Type
                         'mandatoryKeys',
                         'allowedKeys',
                         'minLength',
-                        'maxLength'
+                        'maxLength',
+                        'keySpec'
                     )
                 )
             ) == 0
@@ -1073,6 +1077,29 @@ class Type
                 tr(__NAMESPACE__, 'Array has to much elements'),
                 $value, $name, __METHOD__, $options
             );
+        // check key specification
+        if (isset($options['keySpec'])) {
+            foreach (array_keys($options['keySpec']) as $key) {
+                error_log('xxxxxxxxxxxxxxxxx'.$key);
+                if (!isset($value[$key]))
+                    continue;
+                error_log('xxxxxxxxxxxxxxxxx'.$key);
+                if ((!isset($options['allowedKeys'])
+                        || !\in_array($key, $options['allowedKeys']))
+                    && (!isset($options['mandatoryKeys'])
+                        || !\in_array($key, $options['mandatoryKeys'])))
+                    continue;
+                error_log('xxxxxxxxxxxxxxxxx'.$key);
+                $value[$key] = \Alinex\Validator::check(
+                    $value[$key],
+                    $name.'-'.$key,
+                    $options['keySpec'][$key][0],
+                    isset($options['keySpec'][$key][1])
+                        ? $options['keySpec'][$key][1]
+                        : null
+                );
+            }
+        }
         // return it
         return $value;
     }
@@ -1140,6 +1167,26 @@ class Type
                 'The array has to have {max} or less elements.',
                 array('max' => $options['maxLength'])
             );
+        // key specification
+        if (isset($options['keySpec'])) {
+            $desc .= ' '.tr(
+                __NAMESPACE__,
+                PHP_EOL.'The array may have the following values:'
+            );
+            foreach (array_keys($options['keySpec']) as $key) {
+                if (!\in_array($key, $options['allowedKeys'])
+                    && (!isset($options['mandatoryKeys'])
+                        || !\in_array($key, $options['mandatoryKeys'])))
+                    continue;
+                $desc .= ' '.\Alinex\Validator::describe(
+                    $key,
+                    $options['keySpec'][$key][0],
+                    isset($options['keySpec'][$key][1])
+                        ? $options['keySpec'][$key][1]
+                        : null
+                );
+            }
+        }
         return $desc;
     }
 
