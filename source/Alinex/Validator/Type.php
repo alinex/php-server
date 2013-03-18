@@ -1079,26 +1079,29 @@ class Type
             );
         // check key specification
         if (isset($options['keySpec'])) {
-            foreach (array_keys($options['keySpec']) as $key) {
-                error_log('xxxxxxxxxxxxxxxxx'.$key);
-                if (!isset($value[$key]))
-                    continue;
-                error_log('xxxxxxxxxxxxxxxxx'.$key);
-                if ((!isset($options['allowedKeys'])
-                        || !\in_array($key, $options['allowedKeys']))
-                    && (!isset($options['mandatoryKeys'])
-                        || !\in_array($key, $options['mandatoryKeys'])))
-                    continue;
-                error_log('xxxxxxxxxxxxxxxxx'.$key);
-                $value[$key] = \Alinex\Validator::check(
-                    $value[$key],
-                    $name.'-'.$key,
-                    $options['keySpec'][$key][0],
-                    isset($options['keySpec'][$key][1])
+            foreach (array_keys($value) as $key) {
+#            foreach (array_keys($options['keySpec']) as $key) {
+                if (isset($options['keySpec'][$key])) {
+                    $value[$key] = \Alinex\Validator::check(
+                        $value[$key],
+                        $name.'-'.$key,
+                        $options['keySpec'][$key][0],
+                        isset($options['keySpec'][$key][1])
                         ? $options['keySpec'][$key][1]
                         : null
-                );
+                    );
+                } else if (isset($options['keySpec'][''])) {
+                    $value[$key] = \Alinex\Validator::check(
+                        $value[$key],
+                        $name.'-'.$key,
+                        $options['keySpec'][''][0],
+                        isset($options['keySpec'][''][1])
+                        ? $options['keySpec'][''][1]
+                        : null
+                    );
+                }
             }
+
         }
         // return it
         return $value;
@@ -1179,11 +1182,11 @@ class Type
                         || !\in_array($key, $options['mandatoryKeys'])))
                     continue;
                 $desc .= ' '.\Alinex\Validator::describe(
-                    $key,
+                    $key == '' ?: 'other keys',
                     $options['keySpec'][$key][0],
                     isset($options['keySpec'][$key][1])
-                        ? $options['keySpec'][$key][1]
-                        : null
+                    ? $options['keySpec'][$key][1]
+                    : null
                 );
             }
         }
