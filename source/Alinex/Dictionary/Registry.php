@@ -99,37 +99,13 @@ class Registry implements \Countable, \ArrayAccess
      * Dictionary Engine to use for data storage.
      * @registry
      */
-    const REGISTRY_DATA_TYPE = 'registry.data.type';
-    
-    /**
-     * Prefix for the data storage-
-     * @registry
-     */
-    const REGISTRY_DATA_PREFIX = 'registry.data.prefix';
-    
-    /**
-     * Servers to use if multi server engine is used.
-     * @registry
-     */
-    const REGISTRY_DATA_SERVER = 'registry.data.server';
-    
+    const REGISTRY_DATA_ENGINE = 'registry.data';
+
     /**
      * Dictionary Engine to use for validator storage.
      * @registry
      */
-    const REGISTRY_VALIDATOR_TYPE = 'registry.validator.type';
-    
-    /**
-     * Prefix for the validator storage-
-     * @registry
-     */
-    const REGISTRY_VALIDATOR_PREFIX = 'registry.validator.prefix';
-
-    /**
-     * Servers to use if multi server engine is used.
-     * @registry
-     */
-    const REGISTRY_VALIDATOR_SERVER = 'registry.validator.server';
+    const REGISTRY_VALIDATOR_ENGINE = 'registry.validator';
 
     /**
      * Singleton instance of registry class
@@ -182,50 +158,34 @@ class Registry implements \Countable, \ArrayAccess
             $temp->clear();
             ImportExport\Autodetect::import($data, $temp);
             // check for registry settings
-            if ($temp->has(self::REGISTRY_DATA_TYPE)) {
-                $type = $temp->get(self::REGISTRY_DATA_TYPE);
-                $prefix = $temp->has(self::REGISTRY_DATA_PREFIX)
-                    ? $temp->get(self::REGISTRY_DATA_PREFIX)
-                    : self::PREFIX.'d:';
-                # find class
-                $callback = Validator\Code::callable(
-                    $type.'::getInstance', self::REGISTRY_DATA_TYPE, 
-                    array('relative' => __NAMESPACE__)
-                );
+            if ($temp->has(self::REGISTRY_DATA_ENGINE)) {
                 # create engine
-                $dataEngine = call_user_func($callback, $prefix);
-                if ($temp->has(self::REGISTRY_DATA_SERVER)
-                    && method_exists($dataEngine, 'addServer'))
-                    call_user_func(
-                        array($dataEngine, 'addServer'),
-                        $temp->get(self::REGISTRY_DATA_SERVER)
-                    );
-                // analyze validator 
+                $dataEngine = Engine::getInstance(
+                    Validator::check(
+                        $temp->get(self::REGISTRY_DATA_ENGINE),
+                        'registry-data',
+                        'Dictionary::engine'
+                    )
+                );
+                // analyze validator
                 $validatorEngine = null;
                 if (isset($validator)) {
                     $temp->clear();
                     ImportExport\Autodetect::import($validator, $temp);
-                    if ($temp->has(self::REGISTRY_VALIDATOR_TYPE)) {
-                        $type = $temp->get(self::REGISTRY_VALIDATOR_TYPE);
-                        $prefix = $temp->has(self::REGISTRY_VALIDATOR_PREFIX)
-                            ? $temp->get(self::REGISTRY_VALIDATOR_PREFIX)
-                            : self::PREFIX.'v:';
-                        # find class
-                        $callback = Validator\Code::callable(
-                            $type.'::getInstance', self::REGISTRY_VALIDATOR_TYPE, 
-                            array('relative' => __NAMESPACE__)
+                    if ($temp->has(self::REGISTRY_VALIDATOR_ENGINE)) {
+                        $validatorEngine = Engine::getInstance(
+                            Validator::check(
+                                $temp->get(self::REGISTRY_VALIDATOR_ENGINE),
+                                'registry-validator',
+                                'Dictionary::engine'
+                            )
                         );
-                        # create engine
-                        $validatorEngine = call_user_func($callback, $prefix);
-                        if ($temp->has(self::REGISTRY_VALIDATOR_SERVER)
-                            && method_exists($validatorEngine, 'addServer'))
-                            call_user_func(
-                                array($validatorEngine, 'addServer'),
-                                $temp->get(self::REGISTRY_VALIDATOR_SERVER)
-                            );
                     }
                 }
                 $instance = new Registry($dataEngine, $validatorEngine);
+                // reset all entries through registry to check them
+                foreach ($this->keys() as $key)
+                    $this->set($key, $this->get($key));
             }
         }
         if (!isset($instance))
@@ -325,6 +285,15 @@ class Registry implements \Countable, \ArrayAccess
     {
         $this->_data = $dataEngine;
         $this->_validator = $validatorEngine;
+        // add validators
+        if (!$this->validatorHas(self::REGISTRY_DATA_ENGINE))
+            $this->validatorSet(
+                self::REGISTRY_DATA_ENGINE, 'Dictionary::engine'
+            );
+        if (!$this->validatorHas(self::REGISTRY_VALIDATOR_ENGINE))
+            $this->validatorSet(
+                self::REGISTRY_VALIDATOR_ENGINE, 'Dictionary::engine'
+            );
     }
 
     /**
@@ -341,7 +310,7 @@ class Registry implements \Countable, \ArrayAccess
         // check through validator
         if (isset($value) && $this->_validator->has($key)) {
             $validator = $this->_validator->get($key);
-            Validator::check(
+            $value = Validator::check(
                 $value, $key, $validator[0], $validator[1]
             );
         }
