@@ -18,6 +18,9 @@ use Alinex\Validator;
  * Validator helper functions.
  *
  * This functions will help to easy use and call all the validation methods.
+ *
+ * You may also specify individual validators using the possible parameters or
+ * to get the full possibilities create an extra validator class and method.
  */
 class Validator
 {

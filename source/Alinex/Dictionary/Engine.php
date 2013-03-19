@@ -159,29 +159,55 @@ abstract class Engine implements \Countable, \ArrayAccess
      *
      * The context is mostly used as prefix for the real key name in the engine.
      *
-     * @param string $context special name of this instance
+     * @param string|array $config
+     * - array with complete engine configuration (callen on Engine directly)
+     * - special name of this instance (called on subclass)
      * @return Engine Instance of storage class
      */
-    public static function getInstance($context = '')
+    public static function getInstance($config = null)
     {
-        assert(
-            Validator::is(
-                $context, 'storage-context',
-                'Type::string',
-                array(
-                    'maxLength' => 10, // maximal 10 char. prefix is used
-                    'match' => '/[A-Za-z_.:]*/'
-                    // pipe makes problems in session keys
-                    // - used as separator for array contents
-                )
-            )
-        );
-
-        static::check();
         $class = get_called_class();
-        if (! isset(self::$_instances[$class.'#'.$context]))
-            self::$_instances[$class.'#'.$context] = new $class($context);
-        return self::$_instances[$class.'#'.$context];
+        if (get_called_class() == __CLASS__) {
+            assert(
+                Validator::is(
+                    $config,
+                    isset($config['name']) ? $config['name'] : 'engine',
+                    'Dictionary::engine'
+                )
+            );
+
+            # create engine
+            $engine = call_user_func(
+                $config['type'].'::getInstance',
+                $config['prefix']
+            );
+            if ($config['server'] && method_exists($engine, 'addServer'))
+                call_user_func(
+                    array($engine, 'addServer'),
+                    $config['server']
+                );
+            // analyze validator
+            return $engine;
+
+        } else {
+            assert(
+                Validator::is(
+                    $config, 'storage-context',
+                    'Type::string',
+                    array(
+                        'maxLength' => 10, // maximal 10 char. prefix is used
+                        'match' => '/[A-Za-z_.:]*/'
+                        // pipe makes problems in session keys
+                        // - used as separator for array contents
+                    )
+                )
+            );
+            static::check();
+            $class = get_called_class();
+            if (! isset(self::$_instances[$class.'#'.$config]))
+                self::$_instances[$class.'#'.$config] = new $class($config);
+            return self::$_instances[$class.'#'.$config];
+        }
     }
 
     /**
@@ -923,5 +949,6 @@ abstract class Engine implements \Countable, \ArrayAccess
         }
         return $quote;
     }
+
 
 }
