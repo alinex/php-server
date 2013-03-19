@@ -43,17 +43,15 @@ Code\ErrorHandler::register();
 Code\AssertHandler::enabled(true);
 
 // registry
-$registry = Registry::getInstance();
-// @todo init registry load from file
+$dir = __DIR__.'/';
+Registry::getInstance(
+    'file://'.$dir.'registryData.ini',
+    'file://'.$dir.'registryValidators.ini'
+);
 
 // i18n
-
-// @todo init and select locale from user
-setlocale(LC_MESSAGES, 'de_DE');
-setlocale(LC_ALL, 'de_DE');
-
+Alinex\Util\I18n::setLocale();
 date_default_timezone_set('Europe/Berlin');
-
 
 return $loader;
 
