@@ -184,8 +184,9 @@ class Registry implements \Countable, \ArrayAccess
                 }
                 $instance = new Registry($dataEngine, $validatorEngine);
                 // reset all entries through registry to check them
-                foreach ($this->keys() as $key)
-                    $this->set($key, $this->get($key));
+                if ($instance->validatorCheck())
+                    foreach ($this->keys() as $key)
+                        $this->set($key, $this->get($key));
             }
         }
         if (!isset($instance))
@@ -286,14 +287,16 @@ class Registry implements \Countable, \ArrayAccess
         $this->_data = $dataEngine;
         $this->_validator = $validatorEngine;
         // add validators
-        if (!$this->validatorHas(self::REGISTRY_DATA_ENGINE))
-            $this->validatorSet(
-                self::REGISTRY_DATA_ENGINE, 'Dictionary::engine'
-            );
-        if (!$this->validatorHas(self::REGISTRY_VALIDATOR_ENGINE))
-            $this->validatorSet(
-                self::REGISTRY_VALIDATOR_ENGINE, 'Dictionary::engine'
-            );
+        if (isset($this->_validator)) {
+            if (!$this->validatorHas(self::REGISTRY_DATA_ENGINE))
+                $this->validatorSet(
+                    self::REGISTRY_DATA_ENGINE, 'Dictionary::engine'
+                );
+            if (!$this->validatorHas(self::REGISTRY_VALIDATOR_ENGINE))
+                $this->validatorSet(
+                    self::REGISTRY_VALIDATOR_ENGINE, 'Dictionary::engine'
+                );
+        }
     }
 
     /**
@@ -496,7 +499,7 @@ class Registry implements \Countable, \ArrayAccess
      * @return bool true on success
      * @throws \UnderflowException if no validator storage is set
      */
-    private function validatorCheck()
+    public function validatorCheck()
     {
         if (!isset($this->_validator))
             throw new \UnderflowException(
