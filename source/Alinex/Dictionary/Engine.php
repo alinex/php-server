@@ -190,6 +190,8 @@ abstract class Engine implements \Countable, \ArrayAccess
             return $engine;
 
         } else {
+            if (!isset($config))
+                $config = '';
             assert(
                 Validator::is(
                     $config, 'storage-context',
