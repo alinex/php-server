@@ -257,9 +257,9 @@ class Session implements SessionHandlerInterface
                     );
                 if (!$this->validatorHas(self::REGISTRY_INACTIVETIME))
                     $this->validatorSet(
-                        self::REGISTRY_INACTIVETIME, 'Type::int',
+                        self::REGISTRY_INACTIVETIME, 'Type::integer',
                         array(
-                            'unsigned' => 1,
+                            'unsigned' => true,
                             'description' => tr(
                                 __NAMESPACE__,
                                 'Time of no access till an session will be declared as inactive.'
@@ -268,9 +268,9 @@ class Session implements SessionHandlerInterface
                     );
                 if (!$this->validatorHas(self::REGISTRY_LOGINTIME))
                     $this->validatorSet(
-                        self::REGISTRY_LOGINTIME, 'Type::int',
+                        self::REGISTRY_LOGINTIME, 'Type::integer',
                         array(
-                            'unsigned' => 1,
+                            'unsigned' => true,
                             'description' => tr(
                                 __NAMESPACE__,
                                 'Maximum time to keep an user logged in.'
@@ -279,9 +279,9 @@ class Session implements SessionHandlerInterface
                     );
                 if (!$this->validatorHas(self::REGISTRY_LIFETIME))
                     $this->validatorSet(
-                        self::REGISTRY_LIFETIME, 'Type::int',
+                        self::REGISTRY_LIFETIME, 'Type::integer',
                         array(
-                            'unsigned' => 1,
+                            'unsigned' => true,
                             'description' => tr(
                                 __NAMESPACE__,
                                 'Maximum time to keep an session active.'
@@ -290,9 +290,9 @@ class Session implements SessionHandlerInterface
                     );
                 if (!$this->validatorHas(self::REGISTRY_IPLOCK_TIME))
                     $this->validatorSet(
-                        self::REGISTRY_IPLOCK_TIME, 'Type::int',
+                        self::REGISTRY_IPLOCK_TIME, 'Type::integer',
                         array(
-                            'unsigned' => 1,
+                            'unsigned' => true,
                             'description' => tr(
                                 __NAMESPACE__,
                                 'Timerange for calculating iplock accesses.'
@@ -301,9 +301,9 @@ class Session implements SessionHandlerInterface
                     );
                 if (!$this->validatorHas(self::REGISTRY_IPLOCK_NUM))
                     $this->validatorSet(
-                        self::REGISTRY_IPLOCK_NUM, 'Type::int',
+                        self::REGISTRY_IPLOCK_NUM, 'Type::integer',
                         array(
-                            'unsigned' => 1,
+                            'unsigned' => true,
                             'description' => tr(
                                 __NAMESPACE__,
                                 'Maximum number of session creation per ip in time range.'
