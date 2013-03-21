@@ -13,6 +13,7 @@
 namespace Alinex\Dictionary;
 
 use Alinex\Util\Http;
+use Alinex\Template\Simple;
 
 /**
  * Enhanced session management.
@@ -366,6 +367,7 @@ class Session implements SessionHandlerInterface
      * @param string $sid session id to use (optional) this should be only used
      * in testing
      * @return void
+     * @throw \Exception in case of bruteforce attacks
      */
     public function start($sid)
     {
@@ -387,12 +389,21 @@ class Session implements SessionHandlerInterface
         } else if (isset($_SESSION[self::SESSION_AGENT])
             && $_SESSION[self::SESSION_AGENT]
                 != md5($_SERVER['HTTP_USER_AGENT'])) {
+            Logger::getInstance()->warn(
+                'Possible case of session hijacking because user-agent changed'
+            );
             // request with new session
             $this->create();
         // check for outdated session
         } else if (isset($_SESSION[self::REGISTRY_LIFETIME])
             && $_SESSION[self::REGISTRY_LIFETIME] < time()) {
             // new session
+            Logger::getInstance()->info(
+                Simple::run(
+                    'Session outdated at {time|date Y-m-d H:i:sO}',
+                    array('time' => $_SESSION[self::REGISTRY_LIFETIME])
+                )
+            );
             $this->create(TRUE);
         // check session timeouts
         } else {
@@ -420,6 +431,7 @@ class Session implements SessionHandlerInterface
      * than x different session_id's per minute.
      *
      * @param bool $removeOld should the old session be removed
+     * @throw \Exception in case of bruteforce attacks
      */
     private function create($removeOld = FALSE)
     {
@@ -451,6 +463,9 @@ class Session implements SessionHandlerInterface
             }
         }
         # create the new session
+        Logger::getInstance()->info(
+            'New session will be created for '.$ip
+        );
         session_regenerate_id($removeOld);
         session_unset();
         $_SESSION[self::SESSION_INITIATED] = TRUE;

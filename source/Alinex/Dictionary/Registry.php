@@ -153,6 +153,9 @@ class Registry implements \Countable, \ArrayAccess
             return self::$_instance;
         $instance = null;
         if (isset($data)) {
+            Logger::getInstance()->info(
+                'Loading registry data from '.$data
+            );
             // load into temporary Registry
             $temp = Engine\ArrayList::getInstance('reg-tmp:');
             $temp->clear();
@@ -171,6 +174,9 @@ class Registry implements \Countable, \ArrayAccess
                 $validatorEngine = null;
                 if (isset($validator)) {
                     $temp->clear();
+                    Logger::getInstance()->info(
+                        'Loading registry validators from '.$validator
+                    );
                     ImportExport\Autodetect::import($validator, $temp);
                     if ($temp->has(self::REGISTRY_VALIDATOR_ENGINE)) {
                         $validatorEngine = Engine::getInstance(
