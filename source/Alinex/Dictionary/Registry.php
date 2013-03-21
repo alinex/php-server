@@ -302,6 +302,8 @@ class Registry implements \Countable, \ArrayAccess
                 $this->validatorSet(
                     self::REGISTRY_VALIDATOR_ENGINE, 'Dictionary::engine'
                 );
+            // validators of general static classes
+            \Alinex\Util\Http::addRegistryValidators($this);
         }
     }
 
