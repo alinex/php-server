@@ -12,6 +12,8 @@
 
 namespace Alinex\Dictionary;
 
+use Alinex\Logger;
+
 /**
  * System cache using multiple storages.
  *
@@ -31,6 +33,7 @@ class Cache implements \Countable, \ArrayAccess
 
     /**
      * Get an instance of cache class
+     * @return Cache instance of Cache class
      */
     public final static function getInstance()
     {
@@ -137,6 +140,12 @@ class Cache implements \Countable, \ArrayAccess
      */
     public final function set($key, $value = null, $flags = 0)
     {
+        if (!isset($this->_engines)) {
+            Logger::getInstance()->warn(
+                'No engines defined for cache.'
+            );
+            return false;
+        }
         // first remove old entries
         if (!isset($value))
             return $this->remove($key);
@@ -155,10 +164,9 @@ class Cache implements \Countable, \ArrayAccess
             }
         }
         if ($bestScore == 0)
-            throw new Exception(
-                tr(
-                    __NAMESPACE__, 'No engine found to use for the value.'
-                )
+            Logger::getInstance()->warn(
+                'No engine found to use for the value.',
+                array('value' => $value, 'flags' => $flags)
             );
         // set value using the best alternative
         return $bestEngine->set($key, $value);
