@@ -26,6 +26,10 @@ use Alinex\Util\String;
  * APC user-cache. To use more than one instance of this registry you may use
  * different prefixes. Also use the prefix wisely to prevent collision with
  * other librarys and php routines on the same machine.
+ * 
+ * @attention
+ * This engine should not be used if the Registry\Session is used with an engine
+ * because it may interfere.
  */
 class Session extends Engine
 {
