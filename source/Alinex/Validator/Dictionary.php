@@ -12,6 +12,8 @@
 
 namespace Alinex\Validator;
 
+use Alinex\Dictionary\Engine;
+
 /**
  * Validator for dictionary package.
  *
@@ -20,6 +22,69 @@ namespace Alinex\Validator;
  */
 class Dictionary
 {
+    private static $_engineScopes = null;
+    private static $_enginePersistence = null;
+    private static $_enginePerformance = null;
+
+    /**
+     * Optimize the options.
+     *
+     * @param array $options specific settings
+     * @return array optimized options
+     *
+     * @see integer()
+     */
+    private static function engineOptions(array $options = null)
+    {
+        if (!isset($options))
+            $options = array();
+
+        assert(
+            $options['scope'] == Engine::SCOPE_SESSION
+            || $options['scope'] == Engine::SCOPE_LOCAL
+            || $options['scope'] == Engine::SCOPE_GLOBAL
+        );
+        assert(
+            $options['persistence'] == Engine::PERSISTENCE_SHORT
+            || $options['persistence'] == Engine::PERSISTENCE_MEDIUM
+            || $options['persistence'] == Engine::PERSISTENCE_LONG
+        );
+        assert(
+            $options['performance'] == Engine::PERFORMANCE_LOW
+            || $options['performance'] == Engine::PERFORMANCE_MEDIUM
+            || $options['performance'] == Engine::PERFORMANCE_HIGH
+        );
+
+        // fill description
+        if (!isset(self::$_engineScopes))
+            self::$_engineScopes = array(
+                // TRANS: title for session scope
+                Engine::SCOPE_SESSION => tr(__NAMESPACE__, 'session'),
+                // TRANS: title for local scope
+                Engine::SCOPE_LOCAL => tr(__NAMESPACE__, 'local'),
+                // TRANS: title for global scope
+                Engine::SCOPE_GLOBAL => tr(__NAMESPACE__, 'global')
+            );
+        if (!isset(self::$_enginePersistence))
+            self::$_enginePersistence = array(
+                // TRANS: title for short persistence
+                Engine::PERSISTENCE_SHORT => tr(__NAMESPACE__, 'short'),
+                // TRANS: title for medium persistence
+                Engine::PERSISTENCE_MEDIUM => tr(__NAMESPACE__, 'medium'),
+                // TRANS: title for long persistence
+                Engine::PERSISTENCE_LONG => tr(__NAMESPACE__, 'long')
+            );
+        if (!isset(self::$_enginePerformance))
+            self::$_enginePerformance = array(
+                // TRANS: title for low performance
+                Engine::PERFORMANCE_LOW => tr(__NAMESPACE__, 'low'),
+                // TRANS: title for medium performance
+                Engine::PERFORMANCE_MEDIUM => tr(__NAMESPACE__, 'medium'),
+                // TRANS: title for high performance
+                Engine::PERFORMANCE_HIGH => tr(__NAMESPACE__, 'high')
+            );
+    }
+
     /**
      * Check for dictionary engine definition.
      *
@@ -40,7 +105,6 @@ class Dictionary
      * Engine::PERSISTENCE_MEDIUM, Engine::PERSISTENCE_LONG
      * - \c performance - minimum Performance: Engine::PERFORMANCE_LOW,
      * Engine::PERFORMANCE_MEDIUM, Engine::PERFORMANCE_HIGH
-     * - \c size - maximum value size
      *
      * The name option is possible and only used for giving the engine a name
      * for configuration files.
@@ -57,6 +121,7 @@ class Dictionary
         // name of origin have to be a string
         assert(is_string($name));
 
+        $options = $this->engineOptions($options);
         // check the base configuration
         try {
             $value = Type::arraylist(
@@ -88,10 +153,6 @@ class Dictionary
         } catch (Exception $ex) {
             throw $ex->createOuter(__METHOD__);
         }
-        // check for engine selection
-#        if (isset($options['scope'])) {
-#            call_user_func(array($value['type'], '', )
-#        }
         // check for engine specific options
         try {
             $type = isset($value['type']) ? $value['type'] : '';
@@ -116,6 +177,55 @@ class Dictionary
         } catch (Exception $ex) {
             throw $ex->createOuter(__METHOD__);
         }
+        // check for engine selection
+        $engine = Engine::getInstance($value);
+        if (!$engine->isAvailable())
+            throw new Exception(
+                tr(
+                    __NAMESPACE__,
+                    'The {type} storage is not available',
+                    array('type' => $value['type'])
+                )
+            );
+        if (isset($options['scope'])) {
+            if (!$engine->allow(null, $options['scope']))
+                throw new Exception(
+                    tr(
+                        __NAMESPACE__,
+                        'Engine {type} doesn\'t support {option} scope',
+                        array(
+                            'type' => $value['type'],
+                            'option' => self::$_engineScopes[$options['scope']]
+                        )
+                    )
+                );
+        }
+        if (isset($options['persistence'])) {
+            if ($engine->allow(null, $options['persistence']) == 1)
+                throw new Exception(
+                    tr(
+                        __NAMESPACE__,
+                        'Engine {type} is not declared as {option} persistence',
+                        array(
+                            'type' => $value['type'],
+                            'option' => self::$_enginePersistence[$options['persistence']]
+                        )
+                    )
+                );
+        }
+        if (isset($options['performance'])) {
+            if (!$engine->allow(null, $options['performance']))
+                throw new Exception(
+                    tr(
+                        __NAMESPACE__,
+                        'Engine {type} is not declared as {option} performance',
+                        array(
+                            'type' => $value['type'],
+                            'option' => self::$_enginePerformance[$options['performance']]
+                        )
+                    )
+                );
+        }
         // return result
         return $value;
     }
@@ -127,11 +237,72 @@ class Dictionary
      */
     static function engineDescription()
     {
-        // TRANS: description for the possible values for type boolean
-        return tr(
+        $options = $this->engineOptions($options);
+
+        $desc = tr(
             __NAMESPACE__,
-            'The value has to be a boolean. The value will be true for 1, "true", "on", "yes" and it will be considered as false for 0, "false", "off", "no", "". Other values are not allowed.'
+            'The value has to be a dictionary engine specification structure.'
         );
+        $desc .= ' '.Type::arraylistDescription(
+            array(
+                'notEmpty' => true,
+                'mandatoryKeys' => array('type', 'prefix'),
+                'allowedKeys' => array('server', 'name'),
+                'keySpec' => array(
+                    'type' => array(
+                        'Code::class',
+                        array(
+                            'exists' => 1,
+                            'relative' => 'Alinex\Dictionary\Engine'
+                        )
+                    ),
+                    'prefix' => array(
+                        'Type::string',
+                        array(
+                            'maxLength' => 10, // maximal 10 char. prefix is used
+                            'match' => '/[A-Za-z_.:]*/'
+                            // pipe makes problems in session keys
+                            // - used as separator for array contents
+                        )
+                    )
+                )
+            )
+        );
+        // check for engine specific options
+        $desc .= ' '.tr(__NAMESPACE__, 'For type \'redis\' and \'memcache\' servers are specified as:')
+            .Type::arraylistDescription(
+                array(
+                    'notEmpty' => true,
+                    'keySpec' => array(
+                        '' => array(
+                            'Type::string',
+                            array('match' => '#(tcp)://.*#')
+                        )
+                    )
+                )
+            );
+        // check for engine selection
+        $desc .= ' '.tr(__NAMESPACE__, 'The engine have to be avaiable.');
+        if (isset($options['scope']))
+            $desc .= ' '.tr(
+                __NAMESPACE__,
+                'Only engines of {option} scope are allowed.',
+                array('option' => self::$_engineScopes[$options['scope']])
+            );
+        if (isset($options['persistence']))
+            $desc .= ' '.tr(
+                __NAMESPACE__,
+                'Only engines declared as {option} persistence are allowed.',
+                array('option' => self::$_enginePersistence[$options['persistence']])
+            );
+        if (isset($options['performance']))
+            $desc .= ' '.tr(
+                __NAMESPACE__,
+                'Only engines declared as {option} performance are allowed.',
+                array('option' => self::$_enginePerformance[$options['performance']])
+            );
+        
+        return $desc;
     }
 
 
