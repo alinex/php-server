@@ -18,7 +18,8 @@ use Alinex\Template\Simple;
 /**
  * Enhanced session management.
  *
- * This class will give more control over the session.
+ * This class will give more control over the session. This can be done with
+ * using a dictionary engine as storage but also without one.
  *
  * <b>control the session</b>
  *
@@ -134,10 +135,10 @@ class Session implements SessionHandlerInterface
     const REGISTRY_IPLOCK_NUM = 'session.iplock_num';
 
     /**
-     * Group name of definition for dictionary engine to use as storage.
+     * Dictionary engine definition to use as storage.
      * @registry
      */
-    const REGISTRY_ENGINE = 'session.engine.';
+    const REGISTRY_ENGINE = 'session.engine';
 
     /**
      * Prefix for the data storage-

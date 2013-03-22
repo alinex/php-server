@@ -21,6 +21,7 @@ supported well by most frameworks. Alinex aims this and will give better support
 to make robust and powerful interfaces without to much effort. This is solved
 not as one major system but as a base plattform with lots of intercorporating
 modules.
+
 But Just now the client application is not developed.
 
 Motivation and Origin
@@ -38,7 +39,7 @@ Platform Features
 
 In the moment the following parts are developed:
 
-- **Autloloading** 
+- **Autloloading**
 
   Universal and standard conform autoloader for platform, vendor and system
   files.
