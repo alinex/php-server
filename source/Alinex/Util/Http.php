@@ -12,6 +12,7 @@
 namespace Alinex\Util;
 
 use Alinex\Dictionary\Registry;
+use Alinex\Validator;
 
 /**
  * Helper methods to work with http accesses.
@@ -32,35 +33,37 @@ class Http
      * @registry
      */
     const REGISTRY_EXPIRE = 'http.expire';
-    
+
     /**
      * no caching allowed anywhere
      */
     const HTTPCACHE_NONE = 'none';
-    
+
     /**
      * only cacheable in the browser
      */
     const HTTPCACHE_PRIVATE = 'private';
-    
+
     /**
      * caching is everythere allowed
      */
     const HTTPCACHE_PUBLIC = 'public';
-    
+
     /**
      * Add Validators to the Registry.
-     * 
-     * This method is called from the registry instantiation to add the 
+     *
+     * This method is called from the registry instantiation to add the
      * validators for this class.
-     * 
+     *
      * This is neccessary for all static classes, other classes will do this on
      * her own in the constructor.
-     * 
+     *
      * @param Engine $registry to add the validators to
      */
-    public static function addRegistryValidators($registry)
+    public static function addRegistryValidators(Registry $registry)
     {
+        assert(isset($registry));
+
         if ($registry->validatorCheck()) {
             if (!$this->validatorHas(self::REGISTRY_EXPIRE))
                 $this->validatorSet(
@@ -75,7 +78,7 @@ class Http
                 );
         }
     }
-    
+
     /**
      * Send http header to client.
      *
@@ -117,27 +120,45 @@ class Http
      * @param int $expire Lifetime in seconds to keep content.
      * @return void
      */
-    public static function header($contentType = 'text/html', 
+    public static function header($contentType = 'text/html',
         $cache = self::HTTPCACHE_NONE, $expire = null)
     {
+        assert(
+            Validator::is(
+                $contentType, null, 'Type::string',
+                array('match' => '#\w+/\w+#')
+            )
+        );
+        assert(
+            $cache == self::HTTPCACHE_NONE
+            || $cache == self::HTTPCACHE_PRIVATE
+            || $cache == self::HTTPCACHE_PUBLIC
+        );
+        assert(
+            Validator::is(
+                $expire, null, 'Type::integer',
+                array('unsigned' => true)
+            )
+        );
+
         // get default expiration
         if (!isset($expire)) {
             $registry = Registry::getInstance();
-            $expire = isset($registry) 
+            $expire = isset($registry)
                 && $registry->has(self::REGISTRY_EXPIRE)
                 ? $registry->get(self::REGISTRY_EXPIRE)
                 : self::DEFAULT_EXPIRE;
         }
         header('Content-type: ' . $contentType . '; Charset=utf-8');
-        if ($cache == self::HTTPCACHE_PRIVATE 
+        if ($cache == self::HTTPCACHE_PRIVATE
             || $cache == self::HTTPCACHE_PUBLIC ) {
-            header('Expires: ' 
+            header('Expires: '
                 .gmdate("D, d M Y H:i:s", time() + $expire).' GMT');
             header('Cache-Control: ' . $cache . ', max-age=' . $expire);
             header('Cache-Control: pre-check=' . $expire, false);
         } else if ($cache == self::HTTPCACHE_NONE) {
             // expired in the past
-            header('Expires: Wed 23 Jan 1974 14:14:00 GMT'); 
+            header('Expires: Wed 23 Jan 1974 14:14:00 GMT');
             header('Cache-Control: no-store, no-cache, must-revalidate');
             header('Cache-Control: pre-check=0, post-check=0', false);
         } else {
@@ -169,13 +190,21 @@ class Http
      */
     public static function check304($lastModified, $etagParam = '')
     {
+        assert(
+            Validator::is(
+                $lastModified, null, 'Type::integer',
+                array('unsigned' => true)
+            )
+        );
+        assert(is_string($etagParam));
+
         $eTag = 'ax-'.dechex(crc32($etagParam.$lastModified));
         header('Last-Modified: '
             .gmstrftime("%a, %d %b %Y %T %Z",$lastModified));
         header('ETag: "'.$eTag.'"');
-        if ((isset($_SERVER['IF_MODIFIED_SINCE']) 
+        if ((isset($_SERVER['IF_MODIFIED_SINCE'])
                 && strtotime($_SERVER['IF_MODIFIED_SINCE']) == $lastModified)
-            || (isset($_SERVER['HTTP_IF_NONE_MATCH']) 
+            || (isset($_SERVER['HTTP_IF_NONE_MATCH'])
                 && $_SERVER['HTTP_IF_NONE_MATCH'] == $eTag)) {
             header('HTTP/1.0 304 Not Modified');
             exit();
@@ -184,7 +213,7 @@ class Http
 
     /**
      * Get the client ip address if possible.
-     * 
+     *
      * @return string ipv4 client address
      */
     static function determineIP()
@@ -224,10 +253,10 @@ class Http
         array('192.168.0.0','192.168.255.255'),
         array('255.255.255.0','255.255.255.255')
     );
-    
+
     /**
      * Check if given ip is a possibly correct public ip.
-     * 
+     *
      * @param string $ip address to check
      * @return boolean true if address is possible
      */
@@ -237,7 +266,7 @@ class Http
             foreach (self::$_privateips as $r) {
                 $min = ip2long($r[0]);
                 $max = ip2long($r[1]);
-                if ((ip2long($ip) >= $min) && (ip2long($ip) <= $max)) 
+                if ((ip2long($ip) >= $min) && (ip2long($ip) <= $max))
                     return false;
             }
             return true;
