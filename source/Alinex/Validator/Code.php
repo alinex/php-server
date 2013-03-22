@@ -77,8 +77,8 @@ class Code
         $desc = tr(__NAMESPACE__, 'The value has to be a php namespace.')
             .' '.tr(__NAMESPACE__, 'It can also contain the class name.')
             .' '.Type::stringDescription(
-            array('match' => self::$_namespaceMatch)
-        );
+                array('match' => self::$_namespaceMatch)
+            );
         return $desc;
     }
 

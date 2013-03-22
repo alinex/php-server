@@ -17,8 +17,8 @@ use Alinex\Dictionary\Engine;
 /**
  * Dictionary keeping values in the Redis remote dictionary service.
  *
- * This will work using the credis library 
- * (https://github.com/colinmollenhour/credis) and if available the native 
+ * This will work using the credis library
+ * (https://github.com/colinmollenhour/credis) and if available the native
  * extension phpredis (https://github.com/nicolasff/phpredis) is used if
  * available.
  */
@@ -90,7 +90,7 @@ class Redis extends Engine
      * - port - the connection port (default is 6379)
      * - password
      * - database
-     * 
+     *
      * @param array|string $server memcache server
      * @return array list of servers
      */

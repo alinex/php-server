@@ -814,7 +814,8 @@ abstract class Engine implements \Countable, \ArrayAccess
             $quote *= $this->allowPerformance($flags);
         }
         // check value
-        $quote *= $this->allowSize($value);
+        if (isset($value))
+            $quote *= $this->allowSize($value);
         // return result
         return $quote;
     }

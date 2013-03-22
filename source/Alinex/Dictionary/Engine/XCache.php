@@ -173,5 +173,5 @@ class XCache extends Engine
         10000 => 0.5,
         1000 => 0.8
     );
-        
+
 }
