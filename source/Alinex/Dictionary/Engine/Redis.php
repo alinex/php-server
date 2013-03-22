@@ -19,8 +19,7 @@ use Alinex\Dictionary\Engine;
  *
  * This will work using the credis library
  * (https://github.com/colinmollenhour/credis) and if available the native
- * extension phpredis (https://github.com/nicolasff/phpredis) is used if
- * available.
+ * extension phpredis (https://github.com/nicolasff/phpredis) is used.
  */
 class Redis extends Engine
 {
@@ -183,9 +182,16 @@ class Redis extends Engine
      */
     public function get($key)
     {
+        if (\Credis_Client::TYPE_HASH)
         $this->checkKey($key);
         if (isset($this->_redis)) {
-            $result = $this->_redis->get($this->_context.$key);
+#            switch ($this->_redis->type($this->_context.$key)) {
+#                case \Credis_Client::TYPE_HASH:
+#                    $result = $this->_redis->hGetall($this->_context.$key);
+#                    break;
+#                default:
+                    $result = $this->_redis->get($this->_context.$key);
+#            }
             return $result ?: null;
         }
         return null;
@@ -248,5 +254,278 @@ class Redis extends Engine
         100000 => 0.5,
         10000 => 0.8
     );
+
+    /**
+     * Increment value of given key.
+     *
+     * @param string $key name of storage entry
+     * @param numeric $num increment value
+     * @return numeric new value of storage entry
+     * @throws \Exception if storage entry is not numeric
+     */
+    public function incr($key, $num = 1)
+    {
+        $this->checkKey($key);
+        if (!isset($this->_redis))
+            throw new \Exception(
+                tr(__NAMESPACE__, 'No servers set to connect to redis')
+            );
+        if ($num == 1)
+            return (bool) $this->_redis->incr($this->_context.$key);
+        else if ($num > 1)
+            return (bool) $this->_redis->incrBy($this->_context.$key, $num);
+        else if ($num < 0)
+            return $this->decr($key, $num);
+        else
+            return $this->_redis->get($this->_context.$key);
+    }
+
+    /**
+     * Decrement value of given key.
+     *
+     * @param string $key name of storage entry
+     * @param numeric $num decrement value
+     * @return numeric new value of storage entry
+     * @throws \Exception if storage entry is not numeric
+     */
+    public function decr($key, $num = 1)
+    {
+        $this->checkKey($key);
+        if (!isset($this->_redis))
+            throw new \Exception(
+                tr(__NAMESPACE__, 'No servers set to connect to redis')
+            );
+        if ($num == 1)
+            return (bool) $this->_redis->decr($this->_context.$key);
+        else if ($num > 1)
+            return (bool) $this->_redis->decrBy($this->_context.$key, $num);
+        else if ($num < 0)
+            return $this->incr($key, $num);
+        else
+            return $this->_redis->get($this->_context.$key);
+    }
+
+    /**
+     * Append string to storage value.
+     *
+     * @param string $key name of storage entry
+     * @param string $text text to be appended
+     * @return string new complete text entry
+     * @throws \Exception if storage entry is not a string
+     */
+    public function append($key, $text)
+    {
+        $this->checkKey($key);
+        if (!isset($this->_redis))
+            throw new \Exception(
+                tr(__NAMESPACE__, 'No servers set to connect to redis')
+            );
+        return $this->_redis->append($this->_context.$key, $text);
+    }
+
+     /**
+     * Set an value in the hash specified by key.
+     * @param string $key name of storage entry
+     * @param string $name key name within the hash
+     * @param mixed $value data to be stored
+     * @return mixed value set in hash
+     */
+    public function hashSet($key, $name, $value)
+    {
+        if (!isset($value)) {
+            $this->hashRemove($key, $name);
+            return null;
+        }
+        $this->checkKey($key);
+        if (!isset($this->_redis))
+            throw new \Exception(
+                tr(__NAMESPACE__, 'No servers set to connect to redis')
+            );
+        $this->_redis->hSet($this->_context.$key, $name, $value);
+        if ($this->_ttl)
+            $this->_redis->expire($this->_context.$key, $this->_ttl);
+        return $value;
+    }
+
+    /**
+     * Get an value from  the hash specified by key.
+     * @param string $key name of storage entry
+     * @param string $name key name within the hash
+     * @return mixed value from hash
+     */
+    public function hashGet($key, $name)
+    {
+        $this->checkKey($key);
+        if (isset($this->_redis)) {
+            $result = $this->_redis->hGet($this->_context.$key, $name);
+            return $result ?: null;
+        }
+        return null;
+    }
+
+    /**
+     * Check if the specified hash has the value
+     * @param string $key name of storage entry
+     * @param string $name key name within the hash
+     * @return boll entry in hash found
+     */
+    public function hashHas($key, $name)
+    {
+        $this->checkKey($key);
+        if (isset($this->_redis))
+            return (bool) $this->_redis->hExists($this->_context.$key);
+        return false;
+    }
+
+    /**
+     * Remove some entry from within the specified hash.
+     * @param string $key name of storage entry
+     * @param string $name key name within the hash
+     * @return bool true on success otherwise false
+     */
+    public function hashRemove($key, $name)
+    {
+        if (isset($this->_redis))
+            return (bool) $this->_redis->hDel($key);
+        return false;
+    }
+
+    /**
+     * Count the number of entries within the specified hash.
+     * @param string $key name of storage entry
+     * @return int number of entries within the hash
+     */
+    public function hashCount($key)
+    {
+        $this->checkKey($key);
+        if (isset($this->_redis)) {
+            $result = $this->_redis->hLen($this->_context.$key);
+            return $result ?: null;
+        }
+        return null;
+    }
+
+    /**
+     * Add an element to the end of the list.
+     * @param string $key name of storage entry
+     * @param mixed $value data to be added
+     * @return int new number of elements
+     */
+    public function listPush($key, $value)
+    {
+        if (!isset($value))
+            return null;
+        $this->checkKey($key);
+        if (!isset($this->_redis))
+            throw new \Exception(
+                tr(__NAMESPACE__, 'No servers set to connect to redis')
+            );
+        $result = $this->_redis->rPush($this->_context.$key, $value);
+        if ($this->_ttl)
+            $this->_redis->expire($this->_context.$key, $this->_ttl);
+        return $result;
+    }
+
+    /**
+     * Get the last element out of the list.
+     * @param string $key name of storage entry
+     * @return mixed removed last element of list
+     */
+    public function listPop($key)
+    {
+        $this->checkKey($key);
+        if (isset($this->_redis)) {
+            $result = $this->_redis->rPop($this->_context.$key);
+            return $result ?: null;
+        }
+        return null;
+    }
+
+    /**
+     * Get the first element out of the list.
+     * @param string $key name of storage entry
+     * @return mixed removed first element
+     */
+    public function listShift($key)
+    {
+        $this->checkKey($key);
+        if (isset($this->_redis)) {
+            $result = $this->_redis->lPop($this->_context.$key);
+            return $result ?: null;
+        }
+        return null;
+    }
+
+    /**
+     * Add an element to the start of the list.
+     * @param string $key name of storage entry
+     * @param mixed $value data to be added
+     * @return int new number of elements
+     */
+    public function listUnshift($key, $value)
+    {
+        if (!isset($value))
+            return null;
+        $this->checkKey($key);
+        if (!isset($this->_redis))
+            throw new \Exception(
+                tr(__NAMESPACE__, 'No servers set to connect to redis')
+            );
+        $result = $this->_redis->lPush($this->_context.$key, $value);
+        if ($this->_ttl)
+            $this->_redis->expire($this->_context.$key, $this->_ttl);
+        return $result;
+    }
+
+    /**
+     * Get a specified element from the list.
+     * @param string $key name of storage entry
+     * @param int $num number of element
+     * @return mixed value at the defined position
+     */
+    public function listGet($key, $num)
+    {
+        $this->checkKey($key);
+        if (isset($this->_redis)) {
+            $result = $this->_redis->lIndex($this->_context.$key, $num);
+            return $result ?: null;
+        }
+        return null;
+    }
+
+    /**
+     * Set the value of a specific list entry.
+     * @param string $key name of storage entry
+     * @param int $num number of element
+     * @param mixed $value data to be set
+     * @return mixed data which were set
+     */
+    public function listSet($key, $num, $value)
+    {
+        $this->checkKey($key);
+        if (!isset($this->_redis))
+            throw new \Exception(
+                tr(__NAMESPACE__, 'No servers set to connect to redis')
+            );
+        $this->_redis->lSet($this->_context.$key, $num, $value);
+        if ($this->_ttl)
+            $this->_redis->expire($this->_context.$key, $this->_ttl);
+        return $value;
+    }
+
+    /**
+     * Count the number of elements in list.
+     * @param string $key name of storage entry
+     * @return int number of list entries
+     */
+    public function listCount($key)
+    {
+        $this->checkKey($key);
+        if (isset($this->_redis)) {
+            $result = $this->_redis->lLen($this->_context.$key);
+            return $result ?: null;
+        }
+        return null;
+    }
 
 }
