@@ -20,6 +20,11 @@ use Alinex\Dictionary\Engine;
  * This will work using the credis library
  * (https://github.com/colinmollenhour/credis) and if available the native
  * extension phpredis (https://github.com/nicolasff/phpredis) is used.
+ * 
+ * To use the garbage collector setTtl() have to be used. An implicit garbage 
+ * collector call is not neccessary because redis will do this on it's own.
+ * The garbage collector will work in TTL mode there each entry will be
+ * removed after the general defined time to live per key.
  */
 class Redis extends Engine
 {

@@ -34,6 +34,11 @@ use Alinex\Util\String;
  * APC user-cache. To use more than one instance of this registry you may use
  * different prefixes. Also use the prefix wisely to prevent collision with
  * other librarys and php routines on the same machine.
+ * 
+ * To use the garbage collector setTtl() have to be used. An implicit garbage 
+ * collector call is not neccessary because apc will do this on it's own.
+ * The garbage collector will work in TTL mode there each entry will be
+ * removed after the general defined time to live per key.
  */
 class Apc extends Engine
 {

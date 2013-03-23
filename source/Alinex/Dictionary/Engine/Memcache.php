@@ -32,6 +32,11 @@ use Alinex\Dictionary\Engine;
  * The maximal key length is 250 characters and can't contain spaces. a single
  * value may contain up to 1MB of data. this is already taken care of in the
  * Registry base class.
+ * 
+ * To use the garbage collector setTtl() have to be used. An implicit garbage 
+ * collector call is not neccessary because memcache will do this on it's own.
+ * The garbage collector will work in TTL mode there each entry will be
+ * removed after the general defined time to live per key.
  */
 class Memcache extends Engine
 {
