@@ -30,6 +30,11 @@ use Alinex\Util\String;
  * All values stored through this registry will be prefixed and stored in the
  * XCache user-cache.
  *
+ * To use the garbage collector setTtl() have to be used. An implicit garbage 
+ * collector call is not neccessary because xcache will do this on it's own.
+ * The garbage collector will work in TTL mode there each entry will be
+ * removed after the general defined time to live per key.
+ * 
  * @codeCoverageIgnore because not testable while apc installed
  */
 class XCache extends Engine

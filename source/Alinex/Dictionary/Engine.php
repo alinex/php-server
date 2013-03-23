@@ -701,6 +701,22 @@ abstract class Engine implements \Countable, \ArrayAccess
     }
 
     /**
+     * Garbage collector run.
+     * 
+     * A default garbage collector didn't exist. Each engine have to implement
+     * their own.
+     * 
+     * It will also return false if the engine itself will automatically do the
+     * garbage collector.
+     * 
+     * @return bool true on success
+     */
+    public function gc()
+    {
+        return false;
+    }
+    
+    /**
      * Estimate the size of the value.
      *
      * This may vary depending on the engine. This general method can only
