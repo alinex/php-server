@@ -160,10 +160,10 @@ class Redis extends Engine
             throw new \Exception(
                 tr(__NAMESPACE__, 'No servers set to connect to redis')
             );
-        $result = $this->_redis->set($this->_context.$key, $value);
+        $this->_redis->set($this->_context.$key, $value);
         if ($this->_ttl)
             $this->_redis->expire($this->_context.$key, $this->_ttl);
-        return $result;
+        return $value;
     }
 
     /**
@@ -190,13 +190,13 @@ class Redis extends Engine
         if (\Credis_Client::TYPE_HASH)
         $this->checkKey($key);
         if (isset($this->_redis)) {
-#            switch ($this->_redis->type($this->_context.$key)) {
-#                case \Credis_Client::TYPE_HASH:
-#                    $result = $this->_redis->hGetall($this->_context.$key);
-#                    break;
-#                default:
+            switch ($this->_redis->type($this->_context.$key)) {
+                case \Credis_Client::TYPE_HASH:
+                    $result = $this->_redis->hGetall($this->_context.$key);
+                    break;
+                default:
                     $result = $this->_redis->get($this->_context.$key);
-#            }
+            }
             return $result ?: null;
         }
         return null;
@@ -264,12 +264,14 @@ class Redis extends Engine
      * Increment value of given key.
      *
      * @param string $key name of storage entry
-     * @param numeric $num increment value
-     * @return numeric new value of storage entry
+     * @param int $num increment value
+     * @return int new value of storage entry
      * @throws \Exception if storage entry is not numeric
      */
     public function incr($key, $num = 1)
     {
+        assert(is_int($num));
+        
         $this->checkKey($key);
         if (!isset($this->_redis))
             throw new \Exception(
@@ -280,7 +282,7 @@ class Redis extends Engine
         else if ($num > 1)
             return (bool) $this->_redis->incrBy($this->_context.$key, $num);
         else if ($num < 0)
-            return $this->decr($key, $num);
+            return $this->decr($key, -$num);
         else
             return $this->_redis->get($this->_context.$key);
     }
@@ -289,12 +291,14 @@ class Redis extends Engine
      * Decrement value of given key.
      *
      * @param string $key name of storage entry
-     * @param numeric $num decrement value
-     * @return numeric new value of storage entry
+     * @param int $num decrement value
+     * @return int new value of storage entry
      * @throws \Exception if storage entry is not numeric
      */
     public function decr($key, $num = 1)
     {
+        assert(is_int($num));
+        
         $this->checkKey($key);
         if (!isset($this->_redis))
             throw new \Exception(
@@ -305,7 +309,7 @@ class Redis extends Engine
         else if ($num > 1)
             return (bool) $this->_redis->decrBy($this->_context.$key, $num);
         else if ($num < 0)
-            return $this->incr($key, $num);
+            return $this->incr($key, -$num);
         else
             return $this->_redis->get($this->_context.$key);
     }
@@ -325,7 +329,8 @@ class Redis extends Engine
             throw new \Exception(
                 tr(__NAMESPACE__, 'No servers set to connect to redis')
             );
-        return $this->_redis->append($this->_context.$key, $text);
+        $this->_redis->append($this->_context.$key, $text);
+        return $this->_redis->get($this->_context.$key);
     }
 
      /**
@@ -378,7 +383,7 @@ class Redis extends Engine
     {
         $this->checkKey($key);
         if (isset($this->_redis))
-            return (bool) $this->_redis->hExists($this->_context.$key);
+            return (bool) $this->_redis->hExists($this->_context.$key, $name);
         return false;
     }
 
@@ -391,7 +396,7 @@ class Redis extends Engine
     public function hashRemove($key, $name)
     {
         if (isset($this->_redis))
-            return (bool) $this->_redis->hDel($key);
+            return (bool) $this->_redis->hDel($key, $name);
         return false;
     }
 
@@ -512,7 +517,10 @@ class Redis extends Engine
             throw new \Exception(
                 tr(__NAMESPACE__, 'No servers set to connect to redis')
             );
-        $this->_redis->lSet($this->_context.$key, $num, $value);
+        if (isset($num))
+            $this->_redis->lSet($this->_context.$key, $num, $value);
+        else
+            $this->_redis->rPush($this->_context.$key, $value);
         if ($this->_ttl)
             $this->_redis->expire($this->_context.$key, $this->_ttl);
         return $value;

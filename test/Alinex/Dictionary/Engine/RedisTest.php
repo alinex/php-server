@@ -133,8 +133,6 @@ class RedisTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(128, $this->object->decr('normalValue'));
         $this->assertEquals(120, $this->object->decr('normalValue', 8));
         $this->assertEquals(121, $this->object->decr('normalValue', -1));
-        $this->assertEquals(121.1, $this->object->incr('normalValue',0.1));
-        $this->assertEquals(121, $this->object->decr('normalValue',0.1));
         $this->assertEquals('a', $this->object->set('normalValue','a'));
         $this->assertEquals('ab', $this->object->append('normalValue','b'));
         $this->setExpectedException('\Exception');
@@ -174,6 +172,7 @@ class RedisTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(3, $this->object->listUnshift('list', 444));
         $this->assertEquals(444, $this->object->listShift('list'));
         $this->assertEquals(222, $this->object->listGet('list', 1));
+        $this->assertEquals(2, $this->object->listCount('list'));
         $this->assertEquals(555, $this->object->listSet('list', null, 555));
         $this->assertEquals(3, $this->object->listCount('list'));
     }
