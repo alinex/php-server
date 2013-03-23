@@ -65,8 +65,8 @@ class Http
         assert(isset($registry));
 
         if ($registry->validatorCheck()) {
-            if (!$this->validatorHas(self::REGISTRY_EXPIRE))
-                $this->validatorSet(
+            if (!$registry->validatorHas(self::REGISTRY_EXPIRE))
+                $registry->validatorSet(
                     self::REGISTRY_EXPIRE, 'Type::integer',
                     array(
                         'unsigned' => true,
