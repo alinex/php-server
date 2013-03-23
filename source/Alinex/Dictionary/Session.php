@@ -251,10 +251,13 @@ class Session implements SessionHandlerInterface
                 if (!$this->validatorHas(self::REGISTRY_ENGINE))
                     $this->validatorSet(
                         self::REGISTRY_ENGINE, 'Dictionary::engine',
-                        array('description' => tr(
-                            __NAMESPACE__,
-                            'Storage engine used for session data.'
-                        ))
+                        array(
+                            'exclude' => 'Session',
+                            'description' => tr(
+                                __NAMESPACE__,
+                                'Storage engine used for session data.'
+                            )
+                        )
                     );
                 if (!$this->validatorHas(self::REGISTRY_INACTIVETIME))
                     $this->validatorSet(

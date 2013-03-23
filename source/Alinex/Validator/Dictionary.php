@@ -22,8 +22,22 @@ use Alinex\Dictionary\Engine;
  */
 class Dictionary
 {
+    /**
+     * Names for the scope settings
+     * @var array
+     */
     private static $_engineScopes = null;
+
+    /**
+     * Names for the persistence settings
+     * @var array
+     */
     private static $_enginePersistence = null;
+
+    /**
+     * Names for the performance settings
+     * @var array
+     */
     private static $_enginePerformance = null;
 
     /**
@@ -39,6 +53,7 @@ class Dictionary
         if (!isset($options))
             $options = array();
 
+        assert(!isset($options['exclude']) || is_array($options['exclude']));
         assert(
             $options['scope'] == Engine::SCOPE_SESSION
             || $options['scope'] == Engine::SCOPE_LOCAL
@@ -99,13 +114,14 @@ class Dictionary
      *
      * The validator will check for the right syntax for any engine. The
      * possible engines can be limited by the following parameters:
+     * - \c exclude - list of excluded engines
      * - \c scope - concret scope: Engine::SCOPE_SESSION, Engine::SCOPE_LOCAL,
      * Engine::SCOPE_GLOBAL
      * - \c persistence - minimum persistence: Engine::PERSISTENCE_SHORT,
      * Engine::PERSISTENCE_MEDIUM, Engine::PERSISTENCE_LONG
      * - \c performance - minimum Performance: Engine::PERFORMANCE_LOW,
      * Engine::PERFORMANCE_MEDIUM, Engine::PERFORMANCE_HIGH
-     *
+     * 
      * The name option is possible and only used for giving the engine a name
      * for configuration files.
      *
@@ -176,6 +192,18 @@ class Dictionary
             }
         } catch (Exception $ex) {
             throw $ex->createOuter(__METHOD__);
+        }
+        // exclude specific engines
+        if (isset($options['exclude'])) {
+            foreach ($options['exclude'] as $exclude)
+                if ($value['type'] == $exclude)
+                    throw new Exception(
+                        tr(
+                            __NAMESPACE__,
+                            'The {type} storage is not allowed',
+                            array('type' => $value['type'])
+                        )
+                    );                    
         }
         // check for engine selection
         $engine = Engine::getInstance($value);
@@ -280,6 +308,15 @@ class Dictionary
                         )
                     )
                 )
+            );
+        // check for engine specific options
+        if (isset($options['exclude']))
+            $desc .= ' '.trn(
+                __NAMESPACE__, 
+                'The {list} engine is not allowed here.',
+                'The {list} engines are not allowed here.',
+                count($options['exclude']),
+                array('list' => $options['exclude'])
             );
         // check for engine selection
         $desc .= ' '.tr(__NAMESPACE__, 'The engine have to be avaiable.');
