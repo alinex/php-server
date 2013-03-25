@@ -24,5 +24,9 @@
 
 include_once 'bootstrap.php';
 
+// init session
+Alinex\Dictionary\Session::getInstance()->start();
+
+
 Alinex\Util\I18n::test();
 

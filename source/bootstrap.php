@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Platform initialization.
+ * Platform initialization for both http and cli calls.
  *
  * This file is used for the initialization of the base plattform settings
  * like autoloading, translation system...
@@ -13,6 +13,8 @@
  */
 
 use Alinex\Dictionary\Registry;
+use Alinex\Dictionary\Session;
+use Alinex\Dictionary\Cache;
 use Alinex\Code;
 
 // general php configuration
@@ -32,26 +34,27 @@ $loader->add('Alinex', __DIR__);
 $loader->addBackports(__DIR__.DIRECTORY_SEPARATOR.'backport');
 $loader->register();
 
-// internationalization
-
-I18n::init();
-
 // error handler
 
 Code\ErrorHandler::register();
 // set to false for productive environment
 Code\AssertHandler::enabled(true);
 
-// registry
+// internationalization
+
+I18n::init();
+
+// initialize registry
+
 $dir = __DIR__.'/';
 Registry::getInstance(
     'file://'.$dir.'registryData.ini',
     'file://'.$dir.'registryValidators.ini'
 );
 
-// i18n
-Alinex\Util\I18n::setLocale();
+// configure internationalization
+
+I18n::setLocale();
 date_default_timezone_set('Europe/Berlin');
 
-return $loader;
 

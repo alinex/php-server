@@ -105,7 +105,7 @@ class Session implements SessionHandlerInterface
     const REGISTRY_LIFETIME = 'session.life_time';
 
     /**
-     * Time period for counting session creation per ip..
+     * Time period for counting session creation per ip.
      *
      * Only a maximum of new sessions will be created in the specific time range
      * per client ip. This prevents from hijacking using bruteforce attacks on
@@ -319,7 +319,7 @@ class Session implements SessionHandlerInterface
             $this->setEngine(
                 $registry->has(self::REGISTRY_ENGINE)
                 ? Engine::getInstance($registry->get(self::REGISTRY_ENGINE))
-                : Engine\ArrayList::getInstance(self::DEFAULT_PREFIX)
+                : Engine::getInstance(self::DEFAULT_PREFIX)
             );
             // config times
             if ($registry->has(self::REGISTRY_INACTIVETIME))
@@ -334,6 +334,10 @@ class Session implements SessionHandlerInterface
                 $this->_iplocktime = $registry->get(self::REGISTRY_IPLOCK_TIME);
             if ($registry->has(self::REGISTRY_IPLOCK_NUM))
                 $this->_iplocknum = $registry->get(self::REGISTRY_IPLOCK_NUM);
+        } else {
+            $this->setEngine(
+                Engine::getInstance(self::DEFAULT_PREFIX)
+            );
         }
     }
 
@@ -553,7 +557,7 @@ class Session implements SessionHandlerInterface
      * @return bool always <i>TRUE</i>
      * @see http://www.php.net/manual/en/sessionhandlerinterface.gc.php
      */
-    public static function gc($maxlifetime)
+    public static function gc($ttl)
     {
         return true;
     }

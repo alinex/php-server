@@ -26,6 +26,19 @@ use Alinex\Logger;
 class Cache implements \Countable, \ArrayAccess
 {
     /**
+     * Dictionary engine definitions to use as storage.
+     * This has to be a list of engine specifications.
+     * @registry
+     */
+    const REGISTRY_ENGINE = 'cache.engine';
+
+    /**
+     * Prefix for the data storage-
+     * @registry
+     */
+    const DEFAULT_PREFIX = 'ax:tmp:';
+
+    /**
      * Singleton instance of cache class
 	 * @var Cache
 	 */
@@ -52,7 +65,34 @@ class Cache implements \Countable, \ArrayAccess
      */
     public function __construct()
     {
-        // nothing to do
+        // check for registry settings
+        $registry = Registry::getInstance();
+        if ($registry) {
+            // add validators
+            if ($registry->validatorCheck()) {
+                if (!$this->validatorHas(self::REGISTRY_ENGINE))
+                    $this->validatorSet(
+                        self::REGISTRY_ENGINE, 'Type::arraylist',
+                        array(
+                            'keySpec' => array(
+                                '' => array('Dictionary::engine')
+                            ),
+                            'description' => tr(
+                                __NAMESPACE__,
+                                'Storage engine used for caching.'
+                            )
+                        )
+                    );
+            }
+            // set engine
+            if ($registry->has(self::REGISTRY_ENGINE))
+                foreach ($registry->get(self::REGISTRY_ENGINE) as $engine)
+                    $this->enginePush(Engine::getInstance($engine));
+            else
+                $this->enginePush(Engine::getInstance(self::DEFAULT_PREFIX));
+        } else {
+            $this->enginePush(Engine::getInstance(self::DEFAULT_PREFIX));
+        }
     }
 
     /**

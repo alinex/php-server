@@ -153,6 +153,8 @@ abstract class Engine implements \Countable, \ArrayAccess
     /**
      * Get an instance of storage class
      *
+     * This is done in three different ways (see the config parameter).
+     *
      * Through different context names it is possible to use the same storage
      * type and location independently multiple times. This is also needed for
      * separation of different applications if global storages are used.
@@ -161,6 +163,7 @@ abstract class Engine implements \Countable, \ArrayAccess
      *
      * @param string|array $config
      * - array with complete engine configuration (callen on Engine directly)
+     * - context to use for autodetect engine (called on Engine directly)
      * - special name of this instance (called on subclass)
      * @return Engine Instance of storage class
      */
@@ -169,25 +172,37 @@ abstract class Engine implements \Countable, \ArrayAccess
         $class = get_called_class();
         if (get_called_class() == __CLASS__) {
             assert(
-                Validator::is(
+                is_string($config)
+                || Validator::is(
                     $config,
                     isset($config['name']) ? $config['name'] : 'engine',
                     'Dictionary::engine'
                 )
             );
 
-            # create engine
-            $engine = call_user_func(
-                $config['type'].'::getInstance',
-                $config['prefix']
-            );
-            if ($config['server'] && method_exists($engine, 'addServer'))
-                call_user_func(
-                    array($engine, 'addServer'),
-                    $config['server']
+            if (is_string($config)) {
+                if (php_sapi_name() == 'cli')
+                    return Engine\ArrayList::getInstance($config);
+                else if (Engine\Apc::isAvailable())
+                    return Engine\Apc::getInstance($config);
+                else if (Engine\XCache::isAvailable())
+                    return Engine\Apc::getInstance($config);
+                else
+                    return Engine\ArrayList::getInstance($config);
+            } else {
+                # create engine
+                $engine = call_user_func(
+                    $config['type'].'::getInstance',
+                    $config['prefix']
                 );
-            // analyze validator
-            return $engine;
+                if ($config['server'] && method_exists($engine, 'addServer'))
+                    call_user_func(
+                        array($engine, 'addServer'),
+                        $config['server']
+                    );
+                // analyze validator
+                return $engine;
+            }
 
         } else {
             if (!isset($config))
@@ -702,20 +717,20 @@ abstract class Engine implements \Countable, \ArrayAccess
 
     /**
      * Garbage collector run.
-     * 
+     *
      * A default garbage collector didn't exist. Each engine have to implement
      * their own.
-     * 
+     *
      * It will also return false if the engine itself will automatically do the
      * garbage collector.
-     * 
+     *
      * @return bool true on success
      */
     public function gc()
     {
         return false;
     }
-    
+
     /**
      * Estimate the size of the value.
      *
