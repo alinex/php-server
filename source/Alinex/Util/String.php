@@ -79,7 +79,7 @@ class String
         if (is_string($object))
             return '"'.$object.'"';
         if (is_array($object)) {
-            $islist = array_values($object) == $object;
+            $islist = !ArrayStructure::isAssoc($object);
             if ($depth == 0)
                 return $islist ? '[list]' : '[map]';
             $buf = '';
@@ -116,14 +116,14 @@ class String
      * @var array
      */
     private static $_escape = array(
-        '\\' => '\\\\', 
-        '"' => '\\"', 
-        "\n" => '\\n', 
-        "\r" => '\\r', 
-        "\b" => '\\b', 
-        "\f" => '\\f', 
-        "\t" => '\\r', 
-        '/' => '\\/', 
+        '\\' => '\\\\',
+        '"' => '\\"',
+        "\n" => '\\n',
+        "\r" => '\\r',
+        "\b" => '\\b',
+        "\f" => '\\f',
+        "\t" => '\\r',
+        '/' => '\\/',
         '\\\\u' => '\\u'
     );
 

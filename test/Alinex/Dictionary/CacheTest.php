@@ -14,8 +14,6 @@ class CacheTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->object = Cache::getInstance();
-        $engine1 = ArrayList::getInstance('1');
-        $this->object->enginePush($engine1);
     }
 
     function testEngineSet()
@@ -45,7 +43,7 @@ class CacheTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($this->object->set('normalValue'));
         $this->assertFalse($this->object->has('normalValue'));
     }
-    
+
     /**
      * @depends testSetGet
      */
@@ -100,5 +98,5 @@ class CacheTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(0, $this->object->keys());
         $this->assertFalse($this->object->clear());
     }
-    
+
 }
