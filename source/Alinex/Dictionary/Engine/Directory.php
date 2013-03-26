@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Dictionary keeping values in the local filesystem.
+ * Storage keeping values in the filesystem.
  *
  * @author    Alexander Schilling <info@alinex.de>
  * @copyright 2009-2013 Alexander Schilling (\ref Copyright)
@@ -17,7 +17,17 @@ use Alinex\Util\String;
 use Exception;
 
 /**
- * Dictionary keeping values in the local filesystem.
+ * Storage keeping values in the filesystem.
+ *
+ * **Specification**
+ * - Scope: local or global
+ * - Performance: low
+ * - Persistence: high
+ * - Size: very large
+ * - Objects: will be serialized
+ * - Manipulation: emulated
+ * - Garbage collection: NRU, manual call
+ * - Requirements: None
  *
  * Therefor a self managed structure under the given directory will be created.
  * Each value will be stored in its own file making it perfect for big values.
@@ -35,6 +45,18 @@ use Exception;
  * filesystem.
  *
  * The whole size will only be limited by the harddisk capacity.
+ *
+ * **Garbage collection**
+ *
+ * The default time-to-live setting is used for all entries. The specification
+ * within the set() call is ignored. An entry will time out if it is not
+ * accessed in the last default time-to-live range. This workes in an NRU
+ * (not recently used) algorithm.
+ *
+ * The garbage collector has to be called manual and may run some time.
+ *
+ * @see Engine overview chart
+ * @see Dictionary for usage examples
  */
 class Directory extends Engine
 {
@@ -91,20 +113,10 @@ class Directory extends Engine
     }
 
     /**
-     * Method to set a storage variable
-     *
-     * @param string $key   name of the entry
-     * @param string $value Value of storage key null to remove entry
-     *
-     * @return mixed value which was set
-     * @throws \Alinex\Validator\Exception
+     * @copydoc Engine::set()
      */
-    function set($key, $value = null)
+    function set($key, $value = null, $ttl = null)
     {
-        if (!isset($this->_dir))
-            throw new Exception(
-                tr(__NAMESPACE__, 'Directory for engine not set')
-            );
         if (!isset($value)) {
             $this->remove($key);
             return null;
@@ -127,10 +139,7 @@ class Directory extends Engine
     }
 
     /**
-     * Unset a storage variable
-     *
-     * @param string $key   name of the entry
-     * @return bool    TRUE on success otherwise FALSE
+     * @copydoc Engine::remove()
      */
     public function remove($key)
     {
@@ -153,10 +162,7 @@ class Directory extends Engine
     }
 
     /**
-     * Method to get a variable
-     *
-     * @param  string  $key   array key
-     * @return mixed value on success otherwise NULL
+     * @copydoc Engine::get()
      */
     public function get($key)
     {
@@ -170,10 +176,7 @@ class Directory extends Engine
     }
 
     /**
-     * Check if storage variable is defined
-     *
-     * @param string $key   name of the entry
-     * @return bool    TRUE on success otherwise FALSE
+     * @copydoc Engine::has()
      */
     public function has($key)
     {
@@ -186,12 +189,7 @@ class Directory extends Engine
     }
 
     /**
-     * Get the list of keys
-     *
-     * @note This is done by searching through the APC cache and collecting all
-     * registry keys because of the prefix.
-     *
-     * @return array   list of key names
+     * @copydoc Engine::keys()
      */
     public function keys()
     {
@@ -208,7 +206,8 @@ class Directory extends Engine
      * @param string $dir dirctory to scan
      * @return array list of keys for this directory and below.
      */
-    private function fileKeys($dir) {
+    private function fileKeys($dir)
+    {
         $dir = rtrim($dir, '\\/');
         $result = array();
         foreach (scandir($dir) as $f) {
@@ -224,16 +223,11 @@ class Directory extends Engine
                 );
         }
 
-      return $result;
+        return $result;
     }
 
     /**
-     * Get all values which start with the given string.
-     *
-     * The key name will be shortened by cropping the group name from the start.
-     *
-     * @param string $group start phrase for selected values
-     * @return array list of values
+     * @copydoc Engine::groupGet()
      */
     public function groupGet($group)
     {
@@ -268,11 +262,7 @@ class Directory extends Engine
      */
     public function clear()
     {
-        if (!isset($this->_dir))
-            throw new Exception(
-                tr(__NAMESPACE__, 'Directory for engine not set')
-            );
-        if (!file_exists($this->_dir))
+        if (!isset($this->_dir) || !file_exists($this->_dir))
             return false;
         // recursive remove
         $removed = 0;
@@ -310,5 +300,36 @@ class Directory extends Engine
         10000 => 0.5,
         1000 => 0.8
     );
+
+    /**
+     * Garbage collector run.
+     *
+     * @return bool true on success
+     */
+    public function gc()
+    {
+        if (!isset($this->_dir) || !isset($this->_ttl))
+            return false;
+        // scan directory to find files
+        $timecheck = time() - $this->_ttl;
+        foreach (
+            new \RecursiveIteratorIterator(
+                new \RecursiveDirectoryIterator(
+                    $this->_dir, \FilesystemIterator::SKIP_DOTS
+                ), \RecursiveIteratorIterator::CHILD_FIRST
+            ) as $path) {
+            if ($path->isFile()) {
+                // remove old files
+                if ($path->getATime() < $timecheck)
+                    unlink($path->getPathname());
+            } else {
+                // remove empty directory
+                $d=glob($path->getPathname().'/*');
+                if (empty($d))
+                    rmdir($path->getPathname());
+            }
+        }
+        return true;
+    }
 
 }

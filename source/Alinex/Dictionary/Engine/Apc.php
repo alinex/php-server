@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Dictionary keeping values in the Alternative PHP Cache.
+ * Storage keeping values in the Alternative PHP Cache.
  *
  * @author    Alexander Schilling <info@alinex.de>
  * @copyright 2009-2013 Alexander Schilling (\ref Copyright)
@@ -16,7 +16,17 @@ use Alinex\Dictionary\Engine;
 use Alinex\Util\String;
 
 /**
- * Dictionary keeping values in the Alternative PHP Cache.
+ * Storage keeping values in the Alternative PHP Cache.
+ *
+ * **Specification**
+ * - Scope: local
+ * - Performance: high
+ * - Persistence: small-medium
+ * - Size: medium, configurable
+ * - Objects: will be serialized
+ * - Manipulation: only inc() dec(), others emulated
+ * - Garbage collection: ttl, self managed
+ * - Requirements: Extension
  *
  * This class will store the key-value pairs in the APC user storage. This scope
  * will be kept locally for the complete machine.
@@ -34,11 +44,16 @@ use Alinex\Util\String;
  * APC user-cache. To use more than one instance of this registry you may use
  * different prefixes. Also use the prefix wisely to prevent collision with
  * other librarys and php routines on the same machine.
- * 
- * To use the garbage collector setTtl() have to be used. An implicit garbage 
- * collector call is not neccessary because apc will do this on it's own.
- * The garbage collector will work in TTL mode there each entry will be
- * removed after the general defined time to live per key.
+ *
+ * **Size**
+ *
+ * The cache size can be specified through the apc.shm_size (default 32M)
+ * PHP configuration setting.
+ *
+ * @see Engine overview chart
+ * @see Dictionary for usage examples
+ *
+ * @codeCoverageIgnore because not testable while xcache installed
  */
 class Apc extends Engine
 {
@@ -56,55 +71,22 @@ class Apc extends Engine
     }
 
     /**
-     * Time To Live
-     *
-     * Store var in the cache for ttl seconds. After the ttl has passed, the
-     * stored variable will be expunged from the cache (on the next request).
-     * If no ttl is supplied (or if the ttl is 0), the value will persist until
-     * it is removed from the cache manually, or otherwise fails to exist in
-     * the cache (clear, remove).
-     *
-     * @var integer
+     * @copydoc Engine::set()
      */
-    protected $_ttl = null;
-
-    /**
-     * Constructor
-     *
-     * @param integer   $ttl time to live for each individual value
-     * @return int value set
-     */
-    protected function setTtl($ttl)
-    {
-        assert(is_int($ttl));
-        $this->_ttl = $ttl;
-    }
-
-    /**
-     * Method to set a storage variable
-     *
-     * @param string $key   name of the entry
-     * @param string $value Value of storage key null to remove entry
-     *
-     * @return mixed value which was set
-     * @throws \Alinex\Validator\Exception
-     */
-    function set($key, $value = null)
+    function set($key, $value = null, $ttl = null)
     {
         if (!isset($value)) {
             $this->remove($key);
             return null;
         }
         $this->checkKey($key);
-        return apc_store($this->_context.$key, $value, $this->_ttl)
+        $ttl = !isset($ttl) ? $this->_ttl : $ttl ? $ttl : null;
+        return apc_store($this->_context.$key, $value, $ttl)
             ? $value : null;
     }
 
     /**
-     * Unset a storage variable
-     *
-     * @param string $key   name of the entry
-     * @return bool    TRUE on success otherwise FALSE
+     * @copydoc Engine::remove()
      */
     public function remove($key)
     {
@@ -112,37 +94,24 @@ class Apc extends Engine
     }
 
     /**
-     * Method to get a variable
-     *
-     * @param  string  $key   array key
-     * @return mixed value on success otherwise NULL
+     * @copydoc Engine::get()
      */
     public function get($key)
     {
-        $this->checkKey($key);
         return apc_exists($this->_context.$key) ?
                 apc_fetch($this->_context.$key) : NULL;
     }
 
     /**
-     * Check if storage variable is defined
-     *
-     * @param string $key   name of the entry
-     * @return bool    TRUE on success otherwise FALSE
+     * @copydoc Engine::has()
      */
     public function has($key)
     {
-        $this->checkKey($key);
         return apc_exists($this->_context.$key);
     }
 
     /**
-     * Get the list of keys
-     *
-     * @note This is done by searching through the APC cache and collecting all
-     * registry keys because of the prefix.
-     *
-     * @return array   list of key names
+     * @copydoc Engine::keys()
      */
     public function keys()
     {
@@ -152,6 +121,36 @@ class Apc extends Engine
             if (String::startsWith($entry['info'], $this->_context))
                 $keys[] = substr($entry['info'], strlen($this->_context));
         return $keys;
+    }
+
+    /**
+     * @copydoc Engine::inc()
+     */
+    public function inc($key, $num = 1)
+    {
+        assert(is_int($num));
+
+        if ($num < 0)
+            return $this->dec($key, -$num);
+        $this->checkKey($key);
+        if (!apc_exists($this->_context.$key))
+            return apc_store($this->_context.$key, $num) ? $num : null;
+        return apc_inc($this->_context.$key, $num);
+    }
+
+    /**
+     * @copydoc Engine::dec()
+     */
+    public function dec($key, $num = 1)
+    {
+        assert(is_int($num));
+
+        if ($num < 0)
+            return $this->inc($key, -$num);
+        $this->checkKey($key);
+        if (!apc_exists($this->_context.$key))
+            return apc_store($this->_context.$key, -$num) ? -$num : null;
+        return apc_dec($this->_context.$key, $num);
     }
 
     /**

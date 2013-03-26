@@ -19,5 +19,3 @@ if (isset($registry['timezone'])) {
 
 // remove timezone from registry
 unset($registry['timezone']);
-
-?>

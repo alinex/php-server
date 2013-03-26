@@ -159,4 +159,29 @@ class ArrayStructure
         return true;
     }
 
+    /**
+     * Fast and efficient check für associative arrays.
+     *
+     * @param array $array to check
+     * @return bool true if array is associative
+     */
+    static function isAssoc($array)
+    {
+        if (!is_array($array))
+            return false;
+
+        // method 1: fastest with a more memmory usage
+        return (array_values($array) !== $array);
+
+        // method 2: medium speed lower memory
+        // compares the keys (which for a sequential array are always 0,1,2 etc)
+        // to the keys of the keys (which will always be 0,1,2 etc)
+        $array = array_keys($a);
+        return ($array != array_keys($array));
+
+        // method 3: low speed with less memory
+        return count(array_filter(array_keys($array), 'is_string')) > 0;
+    }
+
+
 }

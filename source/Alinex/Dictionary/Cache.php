@@ -15,13 +15,22 @@ namespace Alinex\Dictionary;
 use Alinex\Logger;
 
 /**
+ * Using the cache.
+ * @example Cache-default.php
+ */
+/**
  * System cache using multiple storages.
  *
  * The cache will hold a list of engines which may be used. Which engine to use
  * for a specific value will be decided automatically based on the engine's
  * scope, performance, persistence and its value size settings.
  *
+ * You may call the garbage collector manual on the cache class or it will
+ * be done automatically before setting a value if min. gctime is set.
+ *
  * @see Registry for storage with validation
+ * @see Session to easy integrate any engine as session storage
+ * @see Dictionary for overview of use
  */
 class Cache implements \Countable, \ArrayAccess
 {
@@ -33,10 +42,29 @@ class Cache implements \Countable, \ArrayAccess
     const REGISTRY_ENGINE = 'cache.engine';
 
     /**
-     * Prefix for the data storage-
+     * Information then the last garbage collector run was.
      * @registry
      */
+    const REGISTRY_LASTRUN = 'cache.lastrun';
+
+    /**
+     * Prefix for the data storage.
+     */
     const DEFAULT_PREFIX = 'ax:tmp:';
+
+    /**
+     * Prefix for the min time before the next garbage collector run.
+     * Set this to 0 to prevent garbage collection run while setting values. If
+     * too much entries this may slow down the active process depending on the
+     * engine's gc performance.
+     */
+    const DEFAULT_GCTIME = '600';
+
+    /**
+     * @copydoc DEFAULT_GCTIME
+     * @registry
+     */
+    const REGISTRY_GCTIME = 'cache.gc_time';
 
     /**
      * Singleton instance of cache class
@@ -58,6 +86,12 @@ class Cache implements \Countable, \ArrayAccess
     }
 
     /**
+     * Time intervall to run gc on cache.
+     * @var int
+     */
+    private $_gctime = null;
+
+    /**
      * Constructor
      *
      * This may be overwritten to implement some initialization of the storage
@@ -70,8 +104,8 @@ class Cache implements \Countable, \ArrayAccess
         if ($registry) {
             // add validators
             if ($registry->validatorCheck()) {
-                if (!$this->validatorHas(self::REGISTRY_ENGINE))
-                    $this->validatorSet(
+                if (!$registry->validatorHas(self::REGISTRY_ENGINE))
+                    $registry->validatorSet(
                         self::REGISTRY_ENGINE, 'Type::arraylist',
                         array(
                             'keySpec' => array(
@@ -83,6 +117,17 @@ class Cache implements \Countable, \ArrayAccess
                             )
                         )
                     );
+                if (!$registry->validatorHas(self::REGISTRY_GCTIME))
+                    $registry->validatorSet(
+                        self::REGISTRY_GCTIME, 'Type::integer',
+                        array(
+                            'unsigned' => true,
+                            'description' => tr(
+                                __NAMESPACE__,
+                                'Time intervall to run garbage collector on cache.'
+                            )
+                        )
+                    );
             }
             // set engine
             if ($registry->has(self::REGISTRY_ENGINE))
@@ -90,6 +135,8 @@ class Cache implements \Countable, \ArrayAccess
                     $this->enginePush(Engine::getInstance($engine));
             else
                 $this->enginePush(Engine::getInstance(self::DEFAULT_PREFIX));
+            if ($registry->has(self::REGISTRY_GCTIME))
+                $this->_gctime = $registry->get(self::REGISTRY_GCTIME);
         } else {
             $this->enginePush(Engine::getInstance(self::DEFAULT_PREFIX));
         }
@@ -174,17 +221,28 @@ class Cache implements \Countable, \ArrayAccess
      * @param string $key   Registry array key
      * @param string $value Value of cache key
      * @param int $flags scope, persistence and performance... flags
+     * @param int $ttl set time to live for this entry
      *
      * @return bool    TRUE on success otherwise FALSE
      * @throws Validator\Exception
      */
-    public final function set($key, $value = null, $flags = 0)
+    public final function set($key, $value = null, $flags = 0, $ttl = null)
     {
         if (!isset($this->_engines)) {
             Logger::getInstance()->warn(
                 'No engines defined for cache.'
             );
             return false;
+        }
+        // maybe cleanup cache
+        if (isset($this->_gctime) && $this->_gctime) {
+            $registry = Registry::getInstance();
+            $lastrun = $registry->get(self::REGISTRY_LASTRUN);
+            if (!isset($lastrun) || $lastrun + $this->_gctime < time()) {
+                foreach ($this->_engines as $engine)
+                    $engine->gc();
+                $registry->set(self::REGISTRY_LASTRUN, time());
+            }
         }
         // first remove old entries
         if (!isset($value))
@@ -209,7 +267,7 @@ class Cache implements \Countable, \ArrayAccess
                 array('value' => $value, 'flags' => $flags)
             );
         // set value using the best alternative
-        return $bestEngine->set($key, $value);
+        return $bestEngine->set($key, $value, $ttl);
     }
 
     /**
@@ -408,4 +466,20 @@ class Cache implements \Countable, \ArrayAccess
         $this->remove($offset);
     }
 
+    /**
+     * Run garbage collector on each engine now.
+     *
+     * If this is called with configured automatic garbage collection the time
+     * will be stored for the next automatic run.
+     */
+    public function gc()
+    {
+        if (isset($this->_engines))
+            foreach ($this->_engines as $engine)
+                $engine->gc();
+        $registry = Registry::getInstance();
+        // set lastrun if already there
+        if ($registry->has(self::REGISTRY_LASTRUN))
+            $registry->set(self::REGISTRY_LASTRUN, time());
+    }
 }
