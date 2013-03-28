@@ -92,7 +92,7 @@ abstract class Handler
         if (isset($this->_filter[$class]))
             return $this->_filter[$class];
         // create new filter
-        $filter = new $class;
+        $filter = new $class();
         $this->_filter[$class] = $filter;
         // also add needed providers
         foreach($filter::$needProvider as $provider)

@@ -25,6 +25,8 @@ use Alinex\Logger;
  * for a specific value will be decided automatically based on the engine's
  * scope, performance, persistence and its value size settings.
  *
+ * Keep the list as short as possible to be performant.
+ * 
  * You may call the garbage collector manual on the cache class or it will
  * be done automatically before setting a value if min. gctime is set.
  *

@@ -15,6 +15,7 @@ namespace Alinex\Logger\Filter;
 use Alinex\Logger\Filter;
 use Alinex\Logger\Message;
 use Alinex\Dictionary\Cache;
+use Alinex\Dictionary\Engine;
 
 /**
  * Prevent duplicate entries in log.
@@ -67,6 +68,20 @@ class NoDuplicate extends Filter
     protected $_data = array();
 
     /**
+     * Id of this filter class used to separate storage with other iinstances.
+     * @var string
+     */
+    private $_id = null;
+    
+    /**
+     * Constructor set the object id
+     */
+    public function __construct() 
+    {
+        $_id = \Alinex\Util\Object::getId($this);
+    }
+    
+    /**
      * Add or remove data to be included in check.
      *
      * @param string $name data element of message to be included
@@ -92,8 +107,7 @@ class NoDuplicate extends Filter
         foreach (array_keys($this->_data) as $name)
             if (isset($message->data[$name]))
                 $data .= '-'.$message->data[$name];
-# TODO add handler identification
-        return self::CACHE_GROUP.'.'.md5($data);
+        return self::CACHE_GROUP.'.'.$this->_id.'.'.md5($data);
     }
 
     /**
@@ -111,7 +125,7 @@ class NoDuplicate extends Filter
         $hash = $this->getHashKey($message);
         // check and store
         if ($cache->has($hash)) {
-            $cache->set($hash, 1, $this->_ttl);
+            $cache->set($hash, 1, Engine::SCOPE_GLOBAL, $this->_ttl);
             return true;
         } else {
             $cache->inc($hash);

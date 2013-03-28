@@ -28,6 +28,12 @@ abstract class Filter
     static $needProvider = array();
 
     /**
+     * Object id of handler for differentiation.
+     * @var int current object id in php memory hash
+     */
+    protected $_handler = null;
+    
+    /**
      * Check if this Message should  be further processed.
      *
      * Post filters may also store some messages locally to add them later.
