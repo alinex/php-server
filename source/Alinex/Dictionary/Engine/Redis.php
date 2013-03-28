@@ -1,7 +1,8 @@
 <?php
+
 /**
  * @file
- * Dictionary keeping values in the Redis remote dictionary service.
+ * Storage keeping values in the Redis remote dictionary service.
  *
  * @author    Alexander Schilling <info@alinex.de>
  * @copyright 2009-2013 Alexander Schilling (\ref Copyright)
@@ -15,24 +16,51 @@ namespace Alinex\Dictionary\Engine;
 use Alinex\Dictionary\Engine;
 
 /**
- * Dictionary keeping values in the Redis remote dictionary service.
+ * Storage keeping values in the Redis remote dictionary service.
+ *
+ * **Specification**
+ * - Scope: global
+ * - Performance: medium
+ * - Persistence: medium
+ * - Size: medium
+ * - Objects: only flat lists, others will be serialized
+ * - Manipulation: native support
+ * - Garbage collection: ttl, self managed
+ * - Requirements: Redis Server, Extension (optional)
  *
  * This will work using the credis library
  * (https://github.com/colinmollenhour/credis) and if available the native
  * extension phpredis (https://github.com/nicolasff/phpredis) is used.
- * 
- * To use the garbage collector setTtl() have to be used. An implicit garbage 
+ *
+ * To use the garbage collector setTtl() have to be used. An implicit garbage
  * collector call is not neccessary because redis will do this on it's own.
  * The garbage collector will work in TTL mode there each entry will be
  * removed after the general defined time to live per key.
+ *
+ * **Garbage Collection**
+ *
+ * Set a timeout on key. After the timeout has expired, the key will
+ * automatically be deleted. A key with an associated timeout is often said to
+ * be volatile in Redis terminology.
+ *
+ * The timeout is cleared only when the key is removed using the remove()
+ * command or overwritten using the set() command. This means that all the
+ * operations that conceptually alter the value stored at the key without
+ * replacing it with a new one will leave the timeout untouched. For instance,
+ * incrementing the value of a key with inc(), pushing a new value into a list
+ * with listPush(), or altering the field value of a hash with hashSet() are all
+ * operations that will leave the timeout untouched.
+ *
+ * For redis it is not neccessary to call the garbage collector. This is done by
+ * redis itself.
+ *
+ * @see Engine overview chart
+ * @see Dictionary for usage examples
  */
 class Redis extends Engine
 {
     /**
-     * Check if this storage is available.
-     *
-     * @return bool true if storage can be used
-     * @throws \Exception if something is missing.
+     * @copydoc Engine::check()
      */
     protected static function check()
     {
@@ -48,38 +76,13 @@ class Redis extends Engine
     }
 
     /**
-     * Time To Live
-     *
-     * Store var in the cache for ttl seconds. After the ttl has passed, the
-     * stored variable will be expunged from the cache (on the next request).
-     * If no ttl is supplied (or if the ttl is 0), the value will persist until
-     * it is removed from the cache manually, or otherwise fails to exist in
-     * the cache (clear, remove).
-     *
-     * @var integer
-     */
-    protected $_ttl = null;
-
-    /**
-     * Constructor
-     *
-     * @param integer   $ttl time to live for each individual value
-     * @return int value set
-     */
-    protected function setTtl($ttl)
-    {
-        assert(is_int($ttl));
-        $this->_ttl = $ttl;
-    }
-
-    /**
-     * List of memcache server to connect
+     * List of redis server to connect
      * @var array
      */
     private $_server = array();
 
     /**
-     * Add one or more memcache servers.
+     * Add one or more redis servers.
      *
      * This can be done using a simple string with an hostname to connect to
      * this host on the default port:
@@ -124,15 +127,12 @@ class Redis extends Engine
 
     /**
      * Redis instance to use.
-     * @var \Memcached | Memcache
+     * @var \Credis_Client
      */
     private $_redis = NULL;
 
     /**
-     * Connect to memcache
-     *
-     * The session handling will be started if not allready done and the
-     * storage array will be added.
+     * Connect to redis server
      */
     protected function connect()
     {
@@ -141,15 +141,9 @@ class Redis extends Engine
     }
 
     /**
-     * Method to set a storage variable
-     *
-     * @param string $key   name of the entry
-     * @param string $value Value of storage key null to remove entry
-     *
-     * @return mixed value which was set
-     * @throws \Alinex\Validator\Exception
+     * @copydoc Engine::set()
      */
-    function set($key, $value = null)
+    function set($key, $value = null, $ttl = null)
     {
         if (!isset($value)) {
             $this->remove($key);
@@ -160,17 +154,21 @@ class Redis extends Engine
             throw new \Exception(
                 tr(__NAMESPACE__, 'No servers set to connect to redis')
             );
-        $this->_redis->set($this->_context.$key, $value);
-        if ($this->_ttl)
-            $this->_redis->expire($this->_context.$key, $this->_ttl);
+        if (\Alinex\Util\ArrayStructure::isAssoc($value))
+            $this->_redis->hMSet($this->_context.$key, $value);
+        else if (is_array($value))
+            foreach($value as $entry)
+                $this->_redis->rPush($this->_context.$key, $entry);
+        else
+            $this->_redis->set($this->_context.$key, $value);
+        if (!isset($ttl)) $ttl = $this->_ttl;
+        if (isset($ttl) && $ttl)
+            $this->_redis->expire($this->_context.$key, $ttl);
         return $value;
     }
 
     /**
-     * Unset a storage variable
-     *
-     * @param string $key   name of the entry
-     * @return bool    TRUE on success otherwise FALSE
+     * @copydoc Engine::remove()
      */
     public function remove($key)
     {
@@ -180,10 +178,7 @@ class Redis extends Engine
     }
 
     /**
-     * Method to get a variable
-     *
-     * @param  string  $key   array key
-     * @return mixed value on success otherwise NULL
+     * @copydoc Engine::get()
      */
     public function get($key)
     {
@@ -194,6 +189,9 @@ class Redis extends Engine
                 case \Credis_Client::TYPE_HASH:
                     $result = $this->_redis->hGetall($this->_context.$key);
                     break;
+                case \Credis_Client::TYPE_LIST:
+                    $result = $this->_redis->lRange($this->_context.$key, 0 -1);
+                    break;
                 default:
                     $result = $this->_redis->get($this->_context.$key);
             }
@@ -203,10 +201,7 @@ class Redis extends Engine
     }
 
     /**
-     * Check if storage variable is defined
-     *
-     * @param string $key   name of the entry
-     * @return bool    TRUE on success otherwise FALSE
+     * @copydoc Engine::has()
      */
     public function has($key)
     {
@@ -217,12 +212,7 @@ class Redis extends Engine
     }
 
     /**
-     * Get the list of keys
-     *
-     * @note This is done by searching through the APC cache and collecting all
-     * registry keys because of the prefix.
-     *
-     * @return array   list of key names
+     * @copydoc Engine::keys()
      */
     public function keys()
     {
@@ -261,17 +251,12 @@ class Redis extends Engine
     );
 
     /**
-     * Increment value of given key.
-     *
-     * @param string $key name of storage entry
-     * @param int $num increment value
-     * @return int new value of storage entry
-     * @throws \Exception if storage entry is not numeric
+     * @copydoc Engine::inc()
      */
-    public function incr($key, $num = 1)
+    public function inc($key, $num = 1)
     {
         assert(is_int($num));
-        
+
         $this->checkKey($key);
         if (!isset($this->_redis))
             throw new \Exception(
@@ -282,23 +267,18 @@ class Redis extends Engine
         else if ($num > 1)
             return (bool) $this->_redis->incrBy($this->_context.$key, $num);
         else if ($num < 0)
-            return $this->decr($key, -$num);
+            return $this->dec($key, -$num);
         else
             return $this->_redis->get($this->_context.$key);
     }
 
     /**
-     * Decrement value of given key.
-     *
-     * @param string $key name of storage entry
-     * @param int $num decrement value
-     * @return int new value of storage entry
-     * @throws \Exception if storage entry is not numeric
+     * @copydoc Engine::dec()
      */
-    public function decr($key, $num = 1)
+    public function dec($key, $num = 1)
     {
         assert(is_int($num));
-        
+
         $this->checkKey($key);
         if (!isset($this->_redis))
             throw new \Exception(
@@ -309,21 +289,18 @@ class Redis extends Engine
         else if ($num > 1)
             return (bool) $this->_redis->decrBy($this->_context.$key, $num);
         else if ($num < 0)
-            return $this->incr($key, -$num);
+            return $this->inc($key, -$num);
         else
             return $this->_redis->get($this->_context.$key);
     }
 
     /**
-     * Append string to storage value.
-     *
-     * @param string $key name of storage entry
-     * @param string $text text to be appended
-     * @return string new complete text entry
-     * @throws \Exception if storage entry is not a string
+     * @copydoc Engine::append()
      */
     public function append($key, $text)
     {
+        assert(is_string($text));
+
         $this->checkKey($key);
         if (!isset($this->_redis))
             throw new \Exception(
@@ -352,20 +329,14 @@ class Redis extends Engine
                 tr(__NAMESPACE__, 'No servers set to connect to redis')
             );
         $this->_redis->hSet($this->_context.$key, $name, $value);
-        if ($this->_ttl)
-            $this->_redis->expire($this->_context.$key, $this->_ttl);
         return $value;
     }
 
     /**
-     * Get an value from  the hash specified by key.
-     * @param string $key name of storage entry
-     * @param string $name key name within the hash
-     * @return mixed value from hash
+     * @copydoc Engine::hashGet()
      */
     public function hashGet($key, $name)
     {
-        $this->checkKey($key);
         if (isset($this->_redis)) {
             $result = $this->_redis->hGet($this->_context.$key, $name);
             return $result ?: null;
@@ -374,24 +345,17 @@ class Redis extends Engine
     }
 
     /**
-     * Check if the specified hash has the value
-     * @param string $key name of storage entry
-     * @param string $name key name within the hash
-     * @return boll entry in hash found
+     * @copydoc Engine::hashHas()
      */
     public function hashHas($key, $name)
     {
-        $this->checkKey($key);
         if (isset($this->_redis))
             return (bool) $this->_redis->hExists($this->_context.$key, $name);
         return false;
     }
 
     /**
-     * Remove some entry from within the specified hash.
-     * @param string $key name of storage entry
-     * @param string $name key name within the hash
-     * @return bool true on success otherwise false
+     * @copydoc Engine::hashRemove()
      */
     public function hashRemove($key, $name)
     {
@@ -401,13 +365,10 @@ class Redis extends Engine
     }
 
     /**
-     * Count the number of entries within the specified hash.
-     * @param string $key name of storage entry
-     * @return int number of entries within the hash
+     * @copydoc Engine::hashCount()
      */
     public function hashCount($key)
     {
-        $this->checkKey($key);
         if (isset($this->_redis)) {
             $result = $this->_redis->hLen($this->_context.$key);
             return $result ?: null;
@@ -416,10 +377,7 @@ class Redis extends Engine
     }
 
     /**
-     * Add an element to the end of the list.
-     * @param string $key name of storage entry
-     * @param mixed $value data to be added
-     * @return int new number of elements
+     * @copydoc Engine::listPush()
      */
     public function listPush($key, $value)
     {
@@ -437,9 +395,7 @@ class Redis extends Engine
     }
 
     /**
-     * Get the last element out of the list.
-     * @param string $key name of storage entry
-     * @return mixed removed last element of list
+     * @copydoc Engine::listPop()
      */
     public function listPop($key)
     {
@@ -452,9 +408,7 @@ class Redis extends Engine
     }
 
     /**
-     * Get the first element out of the list.
-     * @param string $key name of storage entry
-     * @return mixed removed first element
+     * @copydoc Engine::listShift()
      */
     public function listShift($key)
     {
@@ -466,11 +420,7 @@ class Redis extends Engine
         return null;
     }
 
-    /**
-     * Add an element to the start of the list.
-     * @param string $key name of storage entry
-     * @param mixed $value data to be added
-     * @return int new number of elements
+    /**@copydoc Engine::listUnshift()
      */
     public function listUnshift($key, $value)
     {
@@ -488,10 +438,7 @@ class Redis extends Engine
     }
 
     /**
-     * Get a specified element from the list.
-     * @param string $key name of storage entry
-     * @param int $num number of element
-     * @return mixed value at the defined position
+     * @copydoc Engine::listGet()
      */
     public function listGet($key, $num)
     {
@@ -504,11 +451,7 @@ class Redis extends Engine
     }
 
     /**
-     * Set the value of a specific list entry.
-     * @param string $key name of storage entry
-     * @param int $num number of element
-     * @param mixed $value data to be set
-     * @return mixed data which were set
+     * @copydoc Engine::listSet()
      */
     public function listSet($key, $num, $value)
     {
@@ -527,9 +470,7 @@ class Redis extends Engine
     }
 
     /**
-     * Count the number of elements in list.
-     * @param string $key name of storage entry
-     * @return int number of list entries
+     * @copydoc Engine::listCount()
      */
     public function listCount($key)
     {

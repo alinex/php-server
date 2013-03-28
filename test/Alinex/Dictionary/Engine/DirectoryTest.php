@@ -112,18 +112,16 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
     function testEditing()
     {
         $this->assertEquals(123, $this->object->set('normalValue', 123));
-        $this->assertEquals(124, $this->object->incr('normalValue'));
-        $this->assertEquals(130, $this->object->incr('normalValue',6));
-        $this->assertEquals(129, $this->object->incr('normalValue',-1));
-        $this->assertEquals(128, $this->object->decr('normalValue'));
-        $this->assertEquals(120, $this->object->decr('normalValue', 8));
-        $this->assertEquals(121, $this->object->decr('normalValue', -1));
-        $this->assertEquals(121.1, $this->object->incr('normalValue',0.1));
-        $this->assertEquals(121, $this->object->decr('normalValue',0.1));
+        $this->assertEquals(124, $this->object->inc('normalValue'));
+        $this->assertEquals(130, $this->object->inc('normalValue',6));
+        $this->assertEquals(129, $this->object->inc('normalValue',-1));
+        $this->assertEquals(128, $this->object->dec('normalValue'));
+        $this->assertEquals(120, $this->object->dec('normalValue', 8));
+        $this->assertEquals(121, $this->object->dec('normalValue', -1));
         $this->assertEquals('a', $this->object->set('normalValue','a'));
         $this->assertEquals('ab', $this->object->append('normalValue','b'));
         $this->setExpectedException('\Exception');
-        $this->object->incr('normalValue', 123);
+        $this->object->inc('normalValue', 123);
     }
 
     /**

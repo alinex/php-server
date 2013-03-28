@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Dictionary keeping values in user sessiom.
+ * Storage keeping values in user sessiom.
  *
  * @author    Alexander Schilling <info@alinex.de>
  * @copyright 2009-2013 Alexander Schilling (\ref Copyright)
@@ -16,7 +16,17 @@ use Alinex\Dictionary\Engine;
 use Alinex\Util\String;
 
 /**
- * Dictionary keeping values in user session.
+ * Storage keeping values in user session.
+ *
+ * **Specification**
+ * - Scope: session
+ * - Performance: high
+ * - Persistence: medium
+ * - Size: small
+ * - Objects: will be serialized after request
+ * - Manipulation: natively supported
+ * - Garbage collection: None
+ * - Requirements: None
  *
  * This class will store the key-value pairs in the user session storage. This
  * scope will be kept locally, globally or persistent depending on the session
@@ -26,10 +36,18 @@ use Alinex\Util\String;
  * APC user-cache. To use more than one instance of this registry you may use
  * different prefixes. Also use the prefix wisely to prevent collision with
  * other librarys and php routines on the same machine.
- * 
+ *
  * @attention
  * This engine should not be used if the Registry\Session is used with an engine
  * because it may interfere.
+ *
+ * **Garbage Collection**
+ *
+ * **No garbage collection available** for this engine. The settings of $ttl
+ * will be ignored.
+ *
+ * @see Engine overview chart
+ * @see Dictionary for usage examples
  */
 class Session extends Engine
 {
@@ -49,15 +67,9 @@ class Session extends Engine
     }
 
     /**
-     * Method to set a storage variable
-     *
-     * @param string $key   name of the entry
-     * @param string $value Value of storage key null to remove entry
-     *
-     * @return mixed value which was set
-     * @throws \Alinex\Validator\Exception
+     * @copydoc Engine::set()
      */
-    function set($key, $value = null)
+    function set($key, $value = null, $ttl = null)
     {
         if (!isset($value)) {
             $this->remove($key);
@@ -68,10 +80,7 @@ class Session extends Engine
     }
 
     /**
-     * Unset a storage variable
-     *
-     * @param string $key   name of the entry
-     * @return bool    TRUE on success otherwise FALSE
+     * @copydoc Engine::remove()
      */
     public function remove($key)
     {
@@ -83,10 +92,7 @@ class Session extends Engine
     }
 
     /**
-     * Method to get a variable
-     *
-     * @param  string  $key   array key
-     * @return mixed value on success otherwise NULL
+     * @copydoc Engine::get()
      */
     public function get($key)
     {
@@ -97,10 +103,7 @@ class Session extends Engine
     }
 
     /**
-     * Check if storage variable is defined
-     *
-     * @param string $key   name of the entry
-     * @return bool    TRUE on success otherwise FALSE
+     * @copydoc Engine::has()
      */
     public function has($key)
     {
@@ -109,9 +112,7 @@ class Session extends Engine
     }
 
     /**
-     * Get the list of keys
-     *
-     * @return array   list of key names
+     * @copydoc Engine::keys()
      */
     public function keys()
     {
@@ -124,6 +125,196 @@ class Session extends Engine
                 return String::startsWith($item, $context);
             }
         );
+    }
+
+    /**
+     * @copydoc Engine::inc()
+     */
+    public function inc($key, $num = 1)
+    {
+        assert(is_int($num));
+
+        $this->checkKey($key);
+        if (!isset($_SESSION[$this->_context.$key]))
+            $_SESSION[$this->_context.$key] = $num;
+        else if (!is_integer($_SESSION[$this->_context.$key]))
+            throw new \Exception(
+                tr(
+                    __NAMESPACE__,
+                    'Incrementing or decrementing a dictionary value is only possible using integer values,'
+                )
+            );
+        else
+            $_SESSION[$this->_context.$key] += $num;
+        return $_SESSION[$this->_context.$key];
+    }
+
+    /**
+     * @copydoc Engine::append()
+     */
+    public function append($key, $text)
+    {
+        assert(is_string($text));
+
+        $this->checkKey($key);
+        if (!isset($_SESSION[$this->_context.$key]))
+            $_SESSION[$this->_context.$key] = $text;
+        else if (!is_string($_SESSION[$this->_context.$key]))
+            throw new \Exception(
+                tr(
+                    __NAMESPACE__,
+                    'Appending to a dictionary value is only possible using string values,'
+                )
+            );
+        else
+            $_SESSION[$this->_context.$key] .= $text;
+        // return result
+        return $_SESSION[$this->_context.$key];
+    }
+
+    /**
+     * @copydoc Engine::hashSet()
+     */
+    public function hashSet($key, $name, $value)
+    {
+        assert(is_string($name));
+
+        if (!isset($value)) {
+            $this->hashRemove($key, $name);
+            return null;
+        }
+        $this->checkKey($key);
+        if (!isset($_SESSION[$this->_context.$key]))
+            $_SESSION[$this->_context.$key] = array($name => $value);
+        else if (!is_array($_SESSION[$this->_context.$key]))
+            throw new \Exception(
+                tr(
+                    __NAMESPACE__,
+                    'The key isn\'t holding a hash'
+                )
+            );
+        else
+            $_SESSION[$this->_context.$key][$name] = $value;
+        return $value;
+    }
+
+    /**
+     * @copydoc Engine::hashGet()
+     */
+    public function hashGet($key, $name)
+    {
+        return isset($_SESSION[$this->_context.$key][$name])
+            ? $_SESSION[$this->_context.$key][$name]
+            : null;
+    }
+
+    /**
+     * @copydoc Engine::hashHas()
+     */
+    public function hashHas($key, $name)
+    {
+        return isset($_SESSION[$this->_context.$key][$name]);
+    }
+
+    /**
+     * @copydoc Engine::hashRemove()
+     */
+    public function hashRemove($key, $name)
+    {
+        if (isset($_SESSION[$this->_context.$key][$name])) {
+            unset($_SESSION[$this->_context.$key][$name]);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @copydoc Engine::hashCount()
+     */
+    public function hashCount($key)
+    {
+        return isset($_SESSION[$this->_context.$key])
+            ? $this->count($_SESSION[$this->_context.$key])
+            : 0;
+    }
+
+    /**
+     * @copydoc Engine::listPush()
+     */
+    public function listPush($key, $value)
+    {
+        $this->checkKey($key);
+        if (!isset($_SESSION[$this->_context.$key])) {
+            $_SESSION[$this->_context.$key] = array($value);
+            return 1;
+        }
+        return array_push($_SESSION[$this->_context.$key], $value);
+    }
+
+    /**
+     * @copydoc Engine::listPop()
+     */
+    public function listPop($key)
+    {
+        return isset($_SESSION[$this->_context.$key])
+            ? array_pop($_SESSION[$this->_context.$key])
+            : null;
+    }
+
+    /**
+     * @copydoc Engine::listShift()
+     */
+    public function listShift($key)
+    {
+        return isset($_SESSION[$this->_context.$key])
+            ? array_shift($_SESSION[$this->_context.$key])
+            : null;
+    }
+
+    /**
+     * @copydoc Engine::listUnshift()
+     */
+    public function listUnshift($key, $value)
+    {
+        $this->checkKey($key);
+        if (!isset($_SESSION[$this->_context.$key])) {
+            $_SESSION[$this->_context.$key] = array($value);
+            return 1;
+        }
+        return array_unshift($_SESSION[$this->_context.$key], $value);
+    }
+
+    /**
+     * @copydoc Engine::listGet()
+     */
+    public function listGet($key, $num)
+    {
+        return isset($_SESSION[$this->_context.$key][$num])
+            ? $_SESSION[$this->_context.$key][$num]
+            : null;
+    }
+
+    /**
+     * @copydoc Engine::listSet()
+     */
+    public function listSet($key, $num, $value)
+    {
+        $this->checkKey($key);
+        if (!isset($_SESSION[$this->_context.$key]))
+            $_SESSION[$this->_context.$key] = array($value);
+        else if (isset($_SESSION[$this->_context.$key][$num]))
+            $_SESSION[$this->_context.$key][$num] = $value;
+        else
+            $_SESSION[$this->_context.$key][] = $value;
+        return count($_SESSION[$this->_context.$key]);
+    }
+
+    /**
+     * @copydoc Engine::listCount()
+     */
+    public function listCount($key)
+    {
+        return isset($_SESSION[$this->_context.$key]) ? count($_SESSION[$this->_context.$key]) : 0;
     }
 
     /**
@@ -146,5 +337,5 @@ class Session extends Engine
         100000 => 0.2,
         1000 => 0.5
     );
-    
+
 }

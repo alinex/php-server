@@ -121,7 +121,7 @@ class Dictionary
      * Engine::PERSISTENCE_MEDIUM, Engine::PERSISTENCE_LONG
      * - \c performance - minimum Performance: Engine::PERFORMANCE_LOW,
      * Engine::PERFORMANCE_MEDIUM, Engine::PERFORMANCE_HIGH
-     * 
+     *
      * The name option is possible and only used for giving the engine a name
      * for configuration files.
      *
@@ -145,7 +145,7 @@ class Dictionary
                 array(
                     'notEmpty' => true,
                     'mandatoryKeys' => array('type', 'prefix'),
-                    'allowedKeys' => array('server', 'name'),
+                    'allowedKeys' => array('server', 'ttl', 'name'),
                     'keySpec' => array(
                         'type' => array(
                             'Code::class',
@@ -158,16 +158,24 @@ class Dictionary
                             'Type::string',
                             array(
                                 'maxLength' => 10, // maximal 10 char. prefix is used
-                                'match' => '/[A-Za-z_.:]*/'
+                                'match' => '/[A-Za-z_.:]*/',
                                 // pipe makes problems in session keys
                                 // - used as separator for array contents
+                                'description' => tr('Prefix or context name to use.')
+                            )
+                        ),
+                        'ttl' => array(
+                            'Type::integer',
+                            array(
+                                'unsigned' => true,
+                                'description' => tr('Default time to live for the entries.')
                             )
                         )
                     )
                 )
             );
         } catch (Exception $ex) {
-            throw $ex->createOuter(__METHOD__);
+            throw $ex->createOuter(__METHOD__, $options);
         }
         // check for engine specific options
         try {
@@ -185,13 +193,14 @@ class Dictionary
                                         'Type::string',
                                         array('match' => '#(tcp)://.*#')
                                     )
-                                )
+                                ),
+                                'description' => tr('URIs of possible server.')
                             )
                         );
                     break;
             }
         } catch (Exception $ex) {
-            throw $ex->createOuter(__METHOD__);
+            throw $ex->createOuter(__METHOD__, $options);
         }
         // exclude specific engines
         if (isset($options['exclude'])) {
@@ -203,7 +212,7 @@ class Dictionary
                             'The {type} storage is not allowed',
                             array('type' => $value['type'])
                         )
-                    );                    
+                    );
         }
         // check for engine selection
         $engine = Engine::getInstance($value);
@@ -275,7 +284,7 @@ class Dictionary
             array(
                 'notEmpty' => true,
                 'mandatoryKeys' => array('type', 'prefix'),
-                'allowedKeys' => array('server', 'name'),
+                'allowedKeys' => array('server', 'ttl', 'name'),
                 'keySpec' => array(
                     'type' => array(
                         'Code::class',
@@ -288,9 +297,17 @@ class Dictionary
                         'Type::string',
                         array(
                             'maxLength' => 10, // maximal 10 char. prefix is used
-                            'match' => '/[A-Za-z_.:]*/'
+                            'match' => '/[A-Za-z_.:]*/',
                             // pipe makes problems in session keys
                             // - used as separator for array contents
+                            'description' => tr('Prefix or context name to use.')
+                        )
+                    ),
+                    'ttl' => array(
+                        'Type::integer',
+                        array(
+                            'unsigned' => true,
+                            'description' => tr('Default time to live for the entries.')
                         )
                     )
                 )
@@ -306,13 +323,14 @@ class Dictionary
                             'Type::string',
                             array('match' => '#(tcp)://.*#')
                         )
-                    )
+                    ),
+                    'description' => tr('URIs of possible server.')
                 )
             );
         // check for engine specific options
         if (isset($options['exclude']))
             $desc .= ' '.trn(
-                __NAMESPACE__, 
+                __NAMESPACE__,
                 'The {list} engine is not allowed here.',
                 'The {list} engines are not allowed here.',
                 count($options['exclude']),
@@ -338,7 +356,7 @@ class Dictionary
                 'Only engines declared as {option} performance are allowed.',
                 array('option' => self::$_enginePerformance[$options['performance']])
             );
-        
+
         return $desc;
     }
 

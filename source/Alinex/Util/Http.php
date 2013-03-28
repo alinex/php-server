@@ -16,6 +16,8 @@ use Alinex\Validator;
 
 /**
  * Helper methods to work with http accesses.
+ *
+ * @codeCoverageIgnore complicated without browser
  */
 class Http
 {

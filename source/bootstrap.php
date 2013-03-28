@@ -12,10 +12,9 @@
  * @see       http://alinex.de
  */
 
-use Alinex\Dictionary\Registry;
-use Alinex\Dictionary\Session;
-use Alinex\Dictionary\Cache;
 use Alinex\Code;
+use Alinex\Util\I18n;
+use Alinex\Dictionary\Registry;
 
 // general php configuration
 

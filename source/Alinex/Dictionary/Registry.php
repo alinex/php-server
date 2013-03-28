@@ -12,6 +12,7 @@
 
 namespace Alinex\Dictionary;
 
+use Alinex\Logger;
 use Alinex\Validator;
 
 /**
@@ -25,6 +26,10 @@ use Alinex\Validator;
  * @example Registry-arrayAccess.php
  */
 /**
+ * Show how to easy load registry from file if not available.
+ * @example Registry-autoload.php
+ */
+/**
  * Registry to pass global information and objects between classes.
  *
  * The registry is aimed to hold configuration data and specific settings in
@@ -35,7 +40,7 @@ use Alinex\Validator;
  * The ArrayRegistry is used as one of the simplest, but any other can be used
  * in the same way.
  *
- * Additionally checks may be defined using the Alinex::Validator class methods
+ * Additionally checks may be defined using the \Alinex\Validator class methods
  * which will be called on set(). Add this checks using setValidator().
  *
  * <b>Array Access</b>
@@ -54,10 +59,6 @@ use Alinex\Validator;
  * A group is a subpart of the registry with the same group name as key start
  * in storage. This will be prepended on set and removed on get to use with
  * shorter array keys.
- *
- * @note Keys with exact the name of a given group are not included in ti. A
- * group may only include keys which start with the group name but are longer
- * with at least one character.
  *
  * <b>Validation</b>
  *
@@ -87,6 +88,8 @@ use Alinex\Validator;
  * different formats use the Transfer subclasses.
  *
  * @see Cache for more open multiple engine storage
+ * @see Session to easy integrate any engine as session storage
+ * @see Dictionary for overview of use
  */
 class Registry implements \Countable, \ArrayAccess
 {
