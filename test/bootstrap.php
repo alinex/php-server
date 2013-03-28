@@ -35,6 +35,6 @@ $loader->register();
 // internationalization
 
 I18n::init();
-I18n::setLocale("en_US");
+#I18n::setLocale("en_US");
 
 return $loader;

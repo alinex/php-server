@@ -15,6 +15,9 @@ namespace Alinex\Code;
 /**
  * ClassLoader implements a PSR-0 class loader
  *
+ * This class loader supports lazy loading in which classes are only loaded
+ * if they are going to be used to spend less memory.
+ *
  * @code
  *     $loader = \Alinex\Code\Autoloader::getInstance();
  *
@@ -305,12 +308,12 @@ class Autoloader
 
     /**
      * Add backport functions.
-     * 
+     *
      * This will include backported classes from newer php version to make
      * them available on older installations.
-     * The classes have to be available in directories named after their php 
+     * The classes have to be available in directories named after their php
      * version number.
-     * 
+     *
      * @param string $path to the backport directory
      * @return bool true if backports added
      */

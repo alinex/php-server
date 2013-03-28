@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Dictionary keeping values in the Memcache service.
+ * Storage keeping values in the Memcache service.
  *
  * @author    Alexander Schilling <info@alinex.de>
  * @copyright 2009-2013 Alexander Schilling (\ref Copyright)
@@ -15,7 +15,17 @@ namespace Alinex\Dictionary\Engine;
 use Alinex\Dictionary\Engine;
 
 /**
- * Dictionary keeping values in the AMemcache service.
+ * Storage keeping values in the Memcache service.
+ *
+ * **Specification**
+ * - Scope: global
+ * - Performance: medium
+ * - Persistence: medium
+ * - Size: medium
+ * - Objects: will be serialized
+ * - Manipulation: only inc() dec(), others emulated
+ * - Garbage collection: ttl, self managed
+ * - Requirements: Extension
  *
  * This class will store the registry in the global memcache store. This makes
  * it less performant but globally accessible.
@@ -32,11 +42,11 @@ use Alinex\Dictionary\Engine;
  * The maximal key length is 250 characters and can't contain spaces. a single
  * value may contain up to 1MB of data. this is already taken care of in the
  * Registry base class.
- * 
- * To use the garbage collector setTtl() have to be used. An implicit garbage 
- * collector call is not neccessary because memcache will do this on it's own.
- * The garbage collector will work in TTL mode there each entry will be
- * removed after the general defined time to live per key.
+ *
+ * @see Engine overview chart
+ * @see Dictionary for usage examples
+ *
+ * @codeCoverageIgnore because not testable while xcache installed
  */
 class Memcache extends Engine
 {
@@ -54,31 +64,6 @@ class Memcache extends Engine
             throw new \BadMethodCallException("Memcached 2.0 or higher needed");
 
         return true;
-    }
-
-    /**
-     * Time To Live
-     *
-     * Store var in the cache for ttl seconds. After the ttl has passed, the
-     * stored variable will be expunged from the cache (on the next request).
-     * If no ttl is supplied (or if the ttl is 0), the value will persist until
-     * it is removed from the cache manually, or otherwise fails to exist in
-     * the cache (clear, remove).
-     *
-     * @var integer
-     */
-    protected $_ttl = null;
-
-    /**
-     * Constructor
-     *
-     * @param integer   $ttl time to live for each individual value
-     * @return int value set
-     */
-    protected function setTtl($ttl)
-    {
-        assert(is_int($ttl));
-        $this->_ttl = $ttl;
     }
 
     /**
@@ -143,15 +128,9 @@ class Memcache extends Engine
     }
 
     /**
-     * Method to set a storage variable
-     *
-     * @param string $key   name of the entry
-     * @param string $value Value of storage key null to remove entry
-     *
-     * @return mixed value which was set
-     * @throws \Alinex\Validator\Exception
+     * @copydoc Engine::set()
      */
-    function set($key, $value = null)
+    function set($key, $value = null, $ttl = null)
     {
         if (!isset($value)) {
             $this->remove($key);
@@ -162,14 +141,12 @@ class Memcache extends Engine
             throw new Exception(
                 tr(__NAMESPACE__, 'No servers set to connect to memcache')
             );
-        return $this->_memcache->set($this->_context.$key, $value, $this->_ttl);
+        $ttl = !isset($ttl) ? $this->_ttl : $ttl ? $ttl : null;
+        return $this->_memcache->set($this->_context.$key, $value, $ttl);
     }
 
     /**
-     * Unset a storage variable
-     *
-     * @param string $key   name of the entry
-     * @return bool    TRUE on success otherwise FALSE
+     * @copydoc Engine::remove()
      */
     public function remove($key)
     {
@@ -179,10 +156,7 @@ class Memcache extends Engine
     }
 
     /**
-     * Method to get a variable
-     *
-     * @param  string  $key   array key
-     * @return mixed value on success otherwise NULL
+     * @copydoc Engine::get()
      */
     public function get($key)
     {
@@ -193,10 +167,7 @@ class Memcache extends Engine
     }
 
     /**
-     * Check if storage variable is defined
-     *
-     * @param string $key   name of the entry
-     * @return bool    TRUE on success otherwise FALSE
+     * @copydoc Engine::has()
      */
     public function has($key)
     {
@@ -207,18 +178,47 @@ class Memcache extends Engine
     }
 
     /**
-     * Get the list of keys
-     *
-     * @note This is done by searching through the APC cache and collecting all
-     * registry keys because of the prefix.
-     *
-     * @return array   list of key names
+     * @copydoc Engine::keys()
      */
     public function keys()
     {
         if (isset($this->_memcache))
             return $this->_memcache->getAllKeys();
         return array();
+    }
+
+    /**
+     * @copydoc Engine::inc()
+     */
+    public function inc($key, $num = 1)
+    {
+        assert(is_int($num));
+
+        if ($num < 0)
+            return $this->dec($key, -$num);
+        $this->checkKey($key);
+        if (!isset($this->_memcache))
+            return null;
+        if ($this->_memcache->get($this->_context.$key) !== false)
+            return $this->_memcache->set($this->_context.$key, $num);
+        return $this->_memcache->increment($this->_context.$key, $num);
+    }
+
+    /**
+     * @copydoc Engine::dec()
+     */
+    public function dec($key, $num = 1)
+    {
+        assert(is_int($num));
+
+        if ($num < 0)
+            return $this->inc($key, -$num);
+        $this->checkKey($key);
+        if (!isset($this->_memcache))
+            return null;
+        if ($this->_memcache->get($this->_context.$key) !== false)
+            return $this->_memcache->set($this->_context.$key, -$num);
+        return $this->_memcache->decrement($this->_context.$key, $num);
     }
 
     /**

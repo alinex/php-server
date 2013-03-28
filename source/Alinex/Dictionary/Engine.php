@@ -22,26 +22,54 @@ use Alinex\Validator;
  * backend engines. This implies different type of scope like request, server,
  * session, global or permanent.
  *
+ * Each engine maybe best used for the one or other task. Below is a quick
+ * overview:
+ *
+ * | engine    | scope        | perf.  | persistence | registry | cache | session | comment            |
+ * | :-------- | :----------: | :----: | :---------: | :------: | :---: | :-----: | :----------------- |
+ * | Apc       | local        | high   | medium      | +        | ++    | +++     | needs extension    |
+ * | ArrayList | request      | best   | none        | --       | -     | ---     | fallback           |
+ * | Directory | local/global | low    | long        | -        | +++   | -       | only for big data  |
+ * | Memcache  | global       | medium | medium      | +        | ++    | +++     | needs extension    |
+ * | Redis     | global       | medium | medium      | +        | +++   | +++     | opt. extension     |
+ * | Session   | session      | high   | medium      | -        | +     | default | in standard config |
+ * | XCache    | local        | high   | medium      | +        | ++    | +++     | needs extension    |
+ *
+ * But read more about the specific engines in their class description. A
+ * special criteria may also be the size and garbage collection.
+ *
+ * **Methods**
+ *
  * On each engine the following operations are possible:
  * - <b>simple accessors</b>: set(), get(), has(), remove()
  * - <b>array access</b>: offsetSet(), offsetGet(), offsetExists(),
  * offsetUnset()
  * - <b>group access</b>: groupSet(), groupGet(), groupClear()
- * - <b>value editing</b>: incr(), decr(), append()
+ * - <b>value editing</b>: inc(), dec(), append()
  * - <b>hash access</b>: hashSet(), hashGet(), hashHas(), hashRemove(),
  * hashCount()
  * - <b>list access</b>: listPush(), listPop(), listShift(), listUnshift(),
  * listGet(), listSet(), listCount()
- * - <b>overall control</b>: count(), keys(), clear()
+ * - <b>overall control</b>: count(), keys(), clear(), gc()
  *
- * This engines are used as storage in Registry and Cache. Use one of this
- * class from the application level.
+ * This engines are used as storage in Registry, Cache and Session or from the
+ * application level.
  *
- * For this to work some engine specifica are set by each enginelike $_scope,
+ * **Instanciation**
+ *
+ * A new engine can be generated:
+ * - directly from each class
+ * - autodetected using Engine::getInstance()
+ * - by specification using Engine::getInstance($spec)
+ *
+ * The engine specification may also be checked using the
+ * Alinex\Validator\Dictionary::engine Validator.
+ *
+ * For this to work some engine specifica are set by each engine like $_scope,
  * $_performance, $_persistence and the $_limitSize. This may be requested
  * by the high level methods using the different allow() method.
  *
- * <b>Array Access</b>
+ * **Array Access**
  *
  * The storage is also usable like normal Arrays with:
  * @code
@@ -52,13 +80,42 @@ use Alinex\Validator;
  * unset($storage[$offset]);
  * @endcode
  *
- * <b>Group</b>
+ * **Group**
  *
  * A group is a subpart of the entries with the same group name as key start
  * in storage. This will be prepended on set and removed on get to use with
  * shorter array keys.
  *
- * @see Alinex\Dictionary for overview
+ * **Modifiing Methods**
+ *
+ * This are methods which change cchanges the value:
+ * - <b>value editing</b>: inc(), dec(), append()
+ * - <b>hash access</b>: hashSet(), hashGet(), hashHas(), hashRemove(),
+ * hashCount()
+ * - <b>list access</b>: listPush(), listPop(), listShift(), listUnshift(),
+ * listGet(), listSet(), listCount()
+ *
+ * Some engines support this natively for all others it will be emulated.
+ *
+ * **Garbage Collection**
+ *
+ * Most engines support garbage collection. To switch this on it have to be
+ * configured by setting the default time-to-live using setTtl() or giving the
+ * time-to-live with the set() method.
+ *
+ * The timeout is cleared only when the key is removed using the remove()
+ * command or overwritten using the next set() command. This means that all the
+ * operations that conceptually alter the value stored at the key without
+ * replacing it with a new one will leave the timeout untouched. For instance,
+ * incrementing the value of a key with inc(), pushing a new value into a list
+ * with listPush(), or altering the field value of a hash with hashSet() are all
+ * operations that will leave the timeout untouched.
+ *
+ * Each engine works with it's own garbage collection algorithm. On some engines
+ * you have to trigger this by calling gc(). Read more in the description of
+ * each engine.
+ *
+ * @see Dictionary for overview of use
  */
 abstract class Engine implements \Countable, \ArrayAccess
 {
@@ -200,6 +257,11 @@ abstract class Engine implements \Countable, \ArrayAccess
                         array($engine, 'addServer'),
                         $config['server']
                     );
+                if ($config['ttl'])
+                    call_user_func(
+                        array($engine, 'setTtl'),
+                        $config['ttl']
+                    );
                 // analyze validator
                 return $engine;
             }
@@ -258,6 +320,31 @@ abstract class Engine implements \Countable, \ArrayAccess
     }
 
     /**
+     * Default Time To Live
+     *
+     * Store var in the cache for ttl seconds. After the ttl has passed, the
+     * stored variable will be expunged from the cache (on the next request).
+     * If no ttl is supplied (or if the ttl is 0), the value will persist until
+     * it is removed from the cache manually, or otherwise fails to exist in
+     * the cache (clear, remove).
+     *
+     * @var integer
+     */
+    protected $_ttl = null;
+
+    /**
+     * Set the default time to live.
+     *
+     * @param integer   $ttl time to live for each individual value
+     * @return int value set
+     */
+    protected function setTtl($ttl)
+    {
+        assert(is_int($ttl));
+        $this->_ttl = $ttl;
+    }
+
+    /**
      * Check that the key is possible.
      *
      * This method will be used in assert calls to check the key for
@@ -289,16 +376,27 @@ abstract class Engine implements \Countable, \ArrayAccess
     /**
      * Method to set a storage variable
      *
+     * If key already holds a value, it is overwritten, regardless of its type.
+     * Lists and Hashes will be stored in its proper type if the engine supports
+     * this.
+     *
+     * If $ttl is given this value is used, if not the default setting applies.
+     * To prevent  setting a time-to-live even if defined as default 0 have to
+     * be given here.
+     *
      * @param string $key   name of the entry
      * @param string $value Value of storage key null to remove entry
+     * @param int $ttl time to live for entry or 0 for endless
      *
      * @return mixed value which was set
      * @throws \Alinex\Validator\Exception
      */
-    abstract public function set($key, $value = null);
+    abstract public function set($key, $value = null, $ttl = null);
 
     /**
      * Method to get a storage variable
+     *
+     * Lists and hashes will be returned as arrays.
      *
      * @param string $key   name of the entry
      * @return mixed value or NULL if entry is missing
@@ -487,20 +585,28 @@ abstract class Engine implements \Countable, \ArrayAccess
     /**
      * Increment value of given key.
      *
+     * Increments the number stored at key by one. If the key does not exist,
+     * it is set to 0 before performing the operation. An error is returned if
+     * the key contains a value of the wrong type or contains a string that can
+     * not be represented as integer.
+     *
      * @param string $key name of storage entry
      * @param numeric $num increment value
      * @return numeric new value of storage entry
      * @throws \Exception if storage entry is not numeric
      */
-    public function incr($key, $num = 1)
+    public function inc($key, $num = 1)
     {
+        assert(is_int($num));
+
+        $this->checkKey($key);
         $value = $this->get($key);
-        if (!is_numeric($value))
+        if (!isset($value)) $value = 0;
+        if (!is_integer($value))
             throw new \Exception(
                 tr(
                     __NAMESPACE__,
-                    'Incrementing a dictionary value is only possible using numeric values, {num} was given',
-                    array('num' => $num)
+                    'Incrementing or decrementing a dictionary value is only possible using integer values.'
                 )
             );
         return $this->set($key, $value + $num);
@@ -509,18 +615,27 @@ abstract class Engine implements \Countable, \ArrayAccess
     /**
      * Decrement value of given key.
      *
+     * Decrements the number stored at key by one. If the key does not exist,
+     * it is set to 0 before performing the operation. An error is returned if
+     * the key contains a value of the wrong type or contains a string that can
+     * not be represented as integer.
+     *
      * @param string $key name of storage entry
      * @param numeric $num decrement value
      * @return numeric new value of storage entry
      * @throws \Exception if storage entry is not numeric
      */
-    public function decr($key, $num = 1)
+    public function dec($key, $num = 1)
     {
-        return $this->incr($key, -$num);
+        return $this->inc($key, -$num);
     }
 
     /**
      * Append string to storage value.
+     *
+     * If key already exists and is a string, this command appends the value at
+     * the end of the string. If key does not exist it is created and set as an
+     * empty string, so APPEND will be similar to SET in this special case.
      *
      * @param string $key name of storage entry
      * @param string $text text to be appended
@@ -529,13 +644,15 @@ abstract class Engine implements \Countable, \ArrayAccess
      */
     public function append($key, $text)
     {
+        assert(is_string($text));
+
         $value = $this->get($key);
+        if (!isset($value)) $value = '';
         if (!is_string($value))
             throw new \Exception(
                 tr(
                     __NAMESPACE__,
-                    'Appending to a dictionary value is only possible using string values, {text} was given',
-                    array('text' => $text)
+                    'Appending to a dictionary value is only possible using string values,'
                 )
             );
         return $this->set($key, $value . $text);
@@ -543,6 +660,11 @@ abstract class Engine implements \Countable, \ArrayAccess
 
     /**
      * Set an value in the hash specified by key.
+     *
+     * Sets field in the hash stored at key to value. If key does not exist, a
+     * new key holding a hash is created. If field already exists in the hash,
+     * it is overwritten.
+     *
      * @param string $key name of storage entry
      * @param string $name key name within the hash
      * @param mixed $value data to be stored
@@ -550,9 +672,18 @@ abstract class Engine implements \Countable, \ArrayAccess
      */
     public function hashSet($key, $name, $value)
     {
+        assert(is_string($name));
+
         $hash = $this->get($key);
         if (!isset($hash))
             $hash = array();
+        if (!is_array($hash))
+            throw new \Exception(
+                tr(
+                    __NAMESPACE__,
+                    'The key isn\'t holding a hash'
+                )
+            );
         $hash[$name] = $value;
         $this->set($key, $hash);
         return $value;
@@ -560,6 +691,7 @@ abstract class Engine implements \Countable, \ArrayAccess
 
     /**
      * Get an value from  the hash specified by key.
+     *
      * @param string $key name of storage entry
      * @param string $name key name within the hash
      * @return mixed value from hash
@@ -572,6 +704,7 @@ abstract class Engine implements \Countable, \ArrayAccess
 
     /**
      * Check if the specified hash has the value
+     *
      * @param string $key name of storage entry
      * @param string $name key name within the hash
      * @return boll entry in hash found
@@ -584,6 +717,7 @@ abstract class Engine implements \Countable, \ArrayAccess
 
     /**
      * Remove some entry from within the specified hash.
+     *
      * @param string $key name of storage entry
      * @param string $name key name within the hash
      * @return bool true on success otherwise false
@@ -601,6 +735,7 @@ abstract class Engine implements \Countable, \ArrayAccess
 
     /**
      * Count the number of entries within the specified hash.
+     *
      * @param string $key name of storage entry
      * @return int number of entries within the hash
      */
@@ -612,6 +747,7 @@ abstract class Engine implements \Countable, \ArrayAccess
 
     /**
      * Add an element to the end of the list.
+     *
      * @param string $key name of storage entry
      * @param mixed $value data to be added
      * @return int new number of elements
@@ -628,6 +764,7 @@ abstract class Engine implements \Countable, \ArrayAccess
 
     /**
      * Get the last element out of the list.
+     *
      * @param string $key name of storage entry
      * @return mixed removed last element of list
      */
@@ -643,6 +780,7 @@ abstract class Engine implements \Countable, \ArrayAccess
 
     /**
      * Get the first element out of the list.
+     *
      * @param string $key name of storage entry
      * @return mixed removed first element
      */
@@ -658,6 +796,7 @@ abstract class Engine implements \Countable, \ArrayAccess
 
     /**
      * Add an element to the start of the list.
+     *
      * @param string $key name of storage entry
      * @param mixed $value data to be added
      * @return int new number of elements
@@ -674,6 +813,7 @@ abstract class Engine implements \Countable, \ArrayAccess
 
     /**
      * Get a specified element from the list.
+     *
      * @param string $key name of storage entry
      * @param int $num number of element
      * @return mixed value at the defined position
@@ -686,6 +826,7 @@ abstract class Engine implements \Countable, \ArrayAccess
 
     /**
      * Set the value of a specific list entry.
+     *
      * @param string $key name of storage entry
      * @param int $num number of element
      * @param mixed $value data to be set
@@ -706,6 +847,11 @@ abstract class Engine implements \Countable, \ArrayAccess
 
     /**
      * Count the number of elements in list.
+     *
+     * Returns the length of the list stored at key. If key does not exist, it
+     * is interpreted as an empty list and 0 is returned. An error is returned
+     * when the value stored at key is not a list.
+     *
      * @param string $key name of storage entry
      * @return int number of list entries
      */

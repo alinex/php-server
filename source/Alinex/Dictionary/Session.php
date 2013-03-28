@@ -16,6 +16,14 @@ use Alinex\Util\Http;
 use Alinex\Template\Simple;
 
 /**
+ * Short example showing the use of sessions without engine.
+ * @example Session-default.php
+ */
+/**
+ * Using a storage engine in sessions.
+ * @example Session-engine.php
+ */
+/**
  * Enhanced session management.
  *
  * This class will give more control over the session. This can be done with
@@ -56,6 +64,10 @@ use Alinex\Template\Simple;
  * $session->set('name', 'Drak');
  * $session->get('name');
  * @endcode
+ *
+ * @see Registry for storage with validation
+ * @see Cache for more open multiple engine storage
+ * @see Dictionary for overview of use
  */
 class Session implements SessionHandlerInterface
 {
@@ -141,8 +153,7 @@ class Session implements SessionHandlerInterface
     const REGISTRY_ENGINE = 'session.engine';
 
     /**
-     * Prefix for the data storage-
-     * @registry
+     * Prefix for the data storage.
      */
     const DEFAULT_PREFIX = 'ax:ses:';
 
@@ -248,8 +259,8 @@ class Session implements SessionHandlerInterface
         if ($registry) {
             // add validators
             if ($registry->validatorCheck()) {
-                if (!$this->validatorHas(self::REGISTRY_ENGINE))
-                    $this->validatorSet(
+                if (!$registry->validatorHas(self::REGISTRY_ENGINE))
+                    $registry->validatorSet(
                         self::REGISTRY_ENGINE, 'Dictionary::engine',
                         array(
                             'exclude' => 'Session',
@@ -259,8 +270,8 @@ class Session implements SessionHandlerInterface
                             )
                         )
                     );
-                if (!$this->validatorHas(self::REGISTRY_INACTIVETIME))
-                    $this->validatorSet(
+                if (!$registry->validatorHas(self::REGISTRY_INACTIVETIME))
+                    $registry->validatorSet(
                         self::REGISTRY_INACTIVETIME, 'Type::integer',
                         array(
                             'unsigned' => true,
@@ -270,8 +281,8 @@ class Session implements SessionHandlerInterface
                             )
                         )
                     );
-                if (!$this->validatorHas(self::REGISTRY_LOGINTIME))
-                    $this->validatorSet(
+                if (!$registry->validatorHas(self::REGISTRY_LOGINTIME))
+                    $registry->validatorSet(
                         self::REGISTRY_LOGINTIME, 'Type::integer',
                         array(
                             'unsigned' => true,
@@ -281,8 +292,8 @@ class Session implements SessionHandlerInterface
                             )
                         )
                     );
-                if (!$this->validatorHas(self::REGISTRY_LIFETIME))
-                    $this->validatorSet(
+                if (!$registry->validatorHas(self::REGISTRY_LIFETIME))
+                    $registry->validatorSet(
                         self::REGISTRY_LIFETIME, 'Type::integer',
                         array(
                             'unsigned' => true,
@@ -292,8 +303,8 @@ class Session implements SessionHandlerInterface
                             )
                         )
                     );
-                if (!$this->validatorHas(self::REGISTRY_IPLOCK_TIME))
-                    $this->validatorSet(
+                if (!$registry->validatorHas(self::REGISTRY_IPLOCK_TIME))
+                    $registry->validatorSet(
                         self::REGISTRY_IPLOCK_TIME, 'Type::integer',
                         array(
                             'unsigned' => true,
@@ -303,8 +314,8 @@ class Session implements SessionHandlerInterface
                             )
                         )
                     );
-                if (!$this->validatorHas(self::REGISTRY_IPLOCK_NUM))
-                    $this->validatorSet(
+                if (!$registry->validatorHas(self::REGISTRY_IPLOCK_NUM))
+                    $registry->validatorSet(
                         self::REGISTRY_IPLOCK_NUM, 'Type::integer',
                         array(
                             'unsigned' => true,

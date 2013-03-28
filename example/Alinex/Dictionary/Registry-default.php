@@ -30,5 +30,3 @@ if ($registry->has('database.host')) {
 
 // remove timezone from registry
 $registry->remove('timezone');
-
-?>

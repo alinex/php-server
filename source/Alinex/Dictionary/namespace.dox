@@ -22,4 +22,11 @@ Cache System
 The Cache uses multiple Engines to store caching data. Each of the configured
 engines will be checked automatically to find the best storage automatically.
 
+Session Support
+---------------
+
+Through the Session dictionary each avaialble Engine can be used as storage.
+This class also helps in session management and also without the association of
+an engine which will use the php default (same like Engine\Session).
+
 */
