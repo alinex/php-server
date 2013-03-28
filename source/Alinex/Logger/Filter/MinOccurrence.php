@@ -66,7 +66,7 @@ class MinOccurrence extends NoDuplicate
         $hash = $this->getHashKey($message);
         // check and store
         $num = $cache->has($hash)
-            ? $cache->set($hash, 1, $this->_ttl)
+            ? $cache->set($hash, 1, Engine::SCOPE_GLOBAL, $this->_ttl)
             : $cache->inc($hash);
         return $num > $this->_occurrence;
     }
