@@ -1,2 +1,1 @@
-This is only a testfile which will be used in the
-automatic unit tests.
+filetest.txt
