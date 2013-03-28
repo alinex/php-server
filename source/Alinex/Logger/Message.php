@@ -26,7 +26,7 @@ use Alinex\Logger;
  * - level.num - level number
  * - level.name - name of the log severity
  * - message - original message
- * - context.... - attributes from message call
+ * - context. ... - attributes from message call
  *
  * More data elements will be added using the Provider classes.
  */
