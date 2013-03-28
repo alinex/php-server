@@ -33,7 +33,7 @@ abstract class Filter
      * Post filters may also store some messages locally to add them later.
      *
      * @param  Message  $message Log message object
-     * @return Boolean Whether the record has been processed
+     * @return bool whether the record has to be further processed
      */
     abstract public function check(Message $message);
 }

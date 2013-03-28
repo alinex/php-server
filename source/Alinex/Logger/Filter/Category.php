@@ -74,7 +74,7 @@ class Category extends Filter
      * or if it has the specified exact level.
      *
      * @param  Message  $message Log message object
-     * @return Boolean Whether the record has been processed
+     * @return bool whether the record has to be further processed
      */
     public function check(Message $message)
     {
