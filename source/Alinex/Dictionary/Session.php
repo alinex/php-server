@@ -65,6 +65,18 @@ use Alinex\Template\Simple;
  * $session->get('name');
  * @endcode
  *
+ * **Automatic Configuration**
+ * 
+ * This is possible using registry entries like in the following example:
+ *   session.inactive_time = 900
+ *   session.login_time = 21600
+ *   session.life_time = 86400
+ *   session.iplock_time = 60
+ *   session.iplock_num = 60
+ *   session.engine[type] = 'Redis'
+ *   session.engine[prefix] = 'ax:ses:',
+ *   session.engine[server][0] = 'tcp://localhost:3456'
+ *
  * @see Registry for storage with validation
  * @see Cache for more open multiple engine storage
  * @see Dictionary for overview of use
