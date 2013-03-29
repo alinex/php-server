@@ -30,6 +30,15 @@ use Alinex\Logger;
  * You may call the garbage collector manual on the cache class or it will
  * be done automatically before setting a value if min. gctime is set.
  *
+ * **Automatic Configuration**
+ * 
+ * This is possible using registry entries like in the following example:
+ *   cache.gc_lastrun = [timestamp]
+ *   cache.gc_time = 600
+ *   cache.engine[0][type] = 'Redis'
+ *   cache.engine[0][prefix] = 'ax:tmp:',
+ *   cache.engine[0][server][0] = 'tcp://localhost:3456'
+ * 
  * @see Registry for storage with validation
  * @see Session to easy integrate any engine as session storage
  * @see Dictionary for overview of use
@@ -47,7 +56,7 @@ class Cache implements \Countable, \ArrayAccess
      * Information then the last garbage collector run was.
      * @registry
      */
-    const REGISTRY_LASTRUN = 'cache.lastrun';
+    const REGISTRY_LASTRUN = 'cache.gc_lastrun';
 
     /**
      * Prefix for the data storage.

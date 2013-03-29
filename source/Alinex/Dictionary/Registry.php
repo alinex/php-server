@@ -87,6 +87,16 @@ use Alinex\Validator;
  * To export and import values this engines translates the strustures into
  * different formats use the Transfer subclasses.
  *
+ * **Automatic Configuration**
+ * 
+ * This is possible through the registry files itself using the data:
+ *   registry.data[type] = 'Redis'
+ *   registry.data[prefix] = 'ax:reg-d:',
+ *   registry.data[server][0] = 'tcp://localhost:3456'
+ *   registry.data[type] = 'Redis'
+ *   registry.data[prefix] = 'ax:reg-v:',
+ *   registry.data[server][0] = 'tcp://localhost:3456'
+ * 
  * @see Cache for more open multiple engine storage
  * @see Session to easy integrate any engine as session storage
  * @see Dictionary for overview of use

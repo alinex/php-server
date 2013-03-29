@@ -37,8 +37,9 @@ class NoDuplicate extends Filter
 
     /**
      * Name of the group in cache under which the log hashes will be kept.
+     * @cache
      */
-    const CACHE_GROUP = 'log.noduplicate';
+    const CACHE_GROUP = 'log.duplicate';
 
     /**
      * Time-to-live while duplicate messages won't occure

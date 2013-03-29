@@ -103,7 +103,7 @@ class Dictionary
     /**
      * Check for dictionary engine definition.
      *
-     * The definition of an dictionary engine can be n array structure like:
+     * The definition of an dictionary engine have to be an array structure like:
      * @verbatim
      * array(
      *  type => 'Redis',
