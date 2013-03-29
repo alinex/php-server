@@ -20,6 +20,9 @@ use Alinex\Dictionary\Cache;
  *
  * This will use the Cache to collect the messages so also there will be no
  * duplicate messages accross multiple servers.
+ * 
+ * The message will also get the number of occurrencies added as:
+ * - occurrence = int
  */
 class MinOccurrence extends NoDuplicate
 {
@@ -68,6 +71,8 @@ class MinOccurrence extends NoDuplicate
         $num = $cache->has($hash)
             ? $cache->set($hash, 1, Engine::SCOPE_GLOBAL, $this->_ttl)
             : $cache->inc($hash);
+        // set occurrence to message
+        $message->data['occurrence'] = $this->_occurrence;
         return $num > $this->_occurrence;
     }
 }
