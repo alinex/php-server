@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Abstract provider to get additional information for logging.
+ * Get information about calling method.
  *
  * @author    Alexander Schilling <info@alinex.de>
  * @copyright 2009-2013 Alexander Schilling (\ref Copyright)
@@ -16,20 +16,20 @@ use Alinex\Logger\Message;
 use Alinex\Logger\Provider;
 
 /**
- * Abstract provider to get additional information for logging.
+ * Get information about calling method.
  *
  * This will add information about the calling method:
- * - function - The current function name.
- * - line - The current line number.
- * - file - The current file name.
- * - class - The current class name.
- * - object - The current object.
- * - type - The current call type. If a method call "->" is returned.
+ * - code.function - The current function name.
+ * - code.line - The current line number.
+ * - code.file - The current file name.
+ * - code.class - The current class name.
+ * - code.object - The current object.
+ * - code.type - The current call type. If a method call "->" is returned.
  * If a static method call "::" is returned. If a function call nothing is
  * returned.
- * - args - If inside a function, this lists the functions arguments. If inside
+ * - code.args - If inside a function, this lists the functions arguments. If inside
  * an included file, this lists the included file name(s).
- * - trace - same information of the calling methods if required
+ * - code.trace - same information of the calling methods if required
  *
  * @codeCoverageIgnore because backtrace not possible through phpunit
  */
@@ -45,14 +45,7 @@ class Code extends Provider
     public $_withTrace = false;
 
     /**
-     * Get additional information.
-     *
-     * This class will retrieve additional information to be added to the
-     * Message object. They may be used later to generate the message in the
-     * Formatter.
-     *
-     * @param  Message  $message Log message object
-     * @return bool true on success
+     * @opydoc Provider::addTo()
      */
     function addTo(Message $message)
     {
