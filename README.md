@@ -72,6 +72,12 @@ In the moment the following parts are developed:
   integrated into the internationalization, logging and error management
   processes.
 
+- **Automatic Configuration**
+
+  Most parts are automatically configured to be used or may be specified using
+  the configuration file.
+
+
 API Documentation & More
 ---------------------
 
