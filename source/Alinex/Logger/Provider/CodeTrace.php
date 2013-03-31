@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Get information about calling method.
+ * Get information about calling method with trace.
  *
  * @author    Alexander Schilling <info@alinex.de>
  * @copyright 2009-2013 Alexander Schilling (\ref Copyright)
@@ -16,7 +16,7 @@ use Alinex\Logger\Message;
 use Alinex\Logger\Provider;
 
 /**
- * Get information about calling method.
+ * Get information about calling method with trace.
  *
  * This will add information about the calling method:
  * - code.function - The current function name.
@@ -29,10 +29,11 @@ use Alinex\Logger\Provider;
  * returned.
  * - code.args - If inside a function, this lists the functions arguments. If inside
  * an included file, this lists the included file name(s).
+ * - code.trace - same information of the calling methods if required
  *
  * @codeCoverageIgnore because backtrace not possible through phpunit
  */
-class Code extends Provider
+class CodeTrace extends Provider
 {
     /**
      * Should the trace be included.
@@ -41,28 +42,5 @@ class Code extends Provider
      * true, also the back trace will be added as \c code.trace array.
      * @var bool
      */
-    protected $_withTrace = false;
-
-    /**
-     * @opydoc Provider::addTo()
-     */
-    function addTo(Message $message)
-    {
-        // get information
-        $trace = debug_backtrace();
-        $offset = 0;
-        foreach ($trace as $entry) {
-            ++$offset;
-            // step through
-            if (strpos($entry['class'], 'Logger') !== false) // within Logger
-                continue;
-            $message->data['code'] = $entry;
-#            error_log($entry['file'].':'.$entry['line']);
-#            continue;
-            if ($this->_withTrace)
-                array_slice($trace, $offset);
-            break;
-        }
-        return true;
-    }
+    protected $_withTrace = true;
 }
