@@ -25,15 +25,16 @@ use Alinex\Validator;
  * Each engine maybe best used for the one or other task. Below is a quick
  * overview:
  *
- * | engine    | scope        | perf.  | persistence | registry | cache | session | comment            |
- * | :-------- | :----------: | :----: | :---------: | :------: | :---: | :-----: | :----------------- |
- * | Apc       | local        | high   | medium      | +        | ++    | +++     | needs extension    |
- * | ArrayList | request      | best   | none        | --       | -     | ---     | fallback           |
- * | Directory | local/global | low    | long        | -        | +++   | -       | only for big data  |
- * | Memcache  | global       | medium | medium      | +        | ++    | +++     | needs extension    |
- * | Redis     | global       | medium | medium      | +        | +++   | +++     | opt. extension     |
- * | Session   | session      | high   | medium      | -        | +     | default | in standard config |
- * | XCache    | local        | high   | medium      | +        | ++    | +++     | needs extension    |
+ * | engine    | scope        | perf.  | persistence | registry | cache | session | comment             |
+ * | :-------- | :----------: | :----: | :---------: | :------: | :---: | :-----: | :------------------ |
+ * | Apc       | local        | high   | medium      | +        | ++    | +++     | needs extension     |
+ * | ArrayList | request      | best   | none        | --       | -     | ---     | fallback            |
+ * | Directory | local/global | low    | long        | -        | +++   | -       | only for big data   |
+ * | GloblList | request      | best   | none        | --       | -     | ---     | fallback accessible |
+ * | Memcache  | global       | medium | medium      | +        | ++    | +++     | needs extension     |
+ * | Redis     | global       | medium | medium      | +        | +++   | +++     | opt. extension      |
+ * | Session   | session      | high   | medium      | -        | +     | default | in standard config  |
+ * | XCache    | local        | high   | medium      | +        | ++    | +++     | needs extension     |
  *
  * But read more about the specific engines in their class description. A
  * special criteria may also be the size and garbage collection.
