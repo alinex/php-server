@@ -33,8 +33,6 @@ use Alinex\Dictionary\Engine;
  *
  * This engine can be used as a fallback with fast access but the whole
  * space is limited by the php max. memory setting.
- * @attention If memory is exhausted the
- * process will crash.
  *
  * This is the simplest storage, it will last till the end of the php process
  * (mostly the request). It has no dependencies, the performance is high
@@ -83,7 +81,7 @@ class ArrayList extends Engine
      * Reference to this context storage in $_data.
      * @var array
      */
-    private $_storage = null;
+    protected $_storage = null;
 
     /**
      * Memory limit to run the emergency cleanup.
