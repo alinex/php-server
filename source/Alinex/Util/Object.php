@@ -19,9 +19,12 @@ class Object
     /**
      * Get global object ID
      * From: http://stackoverflow.com/questions/2872366/get-instance-id-of-an-object-in-php
+     * @param object $obj to analyze
      * @return int current object id in php memory hash
      */
-    private function getId(Objet &$obj) {
+    public function getId(&$obj) {
+        assert(gettype($obj) == 'object');
+        
         ob_start();
         var_dump($obj);// object(foo)#INSTANCE_ID (0) { }
         preg_match('~^.+?#(\d+)~s', ob_get_clean(), $oid);
