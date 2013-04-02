@@ -44,7 +44,7 @@ use Alinex\Util\ArrayStructure;
  *
  * Therefore the following modifiers are possible:
  * - trim - strip whitespaces from start and end
- * - dump &lt;depth&gt; - dump the variable
+ * - dump [&lt;depth&gt;] - dump the variable
  * - printf &lt;format&gt; - print a formated value see
  * http://www.php.net/manual/en/function.sprintf.php
  * - date &lt;format&gt; - output date using format specified under
@@ -53,6 +53,14 @@ use Alinex\Util\ArrayStructure;
  * are also possible giving only the last part like 'RFC822'.
  * - upper - convert to upper case
  * - lower - convert to lower case
+ * - timerange [&lt;shorten?&gt;] - output seconds human readable if short=true
+ * not with the exact time but the most pregnant part
+ * - unit &lt;unit&gt; [&lt;decimals&gt;] [&lt;long form?&gt;] - output numeric
+ * value using given unit with specified decimals precsision and may be in long
+ * form
+ * - unitbinary &lt;unit&gt; [&lt;decimals&gt;] [&lt;long form?&gt;] - output numeric
+ * value using given unit with specified decimals precsision and may be in long
+ * form
  */
 class Simple
 {
@@ -137,6 +145,15 @@ class Simple
         'printf' => array('call' => 'sprintf', 'reverse' => true),
         'upper' => array('call' => 'strtoupper'),
         'lower' => array('call' => 'strtolower'),
+        'timerange' => array(
+            'call' => array('\Alinex\Util\Number', 'toTimerange')
+        ),
+        'unit' => array(
+            'call' => array('\Alinex\Util\Number', 'useUnit')
+        ),
+        'binaryunit' => array(
+            'call' => array('\Alinex\Util\Number', 'useBinaryUnit')
+        ),
     );
 
     /**
