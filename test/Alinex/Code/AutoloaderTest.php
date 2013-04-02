@@ -29,7 +29,7 @@ class AutoloaderTest extends \PHPUnit_Framework_TestCase
     }
 
     function testSetUseIncludePath()
-    {        
+    {
         $this->object->setUseIncludePath(true);
         $this->assertTrue($this->object->getUseIncludePath(), 'after set to true');
         $this->object->setUseIncludePath(false);
@@ -86,9 +86,9 @@ class AutoloaderTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse(class_exists('\\Xxx\\not_existing_class'));
         $this->assertNull($this->object->loadClass('\\Xxx\\not_existing_class'));
     }
-    
+
     function testBackports()
     {
-        $this->assertTrue($this->object->addBackports(__DIR__.'/../../backport'));
+        $this->assertTrue($this->object->addBackports(__DIR__.'/../../../source/backport'));
     }
 }
