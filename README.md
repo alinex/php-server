@@ -10,16 +10,16 @@ Alinex is a collection of stable, flexible and strong integrated components to
 make a base system for any powerful web application. Web applications are used
 more and more also with the new term 'working in the cloud' and the big market
 share of tablet computers and smartphones. In contrast to traditional
-applications there is no installation for each user neccessary and it can be
+applications there is no installation for each user necessary and it can be
 used anytime and anywhere. This applications can also be used from pocket
 devices like mobile phones.
 
-To reach this there are allready a lot of frameworks which help in development,
-but often they are very complex and not flexible enought. The hardest part in
+To reach this there are already a lot of frameworks which help in development,
+but often they are very complex and not flexible enough. The hardest part in
 web applications are the client programming and just this is often not
 supported well by most frameworks. Alinex aims this and will give better support
 to make robust and powerful interfaces without to much effort. This is solved
-not as one major system but as a base plattform with lots of intercorporating
+not as one major system but as a base platform with lots of intercorporating
 modules.
 
 But Just now the client application is not developed.
@@ -39,38 +39,47 @@ Platform Features
 
 In the moment the following parts are developed:
 
-- **Autloloading**
+- **Autoloader**
 
   Universal and standard conform autoloader for platform, vendor and system
-  files.
+  files. Using lazy loading.
 
-- **Value Validation**
+- **Validation**
 
   This is a central point for stability, maintenance and security.
+
+- **I18n support**
+
+  complete translation support with powerful but easy text format
 
 - **Multilingual Support**
 
   Using an gettext approach for easy use and translation with thread safe
-  alternative and included template language use (see below).
+  alternative and included template language use (see below). The complete
+  base is setup multilingual.
 
 - **Dictionary**
 
-  An abstract layer for different key-value stores with lots of possibilities
-  to use. A great list of engines will be supported.
+  An abstract layer for different key-value stores with different supported 
+  storage engines like Redis, Memcache, APC, Xcache, Directory, ...\n
+  Each engine can import/export in many formats supports value  manipulation 
+  methods and time limits through garbage collection.
 
-  The easy use for different scenarios are provided through the Registry,
-  Cache,... classes.
+  The easy use for different scenarios are provided through the accessors like
+  Registry, Cache, Session and Queue... classes.
 
 - **Logging**
 
   A framework for standard conform logging with lots of handlers, filter and
   the easy to use format specification through the simple template (see below).
+  Logging to syslog, stdout, errorlog, streams, Dictionary, mail, files...
 
 - **Simple Template**
 
   This is an easy template language which will work mostly on short text and is
   integrated into the internationalization, logging and error management
-  processes.
+  processes.\n
+  It supports variable substitutions and different powerful modifiers.
 
 - **Automatic Configuration**
 
