@@ -18,7 +18,7 @@ use Alinex\Logger\Provider;
 /**
  * Get information about the PHP process.
  *
- * This will add information about the memory:
+ * This will add information about the system:
  * - process.pid - The process's id
  * - process.uid - The process's user id
  * - process.gid - The process's group id
@@ -55,8 +55,6 @@ class Process extends Provider
             self::$_data = $base;
         }
         $data = self::$_data;
-        $data['usage'] = memory_get_usage(true);
-        $data['peak'] = memory_get_peak_usage(true);
         $message->data['process'] = $data;
         return true;
     }
