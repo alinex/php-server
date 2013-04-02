@@ -334,5 +334,6 @@ class Autoloader
         // add as fallback
         if (count($paths))
             $this->add('', $paths);
+        return true;
     }
 }

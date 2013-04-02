@@ -22,12 +22,14 @@ class Object
      * @param object $obj to analyze
      * @return int current object id in php memory hash
      */
-    public function getId(&$obj) {
+    public static function getId(&$obj)
+    {
         assert(gettype($obj) == 'object');
-        
+
         ob_start();
         var_dump($obj);// object(foo)#INSTANCE_ID (0) { }
+        $oid = array();
         preg_match('~^.+?#(\d+)~s', ob_get_clean(), $oid);
-        return $oid[1]; 
+        return $oid[1];
     }
 }
