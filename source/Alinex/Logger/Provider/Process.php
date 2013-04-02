@@ -19,7 +19,6 @@ use Alinex\Logger\Provider;
  * Get information about the system.
  *
  * Get a description of the operating system PHP is running on:
- *
  * - system.info - Contains all modes in the sequence "os host release version
  * machine".
  * - system.os - Operating system name. eg. FreeBSD.
