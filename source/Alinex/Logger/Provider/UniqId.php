@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Get information about the PHP process memory.
+ * Get an unique id.
  *
  * @author    Alexander Schilling <info@alinex.de>
  * @copyright 2009-2013 Alexander Schilling (\ref Copyright)
@@ -16,20 +16,18 @@ use Alinex\Logger\Message;
 use Alinex\Logger\Provider;
 
 /**
- * Get information about the PHP process memory.
+ * Get an unique id.
  *
  * This will add information about the memory:
- * - phpmemory.limit - The memory limit set in bytes
- * - phpmemory.usage - The current memory usage in bytes
- * - phpmemory.peak - The peak usage of memory in bytes
+ * - uniq.id - A globally unique id
  */
-class PhpMemory extends Provider
+class UniqId extends Provider
 {
     /**
-     * Cache for memory limit.
-     * @var int
+     * Cache for the static process information.
+     * @var array
      */
-    private static $_limit = null;
+    private static $_system = null;
 
     /**
      * Get additional information.
@@ -43,13 +41,9 @@ class PhpMemory extends Provider
      */
     function addTo(Message $message)
     {
-        $memory = array();
-        if (!isset(self::$_limit))
-            self::$_limit = ini_get('memory_limit');
-        $memory['limit'] = self::$_limit;
-        $memory['usage'] = memory_get_usage(true);
-        $memory['peak'] = memory_get_peak_usage(true);
-        $message->data['phpmemory'] = $memory;
+        if (!isset(self::$_system))
+            self::$_system = php_uname('n').':'.getmypid().':';
+        $message->data['uniq.id'] = uniqid(self::$_system, true);
         return true;
     }
 }
