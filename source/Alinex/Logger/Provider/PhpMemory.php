@@ -26,6 +26,12 @@ use Alinex\Logger\Provider;
 class PhpMemory extends Provider
 {
     /**
+     * Cache for memory limit.
+     * @var int
+     */
+    private static $_limit = null;
+
+    /**
      * Get additional information.
      *
      * This class will retrieve additional information to be added to the
@@ -38,7 +44,9 @@ class PhpMemory extends Provider
     function addTo(Message $message)
     {
         $memory = array();
-        $memory['limit'] = ini_get('memory_limit');
+        if (!isset(self::$_limit))
+            self::$_limit = ini_get('memory_limit');
+        $memory['limit'] = self::$_limit;
         $memory['usage'] = memory_get_usage(true);
         $memory['peak'] = memory_get_peak_usage(true);
         $message->data['phpmemory'] = $memory;
