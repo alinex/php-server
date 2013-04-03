@@ -33,15 +33,15 @@ $loader->add('Alinex', __DIR__);
 $loader->addBackports(__DIR__.DIRECTORY_SEPARATOR.'backport');
 $loader->register();
 
+// internationalization
+
+I18n::init();
+
 // error handler
 
 Code\ErrorHandler::register();
 // set to false for productive environment
 Code\AssertHandler::enabled(true);
-
-// internationalization
-
-I18n::init();
 
 // initialize registry
 
