@@ -75,47 +75,6 @@ class Logger // implements \Psr\Log\LoggerInterface
     const DEBUG = 7;
 
     /**
-     * Available log levels
-     *
-     * @var array
-     */
-    static protected $_logLevels = array(
-        self::EMERGENCY => 'Emergency',
-        self::ALERT => 'Alert',
-        self::CRITICAL => 'Critcal',
-        self::ERROR => 'Error',
-        self::WARNING => 'Warning',
-        self::NOTICE => 'Notice',
-        self::INFO => 'Info',
-        self::DEBUG => 'Debug'
-    );
-
-    /**
-     * Available PHP error levels and their meaning in POSIX loglevel terms
-     * Some ERROR constants are not supported in all PHP versions
-     * and will conditionally be translated from strings to constants,
-     * or else: removed from this mapping at start().
-     *
-     * @var array
-     */
-    static protected $_logPhpMapping = array(
-        E_ERROR => array(self::ERROR, 'Error'),
-        E_WARNING => array(self::WARNING, 'Warning'),
-        E_PARSE => array(self::EMERGENCY, 'Parse'),
-        E_NOTICE => array(self::DEBUG, 'Notice'),
-        E_CORE_ERROR => array(self::EMERGENCY, 'Core Error'),
-        E_CORE_WARNING => array(self::WARNING, 'Core Warning'),
-        E_COMPILE_ERROR => array(self::EMERGENCY, 'Compile Error'),
-        E_COMPILE_WARNING => array(self::WARNING, 'Compile Warning'),
-        E_USER_ERROR => array(self::ERROR, 'User Error'),
-        E_USER_WARNING => array(self::WARNING, 'User Warning'),
-        E_USER_NOTICE => array(self::DEBUG, 'User Notice'),
-        'E_RECOVERABLE_ERROR' => array(self::WARNING, 'Recoverable Error'),
-        'E_DEPRECATED' => array(self::NOTICE, 'Deprecated'),
-        'E_USER_DEPRECATED' => array(self::NOTICE, 'User Deprecated'),
-    );
-
-    /**
      * List of active logger instances.
      * @var array
      */
@@ -163,7 +122,11 @@ class Logger // implements \Psr\Log\LoggerInterface
      */
     public function log($level, $message, array $context = array())
     {
-        assert(key_exists($level, self::$_logLevels));
+        assert(
+            is_int($level) 
+            && $level <= self::DEBUG 
+            && $level >= self::EMERGENCY
+        );
 
         // create message object
         $logmessage = new Logger\Message($level, $message, $context);
