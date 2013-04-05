@@ -19,6 +19,10 @@ class File extends Stream
 {
     /**
      * Initialize the stream.
+     * 
+     * @param string $file file reference
+     * @param bool $keepOpened more performant but only possible for local
+     * files, written by single process.
      */
     function __construct($file, $keepOpened = false)
     {
