@@ -158,17 +158,15 @@ class Dictionary
                             'Type::string',
                             array(
                                 'maxLength' => 10, // maximal 10 char. prefix is used
-                                'match' => '/[A-Za-z_.:]*/',
+                                'match' => '/[A-Za-z_.:]*/'
                                 // pipe makes problems in session keys
                                 // - used as separator for array contents
-                                'description' => tr('Prefix or context name to use.')
                             )
                         ),
                         'ttl' => array(
                             'Type::integer',
                             array(
-                                'unsigned' => true,
-                                'description' => tr('Default time to live for the entries.')
+                                'unsigned' => true
                             )
                         )
                     )
@@ -193,8 +191,7 @@ class Dictionary
                                         'Type::string',
                                         array('match' => '#(tcp)://.*#')
                                     )
-                                ),
-                                'description' => tr('URIs of possible server.')
+                                )
                             )
                         );
                     break;
@@ -290,7 +287,8 @@ class Dictionary
                         'Code::class',
                         array(
                             'exists' => 1,
-                            'relative' => 'Alinex\Dictionary\Engine'
+                            'relative' => 'Alinex\Dictionary\Engine',
+                            'description' => tr(__NAMESPACE__, 'Type of storage engine to use.')
                         )
                     ),
                     'prefix' => array(
@@ -300,14 +298,14 @@ class Dictionary
                             'match' => '/[A-Za-z_.:]*/',
                             // pipe makes problems in session keys
                             // - used as separator for array contents
-                            'description' => tr('Prefix or context name to use.')
+                            'description' => tr(__NAMESPACE__, 'Prefix or context name to use.')
                         )
                     ),
                     'ttl' => array(
                         'Type::integer',
                         array(
                             'unsigned' => true,
-                            'description' => tr('Default time to live for the entries.')
+                            'description' => tr(__NAMESPACE__, 'Default time to live for the entries.')
                         )
                     )
                 )
@@ -324,7 +322,7 @@ class Dictionary
                             array('match' => '#(tcp)://.*#')
                         )
                     ),
-                    'description' => tr('URIs of possible server.')
+                    'description' => tr(__NAMESPACE__, 'URIs of possible server.')
                 )
             );
         // check for engine specific options
