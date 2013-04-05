@@ -168,11 +168,12 @@ class Number
 
     /**
      * Convert numeric value in human readable binary (1024 based) notation.
+     * 
      * @param numeric $value to be converted
      * @param string $unit to be added
      * @param int $digits number of floating point digits
      * @param bool $long should the long format be used
-     * @param bool $binary for binary representation (1024 based)
+     * 
      * @return string optimized value
      */
     static function useBinaryUnit($value, $unit, $digits=0,
