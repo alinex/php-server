@@ -60,79 +60,6 @@ class Number
     );
 
     /**
-     * Get the full name of the prefix to get a long form.
-     * @param string $prefix prefix to be used
-     * @param numeric $value to decide for singular or plural forms
-     * @return string long prefix name for this value
-     */
-    private static function getPrefixName($prefix, $value = 1)
-    {
-        assert(
-            in_array($prefix, self::$_prefixes)
-            || in_array($prefix, self::$_binaryPrefixes)
-        );
-        assert(is_numeric($value));
-        switch ($prefix) {
-            case 'Y':
-                return trn(__NAMEPSACE__, 'septillion', 'septillions', $value);
-            case 'Z':
-                return trn(__NAMEPSACE__, 'sextillion', 'sextillions', $value);
-            case 'E':
-                return trn(__NAMEPSACE__, 'quintillion', 'quintillions', $value);
-            case 'P':
-                return trn(__NAMEPSACE__, 'quadrillion', 'quadrillions', $value);
-            case 'T':
-                return trn(__NAMEPSACE__, 'trillion', 'trillions', $value);
-            case 'G':
-                return trn(__NAMEPSACE__, 'billion', 'billions', $value);
-            case 'M':
-                return trn(__NAMEPSACE__, 'million', 'millions', $value);
-            case 'k':
-                return trn(__NAMEPSACE__, 'thousand', 'thousands', $value);
-            case 'h':
-                return trn(__NAMEPSACE__, 'hundred', 'hundreds', $value);
-            case 'da':
-                return trn(__NAMEPSACE__, 'ten', 'tens', $value);
-            case 'd':
-                return trn(__NAMEPSACE__, 'tenth', 'tenths', $value);
-            case 'c':
-                return trn(__NAMEPSACE__, 'hundredth', 'hundredths', $value);
-            case 'm':
-                return trn(__NAMEPSACE__, 'thousandth', 'thousandths', $value);
-            case 'μ':
-                return trn(__NAMEPSACE__, 'millionth', 'millionths', $value);
-            case 'n':
-                return trn(__NAMEPSACE__, 'billionth', 'billionths', $value);
-            case 'p':
-                return trn(__NAMEPSACE__, 'trillionth', 'trillionths', $value);
-            case 'f':
-                return trn(__NAMEPSACE__, 'quadrillionth', 'quadrillionths', $value);
-            case 'a':
-                return trn(__NAMEPSACE__, 'quintillionth', 'quintillionths', $value);
-            case 'z':
-                return trn(__NAMEPSACE__, 'sextillionth', 'sextillionths', $value);
-            case 'y':
-                return trn(__NAMEPSACE__, 'septillionth', 'septillionths', $value);
-            case 'Ki':
-                return tr(__NAMEPSACE__, 'kibi', $value);
-            case 'Mi':
-                return tr(__NAMEPSACE__, 'mibi', $value);
-            case 'Gi':
-                return tr(__NAMEPSACE__, 'gibi', $value);
-            case 'Ti':
-                return tr(__NAMEPSACE__, 'tibi', $value);
-            case 'Pi':
-                return tr(__NAMEPSACE__, 'pibi', $value);
-            case 'Ei':
-                return tr(__NAMEPSACE__, 'eibi', $value);
-            case 'Zi':
-                return tr(__NAMEPSACE__, 'zibi', $value);
-            case 'Yi':
-                return tr(__NAMEPSACE__, 'yibi', $value);
-        }
-    }
-
-    /**
      * Prefixes which use other units.
      * @var array
      */
@@ -156,6 +83,81 @@ class Number
     );
     
     /**
+     * Get the full name of the prefix to get a long form.
+     * @param string $prefix prefix to be used
+     * @param numeric $value to decide for singular or plural forms
+     * @return string long prefix name for this value
+     */
+    private static function getPrefixName($prefix, $value = 1)
+    {
+        if (!$prefix)
+            return '';
+        assert(
+            in_array($prefix, self::$_prefixes)
+            || in_array($prefix, self::$_binaryPrefixes)
+        );
+        assert(is_numeric($value));
+        switch ($prefix) {
+            case 'Y':
+                return trn(__NAMESPACE__, 'septillion', 'septillions', $value);
+            case 'Z':
+                return trn(__NAMESPACE__, 'sextillion', 'sextillions', $value);
+            case 'E':
+                return trn(__NAMESPACE__, 'quintillion', 'quintillions', $value);
+            case 'P':
+                return trn(__NAMESPACE__, 'quadrillion', 'quadrillions', $value);
+            case 'T':
+                return trn(__NAMESPACE__, 'trillion', 'trillions', $value);
+            case 'G':
+                return trn(__NAMESPACE__, 'billion', 'billions', $value);
+            case 'M':
+                return trn(__NAMESPACE__, 'million', 'millions', $value);
+            case 'k':
+                return trn(__NAMESPACE__, 'thousand', 'thousands', $value);
+            case 'h':
+                return trn(__NAMESPACE__, 'hundred', 'hundreds', $value);
+            case 'da':
+                return trn(__NAMESPACE__, 'ten', 'tens', $value);
+            case 'd':
+                return trn(__NAMESPACE__, 'tenth', 'tenths', $value);
+            case 'c':
+                return trn(__NAMESPACE__, 'hundredth', 'hundredths', $value);
+            case 'm':
+                return trn(__NAMESPACE__, 'thousandth', 'thousandths', $value);
+            case 'μ':
+                return trn(__NAMESPACE__, 'millionth', 'millionths', $value);
+            case 'n':
+                return trn(__NAMESPACE__, 'billionth', 'billionths', $value);
+            case 'p':
+                return trn(__NAMESPACE__, 'trillionth', 'trillionths', $value);
+            case 'f':
+                return trn(__NAMESPACE__, 'quadrillionth', 'quadrillionths', $value);
+            case 'a':
+                return trn(__NAMESPACE__, 'quintillionth', 'quintillionths', $value);
+            case 'z':
+                return trn(__NAMESPACE__, 'sextillionth', 'sextillionths', $value);
+            case 'y':
+                return trn(__NAMESPACE__, 'septillionth', 'septillionths', $value);
+            case 'Ki':
+                return tr(__NAMESPACE__, 'kibi', $value);
+            case 'Mi':
+                return tr(__NAMESPACE__, 'mibi', $value);
+            case 'Gi':
+                return tr(__NAMESPACE__, 'gibi', $value);
+            case 'Ti':
+                return tr(__NAMESPACE__, 'tibi', $value);
+            case 'Pi':
+                return tr(__NAMESPACE__, 'pibi', $value);
+            case 'Ei':
+                return tr(__NAMESPACE__, 'eibi', $value);
+            case 'Zi':
+                return tr(__NAMESPACE__, 'zibi', $value);
+            case 'Yi':
+                return tr(__NAMESPACE__, 'yibi', $value);
+        }
+    }
+
+    /**
      * Fix the value and unit output.
      * 
      * Some things are not possible between unit and prefix like Mg will be
@@ -174,7 +176,7 @@ class Number
         if (isset(self::$_fixUnit[$prefix.$unit]))
             list($prefix, $unit) = self::$_fixUnit[$prefix.$unit];
         return sprintf('%1.'.$digits.'f', $value)
-            . ($long ? self::getPrefixName($prefix, $value) : $prefix)
+            . ($long && $prefix ? ' '.self::getPrefixName($prefix, $value).' ' : $prefix)
             . $unit;
     }
     
@@ -201,7 +203,9 @@ class Number
                         $sign.round($value/$num, $digits), 
                         $prefix, $unit, $digits, $long
                     );
-            return self::formatValue($sign.round($value, $digits), '', $unit, $digits);
+            return self::formatValue(
+                $sign.round($value, $digits), '', $unit, $digits
+            );
         } else if ($value > 100) {
             foreach (self::$_prefixes as $num => $prefix) {
                 if ($num < 1) break;
@@ -219,7 +223,9 @@ class Number
                         $prefix, $unit, $digits, $long
                     );
         }
-        return self::formatValue($sign.round($value, $digits), '', $unit, $digits);
+        return self::formatValue(
+            $sign.round($value, $digits), '', $unit, $digits
+        );
     }
 
     /**
@@ -307,7 +313,8 @@ class Number
         foreach ($units as $divisor => $unit) {
             if ($divisor == 0) {
                 if ($secs != 0)
-                    $res .= $secs . ' ' . self::getTimeUnitName($unit, $secs).", ";
+                    $res .= $secs . ' ' . 
+                        self::getTimeUnitName($unit, $secs).", ";
                 break;;
             }
             $quot = intval($secs / $divisor);

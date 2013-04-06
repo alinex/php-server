@@ -384,7 +384,16 @@ class I18n
         return Template\Simple::run($trans, $params);
     }
 
+    /**
+     * Domain name which is currently active.
+     * @var string
+     */
     private $_domain = null;
+    
+    /**
+     * Set to active reader if emulation is active.
+     * @var \FileReader
+     */
     private $_reader = null;
 
     /**
