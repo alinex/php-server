@@ -368,7 +368,7 @@ class I18n
         // only strings may be translated
         assert(is_string($msgPlural));
         // have to be a positive integer
-        assert(is_int($num) && $num >= 0);
+        assert(is_numeric($num) && $num >= 0);
 
         self::setDomain($namespace);
         if (self::$_emulation)
@@ -376,10 +376,10 @@ class I18n
                 // emulated gettext
                 ? self::$_reader->ngettext($msgSingular, $msgPlural, $num)
                 // fallback keep english
-                : self::$_reader->translate($msgid);
+                : $num==1 ? $msgSingular : $msgPlural;
         else
             // call native php function
-            $trans = ngettext($msgSingular, $msgSingular, $num);
+            $trans = ngettext($msgSingular, $msgPlural, $num);
         // replace variables and return
         return Template\Simple::run($trans, $params);
     }

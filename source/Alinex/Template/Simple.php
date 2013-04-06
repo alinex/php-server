@@ -149,10 +149,10 @@ class Simple
             'call' => array('\Alinex\Util\Number', 'toTimerange')
         ),
         'unit' => array(
-            'call' => array('\Alinex\Util\Number', 'useUnit')
+            'call' => array('\Alinex\Util\Number', 'toUnit')
         ),
         'binaryunit' => array(
-            'call' => array('\Alinex\Util\Number', 'useBinaryUnit')
+            'call' => array('\Alinex\Util\Number', 'toBinaryUnit')
         ),
     );
 
