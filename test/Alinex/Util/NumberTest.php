@@ -18,6 +18,19 @@ class NumberTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('500mg', Number::toUnit(0.5, 'g'));
     }
 
+    public function testToUnitLong()
+    {
+        $this->assertEquals('45g', Number::toUnit(45, 'g', 0, true));
+        $this->assertEquals('1000g', Number::toUnit(1000, 'g', 0, true));
+        $this->assertEquals('8 thousands g', Number::toUnit(8000, 'g', 0, true));
+        $this->assertEquals('8t', Number::toUnit(8000000, 'g', 0, true));
+        $this->assertEquals('8 millions bit', Number::toUnit(8000000, 'bit', 0, true));
+        $this->assertEquals('8 billions bit', Number::toUnit(8200000000, 'bit', 0, true));
+        $this->assertEquals('8.2 billions bit', Number::toUnit(8200000000, 'bit', 1, true));
+        $this->assertEquals('8.20 billions bit', Number::toUnit(8200000000, 'bit', 2, true));
+        $this->assertEquals('500 thousandths g', Number::toUnit(0.5, 'g', 0, true));
+    }
+
     public function testNegativeUnit()
     {
         $this->assertEquals('-45g', Number::toUnit(-45, 'g'));
