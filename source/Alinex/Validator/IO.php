@@ -453,20 +453,12 @@ class IO
         $options = self::streamOptions($options);
         // check for stream resource
         if (!is_resource($value)
-            || get_resource_type($value) !== 'stream')
+            || get_resource_type($value) !== 'stream')
             throw new Exception(
                 tr(
                     __NAMESPACE__,
-                    'The value has to be a stream resource.'
-                )
-            );
-        if ($options[]
-            && feof($value))
-            throw new Exception(
-                tr(
-                    __NAMESPACE__,
-                    'The value has to be a stream resource.'
-                )
+                    'The value has to be an opened stream resource.'
+                ), $value, $name, __METHOD__, $options
             );
         if ((isset($options['readable']) && $options['readable'] === true)
             || (isset($options['writable']) && $options['writable'] === true)) {
@@ -1096,7 +1088,7 @@ class IO
      * @param array   $options  options from check
      * @return string explaining message
      */
-    static function streamDescription(array $options = null)
+    static function streamconfigDescription(array $options = null)
     {
         $options = self::streamOptions($options);
         $desc = tr(

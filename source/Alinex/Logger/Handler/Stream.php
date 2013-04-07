@@ -14,6 +14,7 @@ namespace Alinex\Logger\Handler;
 
 use Alinex\Logger\Handler;
 use Alinex\Logger\Message;
+use Alinex\Validator\IO;
 
 /**
  * Put the log messages to the given stream.
@@ -91,6 +92,8 @@ class Stream extends Handler
      * - ogg:// — Audio streams
      * - expect:// — Process Interaction Streams
      *
+     * Read more details at http://www.php.net/manual/en/wrappers.php
+     * 
      * The stream will be opened for writing only.
      *
      * @param string $stream local file, stream wrapper or url specification
@@ -107,7 +110,7 @@ class Stream extends Handler
             $this->_uri = $stream;
         } else {
             // hopefully it is a stream
-            $stream = \Alinex\Validator\IO::stream($stream, 'stream');
+            $stream = IO::stream($stream, 'stream');
             $this->_stream = $stream;
             // never close if already opened
             $this->_flags = $this->_flags & ~ self::FLAG_CLOSE;
@@ -117,8 +120,10 @@ class Stream extends Handler
 
     private function openStream()
     {
-        if (isset($this->_stream))
+        if (isset($this->_stream)) {
+            IO::stream($this->_stream, 'stream');
             return $this->_stream; // don't reopen it
+        }
         if (!isset($this->_uri))
             throw new \Exception(
                 tr(
@@ -137,7 +142,10 @@ class Stream extends Handler
                 $errorMessage = preg_replace('{^fopen\(.*?\): }', '', $msg);
             }
         );
-        $this->_stream = fopen($this->_uri, 'a', false, $context);
+        if (isset($context))
+            $this->_stream = fopen($this->_uri, 'a', false, $context);
+        else
+            $this->_stream = fopen($this->_uri, 'a');            
         restore_error_handler();
         if (!is_resource($this->_stream)) {
             $this->_stream = null;
@@ -145,7 +153,7 @@ class Stream extends Handler
                 tr(
                     __NAMESPACE__,
                     'The stream to {stream} could not be opened: {cause}',
-                    array('stream' => $this->_file, 'cause' => $errorMessage)
+                    array('stream' => $this->_uri, 'cause' => $errorMessage)
                 )
             );
         }
