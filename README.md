@@ -86,6 +86,12 @@ In the moment the following parts are developed:
   Most parts are automatically configured to be used or may be specified using
   the configuration file.
 
+- **System execution**
+
+  A Process execution and management package makes it easy to call external
+  system routines on any Unix like System. With this PHP can be also be used
+  as replacement for bash scripts...
+
 
 API Documentation & More
 ---------------------
