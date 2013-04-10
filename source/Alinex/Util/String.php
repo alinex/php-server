@@ -72,6 +72,8 @@ class String
      */
     public static function dump($object, $depth = 1)
     {
+        assert(is_int($depth));
+
         if (is_null($object))
             return 'null';
         if (is_bool($object))
@@ -135,6 +137,8 @@ class String
      */
     static function escape($value)
     {
+        assert(is_string($value));
+
         return str_replace(
             array_keys(self::$_escape), array_values(self::$_escape), $value
         );
@@ -153,6 +157,11 @@ class String
         $string, $width = 75, $break = PHP_EOL, $cut = false
     )
     {
+        assert(is_string($string));
+        assert(is_int($width) && $width > 0);
+        assert(is_string($break));
+        assert(is_bool($cut));
+
         $array = explode("\n", $string);
         $string = "";
         foreach ($array as $value) {
@@ -173,6 +182,8 @@ class String
      */
     static function convertType($var)
     {
+        assert(is_string($var));
+        
         if (is_numeric($var))
             return (float) $var != (int) $var
                 ? (float) $var

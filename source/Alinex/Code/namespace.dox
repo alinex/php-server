@@ -2,5 +2,5 @@
 Code management functionality like Autoloader, ErrorHandler and AssertHandler.
 
 This classes will help in easy and stable development. They are meant for easy
-error management and debugging.
+error management and debugging. This builds the core.
 */

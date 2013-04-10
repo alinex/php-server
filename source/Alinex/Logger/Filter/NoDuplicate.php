@@ -69,19 +69,19 @@ class NoDuplicate extends Filter
     protected $_data = array();
 
     /**
-     * Id of this filter class used to separate storage with other iinstances.
+     * Id of this filter class used to separate storage with other instances.
      * @var string
      */
     private $_id = null;
-    
+
     /**
      * Constructor set the object id
      */
-    public function __construct() 
+    public function __construct()
     {
-        $_id = \Alinex\Util\Object::getId($this);
+        $this->_id = \Alinex\Util\Object::getId($this);
     }
-    
+
     /**
      * Add or remove data to be included in check.
      *
