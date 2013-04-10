@@ -12,12 +12,12 @@ class ErrorHandlerTest extends \PHPUnit_Framework_TestCase
      */
     public function testErrorHandlerCaptureNotice()
     {
-        $this->setExpectedException('\ErrorException', 'Undefined index: baz');
-
         ini_set('xdebug.scream', TRUE); // to also test the warning
         ErrorHandler::register();
-
         $array = array('foo' => 'bar');
+        $array['baz'];
+        ErrorHandler::setExceptionLevel(E_ALL);
+        $this->setExpectedException('\ErrorException', 'Undefined index: baz');
         $array['baz'];
     }
 
@@ -26,11 +26,10 @@ class ErrorHandlerTest extends \PHPUnit_Framework_TestCase
      */
     public function testErrorHandlerCaptureWarning()
     {
-        $this->setExpectedException('\ErrorException', 'array_merge(): Argument #2 is not an array');
-
         ErrorHandler::register();
+        $this->setExpectedException('\ErrorException', 'array_merge(): Argument #2 is not an array');
+        array_merge(array(), 'string'); // only notice
 
-        array_merge(array(), 'string');
     }
 
     /**

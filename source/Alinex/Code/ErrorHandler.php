@@ -11,6 +11,7 @@
  */
 
 namespace Alinex\Code;
+use Alinex\Logger;
 
 /**
  * Convert PHP errors into exceptions
@@ -35,7 +36,7 @@ namespace Alinex\Code;
  *
  * You may specify which errors have to be logged (using Logger) and which are
  * thrown as Exception using the setLogLevel(), setExceptionLevel().
- * 
+ *
  * This helps in development because it can be thrown and catched anywhere.
  */
 class ErrorHandler
@@ -45,10 +46,10 @@ class ErrorHandler
      * @var int
      */
     private static $_logLevel = E_ALL;
-    
+
     /**
      * Set the error levels which have to be logged using Logger.
-     * 
+     *
      * This defaults to all.
      * @param int $level error levels to log
      */
@@ -57,23 +58,23 @@ class ErrorHandler
         assert(is_int($level));
         self::$_logLevel = $level;
     }
-    
+
     /**
      * Current setting of levels to throw exceptions.
      * @var int
      */
     private static $_exceptionLevel = 341;
-    
+
     /**
      * Set the error levels on which to throw an exception.
-     * 
+     *
      * This defaults to E_ERROR...
      * @param int $level error levels to log
      */
     public static function setExceptionLevel($level)
     {
         assert(is_int($level));
-        self::$_exceptionLevel = $level;        
+        self::$_exceptionLevel = $level;
     }
 
     /**
@@ -85,23 +86,23 @@ class ErrorHandler
      * @var array
      */
     static protected $_logPhpMapping = array(
-        E_ERROR => array(self::ERROR, 'Error'),
-        E_WARNING => array(self::WARNING, 'Warning'),
-        E_PARSE => array(self::EMERGENCY, 'Parse'),
-        E_NOTICE => array(self::DEBUG, 'Notice'),
-        E_CORE_ERROR => array(self::EMERGENCY, 'Core Error'),
-        E_CORE_WARNING => array(self::WARNING, 'Core Warning'),
-        E_COMPILE_ERROR => array(self::EMERGENCY, 'Compile Error'),
-        E_COMPILE_WARNING => array(self::WARNING, 'Compile Warning'),
-        E_USER_ERROR => array(self::ERROR, 'User Error'),
-        E_USER_WARNING => array(self::WARNING, 'User Warning'),
-        E_USER_NOTICE => array(self::DEBUG, 'User Notice'),
-        'E_RECOVERABLE_ERROR' => array(self::WARNING, 'Recoverable Error'),
-        'E_DEPRECATED' => array(self::NOTICE, 'Deprecated'),
-        'E_USER_DEPRECATED' => array(self::NOTICE, 'User Deprecated'),
-        'E_STRICT' => array(self::DEBUG, 'Strict Warning'),
+        E_ERROR => array(Logger::ERROR, 'Error'),
+        E_WARNING => array(Logger::WARNING, 'Warning'),
+        E_PARSE => array(Logger::EMERGENCY, 'Parse'),
+        E_NOTICE => array(Logger::DEBUG, 'Notice'),
+        E_CORE_ERROR => array(Logger::EMERGENCY, 'Core Error'),
+        E_CORE_WARNING => array(Logger::WARNING, 'Core Warning'),
+        E_COMPILE_ERROR => array(Logger::EMERGENCY, 'Compile Error'),
+        E_COMPILE_WARNING => array(Logger::WARNING, 'Compile Warning'),
+        E_USER_ERROR => array(Logger::ERROR, 'User Error'),
+        E_USER_WARNING => array(Logger::WARNING, 'User Warning'),
+        E_USER_NOTICE => array(Logger::DEBUG, 'User Notice'),
+        'E_RECOVERABLE_ERROR' => array(Logger::WARNING, 'Recoverable Error'),
+        'E_DEPRECATED' => array(Logger::NOTICE, 'Deprecated'),
+        'E_USER_DEPRECATED' => array(Logger::NOTICE, 'User Deprecated'),
+        'E_STRICT' => array(Logger::DEBUG, 'Strict Warning'),
     );
-    
+
     /**
      * Error handler
      *
@@ -125,7 +126,7 @@ a legitimately suppressed error that you were not supposed to see.';
 
         if ($level & self::$_logLevel)
             \Alinex\Logger::getInstance()->log(
-                self::$_logPhpMapping[$level][0], 
+                self::$_logPhpMapping[$level][0],
                 $message,
                 array(
                     'type' => self::$_logPhpMapping[$level][1],
@@ -133,7 +134,7 @@ a legitimately suppressed error that you were not supposed to see.';
                     'line' => $line
                 )
             );
-        
+
         if ($level & self::$_exceptionLevel)
             throw new \ErrorException($message, 0, $level, $file, $line);
     }
@@ -145,5 +146,5 @@ a legitimately suppressed error that you were not supposed to see.';
     {
         set_error_handler(array(__CLASS__, 'handle'));
     }
-    
+
 }
