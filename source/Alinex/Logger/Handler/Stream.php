@@ -104,6 +104,10 @@ class Stream extends Handler
      */
     function __construct($stream, array $context = null, $flags = null)
     {
+        // $stream is text uri or real resource stream
+        assert(is_string($stream) || is_resource($stream));
+        assert(is_bool($flags));
+        
         $this->_context = $context;
         $this->_flags = $flags;
         if (is_string($stream)) {
@@ -118,6 +122,12 @@ class Stream extends Handler
         $this->_formatter = new \Alinex\Logger\Formatter\Line();
     }
 
+    /**
+     * This will open the given stream if not done.
+     * @return resource strem to be used
+     * @throws \Exception if stream could not be reopened or opened.
+     * @throws \UnexpectedValueExceptionproblem opening stream
+     */
     private function openStream()
     {
         if (isset($this->_stream)) {
@@ -128,7 +138,7 @@ class Stream extends Handler
             throw new \Exception(
                 tr(
                     __NAMESPACE__,
-                    'Stream has been closed and could not be reopened'
+                    'Stream could not be opened or reopened'
                 )
             );
         // create context
@@ -160,6 +170,10 @@ class Stream extends Handler
         return $this->_stream;
     }
 
+    /**
+     * This will close a previously opened stream.
+     * @return bool true if stream could be closed
+     */
     private function closeStream()
     {
         if (!($this->_flags & self::FLAG_CLOSE))
@@ -167,6 +181,7 @@ class Stream extends Handler
         if (is_resource($this->_stream))
             fclose($this->_stream);
         $this->_stream = null;
+        return true;
     }
 
     /**

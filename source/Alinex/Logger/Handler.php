@@ -38,6 +38,7 @@ abstract class Handler implements Util\EventObserver
      */
     public function update(Util\Event $message)
     {
+        // only message event allowed
         assert($message instanceof Message);
 
         // call prefilter
@@ -88,18 +89,24 @@ abstract class Handler implements Util\EventObserver
      */
     public function addFilter($class)
     {
-        $class = Validator\Code::phpClass(
-            $class, 'filter', array('relative' => '\Alinex\Logger\Filter')
+        // $class have to an existing callable
+        assert(
+            $class = Validator\Code::phpClass(
+                $class, 'filter', array('relative' => '\Alinex\Logger\Filter')
+            )
         );
+        
         // check if filter already set
         if (isset($this->_filter[$class]))
             return $this->_filter[$class];
         // create new filter
         $filter = new $class();
+        // given class has to be Filter
+        assert($filter instanceof Filter);
         $this->_filter[$class] = $filter;
         // also add needed providers
         foreach($filter::$needProvider as $provider)
-            $this->addProvider ($provider);
+            $this->addProvider($provider);
         // return filter
         return $filter;
     }
@@ -111,9 +118,13 @@ abstract class Handler implements Util\EventObserver
      */
     public function getFilter($class)
     {
-        $class = Validator\Code::phpClass(
-            $class, 'filter', array('relative' => '\Alinex\Logger\Filter')
+        // $class have to an existing callable
+        assert(
+            $class = Validator\Code::phpClass(
+                $class, 'filter', array('relative' => '\Alinex\Logger\Filter')
+            )
         );
+
         return isset($this->_filter[$class]) ? $this->_filter[$class] : null;
     }
 
@@ -123,9 +134,13 @@ abstract class Handler implements Util\EventObserver
      */
     public function removeFilter($class)
     {
-        $class = Validator\Code::phpClass(
-            $class, 'filter', array('relative' => '\Alinex\Logger\Filter')
+        // $class have to an existing callable
+        assert(
+            $class = Validator\Code::phpClass(
+                $class, 'filter', array('relative' => '\Alinex\Logger\Filter')
+            )
         );
+
         unset($this->_filter[$class]);
     }
 
@@ -142,14 +157,20 @@ abstract class Handler implements Util\EventObserver
      */
     public function addProvider($class)
     {
-        $class = Validator\Code::phpClass(
-            $class, 'provider', array('relative' => '\Alinex\Logger\Provider')
+        // $class have to be an existing class
+        assert(
+            $class = Validator\Code::phpClass(
+                $class, 'provider', array('relative' => '\Alinex\Logger\Provider')
+            )
         );
+        
         // check if provider already set
         if (isset($this->_provider[$class]))
             return $this->_provider[$class];
         // create new provider
         $provider = new $class;
+        // given class has to be Provider
+        assert($provider instanceof Provider);
         $this->_provider[$class] = $provider;
         // return provider
         return $provider;
@@ -162,9 +183,13 @@ abstract class Handler implements Util\EventObserver
      */
     public function getProvider($class)
     {
-        $class = Validator\Code::phpClass(
-            $class, 'provider', array('relative' => '\Alinex\Logger\Provider')
+        // $class have to be an existing class
+        assert(
+            $class = Validator\Code::phpClass(
+                $class, 'provider', array('relative' => '\Alinex\Logger\Provider')
+            )
         );
+        
         return isset($this->_provider[$class])
             ? $this->_provider[$class] : null;
     }
@@ -175,9 +200,13 @@ abstract class Handler implements Util\EventObserver
      */
     public function removeProvider($class)
     {
-        $class = Validator\Code::phpClass(
-            $class, 'provider', array('relative' => '\Alinex\Logger\Provider')
+        // $class have to be an existing class
+        assert(
+            $class = Validator\Code::phpClass(
+                $class, 'provider', array('relative' => '\Alinex\Logger\Provider')
+            )
         );
+        
         unset($this->_provider[$class]);
     }
 

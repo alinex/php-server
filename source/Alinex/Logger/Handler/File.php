@@ -26,6 +26,13 @@ class File extends Stream
      */
     function __construct($file, $keepOpened = false)
     {
+        // $file have to be writable
+        assert(
+            \Alinex\Validator\IO::path(
+                $file, 'streamfile',
+                array('writable' => true)
+            )
+        );
         assert(is_string($file));
         assert(is_bool($keepOpened));
 

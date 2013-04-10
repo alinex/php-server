@@ -37,6 +37,13 @@ class Level extends Filter
      */
     public function setMinimum($level)
     {
+        // level has to be valid Logger::... constant
+        assert(
+            is_int($level)
+            && $level >= \Alinex\Logger::EMERGENCY
+            && $level <= \Alinex\Logger::DEBUG
+        );
+        
         $this->_allow = array(); // cleanup
         for (; $level >= 0; $level--)
             $this->_allow[$level] = true;
@@ -48,6 +55,13 @@ class Level extends Filter
      */
     public function enable($level)
     {
+        // level has to be valid Logger::... constant
+        assert(
+            is_int($level)
+            && $level >= \Alinex\Logger::EMERGENCY
+            && $level <= \Alinex\Logger::DEBUG
+        );
+        
         $this->_allow[$level] = true;
     }
 
@@ -57,6 +71,13 @@ class Level extends Filter
      */
     public function disable($level)
     {
+        // level has to be valid Logger::... constant
+        assert(
+            is_int($level)
+            && $level >= \Alinex\Logger::EMERGENCY
+            && $level <= \Alinex\Logger::DEBUG
+        );
+        
         unset($this->_allow[$level]);
     }
 

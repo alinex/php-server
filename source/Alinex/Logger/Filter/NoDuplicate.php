@@ -58,6 +58,9 @@ class NoDuplicate extends Filter
      */
     public function setTime($ttl)
     {
+        // timerange in seconds needed
+        assert(is_int($ttl)&& $ttl > 0);
+        
         $this->_ttl = isset($ttl) ? $ttl : self::DEFAULT_TTL;
         return $this->_ttl;
     }
@@ -90,6 +93,9 @@ class NoDuplicate extends Filter
      */
     public function checkData($name, $enabled = true)
     {
+        assert(is_string($name));
+        assert(is_bool($enabled));
+        
         if ($enabled)
             $this->_data[$name] = 1;
         else
