@@ -74,7 +74,8 @@ class Http
                         'unsigned' => true,
                         'description' => tr(
                             __NAMESPACE__,
-                            'Default lifetime in seconds to keep content cached.'
+                            'Default lifetime in seconds to keep content'
+                            .'cached.'
                         )
                     )
                 );
@@ -125,17 +126,20 @@ class Http
     public static function header($contentType = 'text/html',
         $cache = self::HTTPCACHE_NONE, $expire = null)
     {
+        // valid content-type header string
         assert(
             Validator::is(
                 $contentType, null, 'Type::string',
                 array('match' => '#\w+/\w+#')
             )
         );
+        // $cache is one of HTTPCACHE_...
         assert(
             $cache == self::HTTPCACHE_NONE
             || $cache == self::HTTPCACHE_PRIVATE
             || $cache == self::HTTPCACHE_PUBLIC
         );
+        // expiration have to be in future
         assert(
             Validator::is(
                 $expire, null, 'Type::integer',
@@ -154,8 +158,10 @@ class Http
         header('Content-type: ' . $contentType . '; Charset=utf-8');
         if ($cache == self::HTTPCACHE_PRIVATE
             || $cache == self::HTTPCACHE_PUBLIC ) {
-            header('Expires: '
-                .gmdate("D, d M Y H:i:s", time() + $expire).' GMT');
+            header(
+                'Expires: '
+                .gmdate("D, d M Y H:i:s", time() + $expire).' GMT'
+            );
             header('Cache-Control: ' . $cache . ', max-age=' . $expire);
             header('Cache-Control: pre-check=' . $expire, false);
         } else if ($cache == self::HTTPCACHE_NONE) {
@@ -171,11 +177,12 @@ class Http
     /**
      * Check if 304 response can be send.
      *
-     * This depends on the last modification of the data requested and the etag parameter.
+     * This depends on the last modification of the data requested and the etag
+     * parameter.
      * The headers \c Last-Modified and \c ETag will be set and
      * if the response contains the \c if-modified-since or
-     * \c if-none-match headers it will check whether a '304 not modified' response
-     * can be send or the content has to be delivered.
+     * \c if-none-match headers it will check whether a '304 not modified'
+     * response can be send or the content has to be delivered.
      *
      * On 304 answers the processing will stop here.
      *
@@ -192,6 +199,7 @@ class Http
      */
     public static function check304($lastModified, $etagParam = '')
     {
+        // last-modified header have to specify time in seconds
         assert(
             Validator::is(
                 $lastModified, null, 'Type::integer',
@@ -201,8 +209,10 @@ class Http
         assert(is_string($etagParam));
 
         $eTag = 'ax-'.dechex(crc32($etagParam.$lastModified));
-        header('Last-Modified: '
-            .gmstrftime("%a, %d %b %Y %T %Z",$lastModified));
+        header(
+            'Last-Modified: '
+            .gmstrftime("%a, %d %b %Y %T %Z", $lastModified)
+        );
         header('ETag: "'.$eTag.'"');
         if ((isset($_SERVER['IF_MODIFIED_SINCE'])
                 && strtotime($_SERVER['IF_MODIFIED_SINCE']) == $lastModified)
@@ -264,6 +274,8 @@ class Http
      */
     private static function checkIP($ip)
     {
+        assert(is_string($ip));
+        
         if (!empty($ip) && ip2long($ip)!=-1 && ip2long($ip)!=false) {
             foreach (self::$_privateips as $r) {
                 $min = ip2long($r[0]);

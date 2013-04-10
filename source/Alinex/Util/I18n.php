@@ -5,7 +5,8 @@
  *
  * @author    Alexander Schilling <info@alinex.de>
  * @copyright 2009-2013 Alexander Schilling (\ref Copyright)
- * @license   All Alinex code is released under the GNU General Public \ref License.
+ * @license   All Alinex code is released under the GNU General Public
+ *            \ref License.
  * @see       http://alinex.de Alinex Project
  */
 
@@ -89,8 +90,18 @@ class I18n
         return self::setEmulation(!function_exists('gettext') || $flag == true);
     }
 
+    /**
+     * Set the emulation flag.
+     *
+     * If this flag is set it will emulate gettext and not use the native calls.
+     *
+     * @param bool $flag true to use emulation althouight gettext is installed
+     * @return bool flag if emulation is active or not
+     */
     private static function setEmulation($flag)
     {
+        assert(is_bool($flag));
+
         self::$_emulation = $flag;
         if ($flag) {
             require_once __DIR__.'/../../vnd/php-gettext/streams.php';
@@ -126,6 +137,9 @@ class I18n
      */
     public static function setLocale($locales = null)
     {
+        // $locales has to be string or array if set
+        assert(!isset($locales) || is_string($locales) || is_array($locales));
+
         $set = false;
         if (is_string($locales))
             $locales = array($locales);
@@ -196,7 +210,7 @@ class I18n
         }
         // find user locale by domain name
         if (isset($_SERVER['REMOTE_HOST'])) {
-            $locales[] = strtolower(end(explode('.',$_SERVER['REMOTE_HOST'])));
+            $locales[] = strtolower(end(explode('.', $_SERVER['REMOTE_HOST'])));
         }
         return self::localeExtend($locales);
     }
@@ -213,6 +227,9 @@ class I18n
      */
     private static function localeExtend($locales)
     {
+        // $locales has to be string or array if set
+        assert(!isset($locales) || is_string($locales) || is_array($locales));
+
         $lang = array(); // simplest entries using ll
         $cont = array(); // advanced entries using ll_CC
         $cset = array(); // full entries using ll_CC.charset
@@ -266,6 +283,9 @@ class I18n
      */
     private static function localeFilter($locales)
     {
+        // $locales has to be string or array if set
+        assert(!isset($locales) || is_string($locales) || is_array($locales));
+
         $ok = array();
         if (!$locales)
             return false;
@@ -308,9 +328,9 @@ class I18n
     /**
      * Gettext translate function
      *
-     * This function uses the gettext library which should be enabled in PHP. If not
-     * installed, no translations will be available and the original text will be
-     * shown.
+     * This function uses the gettext library which should be enabled in PHP.
+     * If not installed, no translations will be available and the original text
+     * will be shown.
      *
      * @param string $namespace namespace of caller (use __NAMESPACE__)
      * @param string $msgid text which should be translated
@@ -344,9 +364,9 @@ class I18n
     /**
      * Gettext translate function (with plural)
      *
-     * This function uses the gettext library which should be enabled in PHP. If not
-     * installed, no translations will be available and the original text will be
-     * shown.
+     * This function uses the gettext library which should be enabled in PHP. If
+     * not installed, no translations will be available and the original text
+     * will be shown.
      *
      * @param string $namespace namespace of caller (use __NAMESPACE__)
      * @param string $msgSingular singular text which should be translated
@@ -389,7 +409,7 @@ class I18n
      * @var string
      */
     private $_domain = null;
-    
+
     /**
      * Set to active reader if emulation is active.
      * @var \FileReader
@@ -411,6 +431,8 @@ class I18n
      */
     private static function setDomain($namespace)
     {
+        assert(is_string($namespace));
+
         // check for initialization
         if (!isset(self::$_emulation))
             self::init();
@@ -429,7 +451,9 @@ class I18n
                     list($locale) = explode('_', $locale, 2);
                     $file = __DIR__.'/../../../tr/'.$locale.'/'.$domain.'.mo';
                     if (!file_exists($file))
-                        throw new \Exception('Could not bind translation directory under /tr');
+                        throw new \Exception(
+                            'Could not bind translation directory under /tr'
+                        );
                 }
             }
             self::$_reader = new \FileReader($file);
@@ -439,10 +463,15 @@ class I18n
             return;
         // closing slash for windows neccessary
         if (!bindtextdomain($domain, __DIR__.'/../../tr/'))
-            throw new \Exception('Could not bind translation directory under '.__DIR__.'/../../../tr/');
+            throw new \Exception(
+                'Could not bind translation directory under '
+                .__DIR__.'/../../../tr/'
+            );
         // set the dopmain
         if (!textdomain($domain) == $domain)
-            throw new \Exception('Could not set translation domain to '.$domain.' under /tr');
+            throw new \Exception(
+                'Could not set translation domain to '.$domain.' under /tr'
+            );
         // set codeset to use UTF-8 (optional)
         bind_textdomain_codeset($domain, "UTF-8");
         return $domain;

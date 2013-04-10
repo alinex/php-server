@@ -18,9 +18,14 @@ class Object
 {
     /**
      * Get global object ID
-     * From: http://stackoverflow.com/questions/2872366/get-instance-id-of-an-object-in-php
+     *
+     * This will get an global unique number for objects of this type.
+     *
+     * @attention Objects of other classes may have the same id.
+     *
      * @param object $obj to analyze
      * @return int current object id in php memory hash
+     * @see spl_object_hash($obj) for an completely unique hash id
      */
     public static function getId(&$obj)
     {

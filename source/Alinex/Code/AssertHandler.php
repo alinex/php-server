@@ -15,9 +15,27 @@ namespace Alinex\Code;
 /**
  * Support assert with detailed info.
  *
+ * To reach a high security level while be as performant as possible type and
+ * value checks are separated in two categories:
+ * 1. data coming from external resources hav to be completely checked at any
+ * time
+ * 2. data send internaly between the classes should be ok if code was tested
+ * and didn't change
+ *
+ * Therefore the second type of checks are put into assert calls which can be
+ * switched off or completely removed from code in productive environment.
+ *
+ * Example of calls with active asserts:
+ * @image html asserts-active.png
+ * @image latex asserts-active.png "Asserts active" width=10cm
+ *
+ * Example of the same calls with asserts inactive or removed:
+ * @image html asserts-removed.png
+ * @image latex asserts-removed.png "Asserts removed" width=10cm
+ *
  * Assertions are used to report internal code problems which are used in
  * functions and methods to check incoming data. This is done in addition to
- * the UnitTests as folows:
+ * the Validator and UnitTests as folows:
  * @code
  * // check for integer range
  * assert(is_integer($minRange));

@@ -37,6 +37,8 @@ class ArrayStructure
     /**
      * Set, get or unset a value in the array structure using path.
      *
+     * If path is given as string it will be splitted up using \c delimiter.
+     *
      * @param array &$array array structure to use
      * @param array|string $path path under which to store it
      * @param string $delim delimiter used in path (if string)
@@ -49,8 +51,13 @@ class ArrayStructure
         array &$array, $path, $delim=null, $value=null, $unset=false
     )
     {
+        // path has to be string or array
+        assert((is_string($path) || is_array($path)) && $path);
         // delimiter must be an string
         assert(!isset($delim) || is_string($delim));
+        // unset have to be aboolean value
+        assert(is_bool($unset));
+
         $ref = &$array;
 
         // convert $path to array
@@ -138,6 +145,7 @@ class ArrayStructure
     {
         // delimiter have to be a string
         assert(!isset($delimiter) || is_string($delimiter));
+
         $ref = &$array;
         // convert $path to array
         if (! is_array($path) && strlen($delimiter))
@@ -165,7 +173,7 @@ class ArrayStructure
      * @param array $array to check
      * @return bool true if array is associative
      */
-    static function isAssoc($array)
+    static function isAssoc(array $array)
     {
         if (!is_array($array))
             return false;
