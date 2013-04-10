@@ -14,6 +14,7 @@ namespace Alinex\Logger;
 
 use Alinex\Logger\Message;
 use Alinex\Validator;
+use Alinex\Util;
 
 /**
  * Abstract handler for log managing.
@@ -27,16 +28,18 @@ use Alinex\Validator;
  * the message out of the collected data. The result will be published from the
  * handler directly.
  */
-abstract class Handler
+abstract class Handler implements Util\EventObserver
 {
     /**
      * Adds a log record to this handler.
      *
      * @param  Message  $message Log message object
-     * @return Boolean Whether the record has been processed
+     * @return Util\Event Whether the record has been processed
      */
-    public function log(Message $message)
+    public function update(Util\Event $message)
     {
+        assert($message instanceof Message);
+
         // call prefilter
         foreach($this->_filter as $filter)
             if (!$filter::IS_POSTFILTER

@@ -21,16 +21,16 @@ use Alinex\Logger;
  * chain and collect data.
  *
  * The general data elements are:
+ * - the context variables from message call
  * - time.sec - only the unixtem (seconds)
  * - time.msec - microseconds
  * - level.num - level number
  * - level.name - name of the log severity
  * - message - original message
- * - context. ... - attributes from message call
  *
  * More data elements will be added using the Provider classes.
  */
-class Message
+class Message extends \Alinex\Util\Event
 {
     /**
      * Get i18n title for the log level.
@@ -53,12 +53,6 @@ class Message
     }
 
     /**
-     * Information structure.
-     * @var array
-     */
-    public $data = array();
-
-    /**
      * Formatted message.
      * @var mixed
      */
@@ -72,6 +66,8 @@ class Message
      */
     public function __construct($level, $message, array $context = array())
     {
+        // set context data as base
+        $this->data = $context;
         // set the time
         list($sec, $msec) = explode('.', microtime(true));
         $this->data['time'] = array(
@@ -85,8 +81,5 @@ class Message
         );
         // set message
         $this->data['message'] = $message;
-        // set context data
-        if ($context)
-            $this->data['context'] = $context;
     }
 }
