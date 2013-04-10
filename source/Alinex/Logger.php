@@ -21,7 +21,9 @@ namespace Alinex;
  *
  * Every Logger instance has a channel (name) and a stack of handlers. Whenever
  * you add a message to the logger, it traverses the handler stack. Each handler
- * decides whether it handle the message and how to record it.
+ * decides whether it handle the message and how to record it.\n
+ * This is done using the Event Observer Pattern. This means you may add any
+ * class as EventObserver to the logger using the attach() method.
  *
  * @dotfile Logger/Handler
  *
@@ -32,7 +34,7 @@ namespace Alinex;
  * The class is compatible with the PEAR standards to enforce an
  * interchangeability in other standard conform projects.
  */
-class Logger // implements \Psr\Log\LoggerInterface
+class Logger implements Util\EventSubject // implements \Psr\Log\LoggerInterface
 {
     /**
      * System is unusable (will throw a LOG_Exception as well)
@@ -102,12 +104,53 @@ class Logger // implements \Psr\Log\LoggerInterface
     protected $_name = null;
 
     /**
+     * List of handlers
+     * @var Logger\HandlerEvent
+     */
+    protected $_handler = array();
+
+    /**
      * Create a new
      * @param string $name The logging channel
      */
     protected function __construct($name)
     {
+        assert(is_string($name));
+
         $this->_name = $name;
+    }
+
+    /**
+     * Attach an observer so that it can be notified
+     * @param Util\EventObserver $handler observer object to aadd
+     */
+    public function attach(Util\EventObserver $handler)
+    {
+        // observer has to be a handler
+        assert($handler instanceof Logger\Handler);
+
+        $this->_handler[spl_object_hash($handler)] = $handler;
+    }
+
+    /**
+     * Detaches an observer from the subject to no longer notify it
+     * @param Util\EventObserver $handler observer object to remove
+     */
+    public function detach(Util\EventObserver $handler)
+    {
+        // observer has to be a handler
+        assert($handler instanceof Logger\Handler);
+
+        unset($this->_handler[spl_object_hash($handler)]);
+    }
+
+    /**
+     * Get the list of registered handlers
+     * @return array of Handler
+     */
+    public function getHandlers()
+    {
+        return $this->_handler;
     }
 
     /**
@@ -122,20 +165,19 @@ class Logger // implements \Psr\Log\LoggerInterface
      */
     public function log($level, $message, array $context = array())
     {
+        // valid loglevel between DEBUG - EMERGENCY
         assert(
-            is_int($level) 
-            && $level <= self::DEBUG 
+            is_int($level)
+            && $level <= self::DEBUG
             && $level >= self::EMERGENCY
         );
 
         // create message object
         $logmessage = new Logger\Message($level, $message, $context);
         // process handlers
-        $success = 0;
         foreach($this->_handler as $handler)
-            if ($handler->log($logmessage))
-                $success++;
-        return $success;
+            $handler->update($this, $logmessage);
+        return count($this->_handler);
     }
 
     /**
@@ -189,20 +231,6 @@ class Logger // implements \Psr\Log\LoggerInterface
      * @param  array   $context The log context
      * @return int number of successful processings 0 = not logged
      */
-    public function warn($message, array $context = array())
-    {
-        return $this->log(static::WARNING, $message, $context);
-    }
-
-    /**
-     * Adds a log record at the WARNING level.
-     *
-     * This method allows for compatibility with common interfaces.
-     *
-     * @param  string  $message The log message
-     * @param  array   $context The log context
-     * @return int number of successful processings 0 = not logged
-     */
     public function warning($message, array $context = array())
     {
         return $this->log(static::WARNING, $message, $context);
@@ -217,37 +245,9 @@ class Logger // implements \Psr\Log\LoggerInterface
      * @param  array   $context The log context
      * @return int number of successful processings 0 = not logged
      */
-    public function err($message, array $context = array())
-    {
-        return $this->log(static::ERROR, $message, $context);
-    }
-
-    /**
-     * Adds a log record at the ERROR level.
-     *
-     * This method allows for compatibility with common interfaces.
-     *
-     * @param  string  $message The log message
-     * @param  array   $context The log context
-     * @return int number of successful processings 0 = not logged
-     */
     public function error($message, array $context = array())
     {
         return $this->log(static::ERROR, $message, $context);
-    }
-
-    /**
-     * Adds a log record at the CRITICAL level.
-     *
-     * This method allows for compatibility with common interfaces.
-     *
-     * @param  string  $message The log message
-     * @param  array   $context The log context
-     * @return int number of successful processings 0 = not logged
-     */
-    public function crit($message, array $context = array())
-    {
-        return $this->log(static::CRITICAL, $message, $context);
     }
 
     /**
@@ -287,67 +287,9 @@ class Logger // implements \Psr\Log\LoggerInterface
      * @param  array   $context The log context
      * @return int number of successful processings 0 = not logged
      */
-    public function emerg($message, array $context = array())
-    {
-        return $this->log(static::EMERGENCY, $message, $context);
-    }
-
-    /**
-     * Adds a log record at the EMERGENCY level.
-     *
-     * This method allows for compatibility with common interfaces.
-     *
-     * @param  string  $message The log message
-     * @param  array   $context The log context
-     * @return int number of successful processings 0 = not logged
-     */
     public function emergency($message, array $context = array())
     {
         return $this->log(static::EMERGENCY, $message, $context);
-    }
-
-    /**
-     * List of handlers
-     * @var array
-     */
-    protected $_handler = array();
-
-    /**
-     * Adding Handler to the end of the list.
-     * @param Logger\Handler $handler handler instance
-     * @return int number of handlers in list
-     */
-    public function handlerPush(Logger\Handler $handler)
-    {
-        return array_push($this->_handler, $handler);
-    }
-
-    /**
-     * Adding Handler to the start of the list.
-     * @param Logger\Handler $handler handler instance
-     * @return int number of handlers in list
-     */
-    public function handlerUnshift(Logger\Handler $handler)
-    {
-        return array_unshift($this->_handler, $handler);
-    }
-
-    /**
-     * Removing Handler from the end of the list.
-     * @return Logger\Handler handler instance
-     */
-    public function handlerPop()
-    {
-        return array_pop($this->_handler);
-    }
-
-    /**
-     * Removing Handler from the start of the list.
-     * @return Logger\Handler handler instance
-     */
-    public function handlerShift()
-    {
-        return array_shift($this->_handler);
     }
 
 }
