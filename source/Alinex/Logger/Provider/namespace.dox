@@ -1,5 +1,5 @@
 /** @namespace Alinex\Logger\Provider
 Providing additional information for log messages.
 
-The Provider can collect more inform,ation to be used in Filter and Formatter.
+The Provider can collect more information to be used in Filter and Formatter.
 */

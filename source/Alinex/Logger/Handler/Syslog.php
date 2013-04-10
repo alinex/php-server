@@ -72,7 +72,12 @@ class Syslog extends Handler
     function __construct($ident = 'Alinex', $facility = LOG_LOCAL0)
     {
         assert(is_string($ident));
-        assert(is_int($facility));
+        // $facility has to be a specified php LOG_... constant
+        assert(
+            is_int($facility) 
+            && $facility >= LOG_KERN 
+            && $facility <= LOG_LOCAL7
+        );
 
         $this->_ident = $ident;
         if (strtoupper(substr(PHP_OS, 0, 3)) != 'WIN')

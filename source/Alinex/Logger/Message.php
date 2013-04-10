@@ -39,6 +39,13 @@ class Message extends \Alinex\Util\Event
      */
     static function levelName($level)
     {
+        // use LOGGER::... constants for level name
+        assert(
+            is_int($level) 
+            && $level >= Logger::EMERGENCY 
+            && $level <= Logger::DEBUG
+        );
+        
         $title = array(
             Logger::EMERGENCY => tr(__NAMESPACE__, 'Emergency'),
             Logger::ALERT => tr(__NAMESPACE__, 'Alert'),
@@ -66,6 +73,14 @@ class Message extends \Alinex\Util\Event
      */
     public function __construct($level, $message, array $context = array())
     {
+        // use LOGGER::... constants for level name
+        assert(
+            is_int($level) 
+            && $level >= Logger::EMERGENCY 
+            && $level <= Logger::DEBUG
+        );
+        assert(is_string($message));
+        
         // set context data as base
         $this->data = $context;
         // set the time

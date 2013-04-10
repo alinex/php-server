@@ -50,6 +50,9 @@ class MinOccurrence extends NoDuplicate
      */
     public function setOccurrence($num = self::DEFAULT_OCCURRENCE)
     {
+        // each element ha to be executed at least once
+        assert(is_int($num) && $num >= 1);
+        
         $this->_occurrence = $num;
         return $num;
     }

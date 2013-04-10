@@ -50,20 +50,24 @@ class Category extends Filter
 
     /**
      * Enable the given namespace for logging.
-     * @param int $namespace namespace to be enabled
+     * @param string $namespace namespace to be enabled
      */
     public function enable($namespace)
     {
+        assert(is_string($namespace));
+        
         $this->_allow[$namespace] = true;
         unset($this->_deny[$namespace]);
     }
 
     /**
      * Disable the given namespace for logging.
-     * @param int $namespace namespace to be disabled
+     * @param string $namespace namespace to be disabled
      */
     public function disable($namespace)
     {
+        assert(is_string($namespace));
+        
         $this->_deny[$namespace] = true;
     }
 

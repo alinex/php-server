@@ -70,7 +70,7 @@ class Simple
      * @param array $values named array with values
      * @return string resulting text
      */
-    public static function run($text, array $values)
+    public static function run($text, array $values = null)
     {
         assert(is_string($text));
 
@@ -82,15 +82,16 @@ class Simple
      * Named array with values.
      * @var array
      */
-    private $_values = null;
+    private $_values = array();
 
     /**
      * Create a new object and store values.
      * @param array $values named array with values
      */
-    private function __construct(array $values)
+    private function __construct(array $values = null)
     {
-        $this->_values = $values;
+        if (isset($values))
+            $this->_values = $values;
     }
 
     /**
@@ -100,6 +101,8 @@ class Simple
      */
     private function replace($text)
     {
+        assert(is_string($text));
+        
         return preg_replace_callback(
             '/\{(\s?\w[^}]+?)\}/',
             array($this, 'replaceVariable'),
@@ -115,7 +118,7 @@ class Simple
      * - 1 - variable name with optional modifiers
      * @return string replacement for this part
      */
-    private function replaceVariable($matches)
+    private function replaceVariable(array $matches)
     {
         $parts = explode('|', $matches[1]);
         $variable = array_shift($parts);
@@ -164,6 +167,8 @@ class Simple
      */
     private function modifier($value, $modifier)
     {
+        assert(is_string($modifier));
+        
         $parts = explode(' ', $modifier, 2);
         $function = $parts[0];
         // by default each modifier will be called with value and modifier
@@ -205,6 +210,10 @@ class Simple
      */
     private function call_date($value, $param = DATE_ISO8601)
     {
+        // $value has to be a timestamp
+        assert(is_int($value));
+        assert(is_string($param));
+        
         // allow use of DATE_XXX constants
         if (defined('DATE_'.$param))
             $param = constant('DATE_'.$param);
