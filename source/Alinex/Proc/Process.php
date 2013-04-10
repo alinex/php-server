@@ -15,15 +15,18 @@ namespace Alinex\Proc;
 
 /**
  * System program execution and control.
- * 
+ *
  * This class can be used as wrapper over the PHP proc_ methods to create
- * system calls. It adds an easy interface with simplified functions for secure 
+ * system calls. It adds an easy interface with simplified functions for secure
  * use with all abilities like:
  * - complete control
  * - unblocked buffer reading
  * - interactions
  * - additional pipes possible
  * - pseudo terminal support
+ *
+ * Most public methods are designed after the @ref chaining this allows to
+ * easy concatenate them.
  */
 class Process // implements \Psr\Log\LoggerInterface
 {
@@ -64,6 +67,26 @@ class Process // implements \Psr\Log\LoggerInterface
     const FLAG_PTY = 2;
 
     /**
+     * Status flag if process has not started.
+     */
+    const STATUS_INIT = 0;
+
+    /**
+     * Status flag if process is running.
+     */
+    const STATUS_RUNNING = 1;
+
+    /**
+     * Status flag if process has been terminated.
+     */
+    const STATUS_TERMINATED = 2;
+
+    /**
+     * Status flag if process is finished.
+     */
+    const STATUS_DONE = 4;
+
+    /**
      * List of all pipes which are possibly used
      * @var array
      */
@@ -89,6 +112,13 @@ class Process // implements \Psr\Log\LoggerInterface
     );
 
     /**
+     * Current status of Process.
+     * Use the const STATUS_... to check.
+     * @var int
+     */
+    protected $_status = self::STATUS_INIT;
+
+    /**
      * The command to be executed.
      * @var string
      */
@@ -110,7 +140,7 @@ class Process // implements \Psr\Log\LoggerInterface
      * The working directory context for the command.
      * @var string
      */
-    protected $_workingDirectory;
+    protected $_cwd;
 
     /**
      * Array of environment variables to me made available to the command.
@@ -137,14 +167,8 @@ class Process // implements \Psr\Log\LoggerInterface
     protected $_pipes;
 
     /**
-     * Determines if the process is currently open.
-     * @var boolean
-     */
-    protected $_isOpen;
-
-    /**
-     * Starttime of process run.
-     * @var int
+     * Starttime of process run in seconds.
+     * @var float
      */
     protected $_starttime;
 
@@ -155,8 +179,8 @@ class Process // implements \Psr\Log\LoggerInterface
     protected $_pid;
 
     /**
-     * Starttime of process run.
-     * @var int
+     * Starttime of process run in secomds.
+     * @var float
      */
     protected $_endtime;
 
@@ -181,9 +205,9 @@ class Process // implements \Psr\Log\LoggerInterface
 
     /**
      * Exit status code of the command that was executed
-     * @var type
+     * @var int
      */
-    protected $_exit;
+    protected $_exit = 0;
 
     /**
      * Constructs the object, optionally setting the command to be executed.
@@ -209,6 +233,9 @@ class Process // implements \Psr\Log\LoggerInterface
      */
     function setCommandFlags($flags)
     {
+        // possible flags are the FLAG_... constants
+        assert(is_int($flags) && $flags >= 0);
+        
         $this->_flags = $flags;
     }
 
@@ -220,6 +247,9 @@ class Process // implements \Psr\Log\LoggerInterface
      */
     function setTimeout($time)
     {
+        // time range in seconds
+        assert(is_int($time) && $time >= 0);
+        
         $this->_timeout = $time;
         return $this;
     }
@@ -233,11 +263,11 @@ class Process // implements \Psr\Log\LoggerInterface
     public function setWorkingDirectory($path)
     {
         // this can only be done before opening the process
-        assert(!$this->_isOpen);
+        assert($this->_status == self::STATUS_INIT);
         // the working directory have to exist
         assert(is_string($path) && is_dir($path));
 
-        $this->_workingDirectory = $path;
+        $this->_cwd = $path;
         return $this;
     }
 
@@ -266,8 +296,8 @@ class Process // implements \Psr\Log\LoggerInterface
      */
     function open()
     {
-        if ($this->_isOpen)
-            throw new RuntimeException('Process is already open');
+        // process should only be opened once
+        assert($this->_status == self::STATUS_INIT);
 
         // get systemcall
         $call = $this->_command;
@@ -299,7 +329,7 @@ class Process // implements \Psr\Log\LoggerInterface
                 self::ADDOUT => array('pipe', 'w')
             ),
             $this->_pipes,
-            $this->_workingDirectory,
+            $this->_cwd,
             $this->_environment
         );
         // check the handle
@@ -309,8 +339,8 @@ class Process // implements \Psr\Log\LoggerInterface
             );
         // set the references
         $this->_handle = $handle;
-        $this->_isOpen = true;
-        $this->_starttime = time();
+        $this->_status = self::STATUS_RUNNING;
+        $this->_starttime = microtime(true);
         // set non-blocking mode for output pipes
         foreach (static::$_outPipes as $pipe)
             stream_set_blocking($this->_pipes[$pipe], 0);
@@ -327,7 +357,7 @@ class Process // implements \Psr\Log\LoggerInterface
     function isRunning()
     {
         $this->read(); // read if something there
-        return !$this->_closed;
+        return $this->_status == self::STATUS_RUNNING;
     }
 
     /**
@@ -336,14 +366,34 @@ class Process // implements \Psr\Log\LoggerInterface
      * Close the process if it is outdated.
      * @return bool true if process is running to long
      */
-    function isTimeout()
+    private function isTimeout()
     {
         if (!isset($this->_timeout))
             return false; // no timeout set
-        $close = $this->_starttime+$this->_timeout < time();
+        $close = $this->_starttime+$this->_timeout < microtime(true);
         if ($close)
             $this->close();
         return $close;
+    }
+
+    /**
+     * Is the process finished wtih success
+     * @return bool true if process is (still) running
+     */
+    function isFinished()
+    {
+        $this->read(); // read if something there
+        return $this->_status > self::STATUS_RUNNING;
+    }
+
+    /**
+     * Is the process finished wtih success
+     * @return bool true if process is (still) running
+     */
+    function isSuccess()
+    {
+        $this->read(); // read if something there
+        return $this->_status == self::STATUS_DONE;
     }
 
     /**
@@ -362,6 +412,8 @@ class Process // implements \Psr\Log\LoggerInterface
      */
     protected function read()
     {
+        if ($this->_status != self::STATUS_RUNNING)
+            return false;
         $this->isTimeout(); // check for timeoutd
         $readMore = false;
         foreach (self::$_outPipes as $pipe) {
@@ -417,13 +469,6 @@ class Process // implements \Psr\Log\LoggerInterface
     }
 
     /**
-     * Flag that the process is already closed.
-     * To prevent execuzting the close method twice.
-     * @var bool
-     */
-    private $_closed = false;
-
-    /**
      * Closes the process and all open pipes.
      *
      * @return int|null Exit status code of the command that was executed
@@ -431,10 +476,10 @@ class Process // implements \Psr\Log\LoggerInterface
     private function close()
     {
         // if already closed return last exit status
-        if ($this->_closed)
+        if ($this->_status != self::STATUS_RUNNING)
             return $this->_exit;
         // store endtime
-        $this->_endtime = time();
+        $this->_endtime = microtime(true);
         // close all opened pipes
         foreach (self::$_allPipes as $pipe)
             if (is_resource($this->_pipes[$pipe]))
@@ -451,10 +496,12 @@ class Process // implements \Psr\Log\LoggerInterface
         // close process handle
         if (is_resource($this->_handle))
             $this->_exit = proc_close($this->_handle);
-        $this->_isOpen = false;
         // set and return status
         $status = proc_get_status($this->_handle);
         $this->_exit = $status["running"] ? $this->_exit : $status["exitcode"];
+        $this->_status = $this->_exit
+            ? self::STATUS_TERMINATED
+            : self::STATUS_DONE;
         return $this->_exit;
     }
 
@@ -475,6 +522,7 @@ class Process // implements \Psr\Log\LoggerInterface
         return array(
             'command' => $this->_command,
             'params' => $this->_params,
+            'cwd' => isset($this->_cwd) ? $this->_cwd : getcwd(),
             'environment' => $this->_environment,
             'timeout' => $this->_timeout,
             'pid' => $this->_pid,
@@ -482,8 +530,21 @@ class Process // implements \Psr\Log\LoggerInterface
             'end' => isset($this->_endtime) ? $this->_endtime : '',
             'duration' => isset($this->_endtime)
                 ? $this->_endtime - $this->_starttime
-                : time() - $this->_starttime
+                : microtime(true) - $this->_starttime
         );
+    }
+
+    /**
+     * Gets the process status.
+     *
+     * The status is one of the STATUS_... constants
+     *
+     * @return int status number
+     */
+    public function getStatus()
+    {
+        $this->read(); // update status
+        return $this->_status;
     }
 
     /**
@@ -547,6 +608,70 @@ class Process // implements \Psr\Log\LoggerInterface
         // read rest first, wait for finish
         $this->readAll();
         return $this->_exit;
+    }
+
+    /**
+     * Exit codes translation table.
+     * This is set up on first call to exitDescription().
+     * @var array
+     */
+    private static $_exitCodes;
+
+    /**
+     * Get a descriptive description for the exit code.
+     *
+     * @param int $code exit code from command
+     * @return string description text
+     */
+    public static function exitDescription($code)
+    {
+        // valid exit code between -255 and 255
+        assert(is_int($code) && $code >= -255 && $code <= 255);
+        
+        if (!isset(self::$_exitCodes))
+            self::$_exitCodes = array(
+                0 => tr(__NAMESPACE__, 'OK'),
+                1 => tr(__NAMESPACE__, 'General error'),
+                2 => tr(__NAMESPACE__, 'Misuse of shell builtins'),
+                126 => tr(__NAMESPACE__, 'Invoked command cannot execute'),
+                127 => tr(__NAMESPACE__, 'Command not found'),
+                128 => tr(__NAMESPACE__, 'Invalid exit argument'),
+                // signals
+                129 => tr(__NAMESPACE__, 'Hangup'),
+                130 => tr(__NAMESPACE__, 'Interrupt'),
+                131 => tr(__NAMESPACE__, 'Quit and dump core'),
+                132 => tr(__NAMESPACE__, 'Illegal instruction'),
+                133 => tr(__NAMESPACE__, 'Trace/breakpoint trap'),
+                134 => tr(__NAMESPACE__, 'Process aborted'),
+                135 => tr(__NAMESPACE__, 'Bus error: "access to undefined portion of memory object"'),
+                136 => tr(__NAMESPACE__, 'Floating point exception: "erroneous arithmetic operation"'),
+                137 => tr(__NAMESPACE__, 'Kill (terminate immediately)'),
+                138 => tr(__NAMESPACE__, 'User-defined 1'),
+                139 => tr(__NAMESPACE__, 'Segmentation violation'),
+                140 => tr(__NAMESPACE__, 'User-defined 2'),
+                141 => tr(__NAMESPACE__, 'Write to pipe with no one reading'),
+                142 => tr(__NAMESPACE__, 'Signal raised by alarm'),
+                143 => tr(__NAMESPACE__, 'Termination (request to terminate)'),
+                // 144 - not defined
+                145 => tr(__NAMESPACE__, 'Child process terminated, stopped (or continued*)'),
+                146 => tr(__NAMESPACE__, 'Continue if stopped'),
+                147 => tr(__NAMESPACE__, 'Stop executing temporarily'),
+                148 => tr(__NAMESPACE__, 'Terminal stop signal'),
+                149 => tr(__NAMESPACE__, 'Background process attempting to read from tty ("in")'),
+                150 => tr(__NAMESPACE__, 'Background process attempting to write to tty ("out")'),
+                151 => tr(__NAMESPACE__, 'Urgent data available on socket'),
+                152 => tr(__NAMESPACE__, 'CPU time limit exceeded'),
+                153 => tr(__NAMESPACE__, 'File size limit exceeded'),
+                154 => tr(__NAMESPACE__, 'Signal raised by timer counting virtual time: "virtual timer expired"'),
+                155 => tr(__NAMESPACE__, 'Profiling timer expired'),
+                // 156 - not defined
+                157 => tr(__NAMESPACE__, 'Pollable event'),
+                // 158 - not defined
+                159 => tr(__NAMESPACE__, 'Bad syscall'),
+            );
+        return isset(self::$_exitCodes[$code])
+            ? self::$_exitCodes[$code]
+            : 'Unknown code: '.$code;
     }
 }
 
