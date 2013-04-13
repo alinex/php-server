@@ -71,6 +71,11 @@ class Apc extends Engine
     }
 
     /**
+     * @name Normal value access
+     * @{
+     */
+    
+    /**
      * @copydoc Engine::set()
      */
     function set($key, $value = null, $ttl = null)
@@ -124,6 +129,15 @@ class Apc extends Engine
     }
 
     /**
+     * @}
+     */
+    
+    /**
+     * @name Value modification methods
+     * @{
+     */
+    
+    /**
      * @copydoc Engine::inc()
      */
     public function inc($key, $num = 1)
@@ -153,6 +167,10 @@ class Apc extends Engine
         return apc_dec($this->_context.$key, $num);
     }
 
+    /**
+     * @}
+     */
+    
     /**
      * Persistence level of the engine.
      * @var int

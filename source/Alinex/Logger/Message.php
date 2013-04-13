@@ -33,6 +33,21 @@ use Alinex\Logger;
 class Message extends \Alinex\Util\Event
 {
     /**
+     * Alias names for the event.
+     * @var array of strings
+     */
+    private static $_alias = array(
+        Logger::EMERGENCY => 'emergency',
+        Logger::ALERT => 'alert',
+        Logger::CRITICAL => 'critical',
+        Logger::ERROR => 'error',
+        Logger::WARNING => 'warning',
+        Logger::NOTICE => 'notice',
+        Logger::INFO => 'info',
+        Logger::DEBUG => 'debug'
+    );
+
+    /**
      * Get i18n title for the log level.
      * @param int $level log level
      * @return string title for level
@@ -41,11 +56,11 @@ class Message extends \Alinex\Util\Event
     {
         // use LOGGER::... constants for level name
         assert(
-            is_int($level) 
-            && $level >= Logger::EMERGENCY 
+            is_int($level)
+            && $level >= Logger::EMERGENCY
             && $level <= Logger::DEBUG
         );
-        
+
         $title = array(
             Logger::EMERGENCY => tr(__NAMESPACE__, 'Emergency'),
             Logger::ALERT => tr(__NAMESPACE__, 'Alert'),
@@ -67,34 +82,38 @@ class Message extends \Alinex\Util\Event
 
     /**
      * Create new message object to work with.
+     * @param mixed $subject Object in which the event occured
      * @param  mixed   $level   The log level
      * @param  string  $message The log message
      * @param  array   $context The log context
      */
-    public function __construct($level, $message, array $context = array())
+    public function __construct($subject, $level, $message,
+        array $context = array())
     {
         // use LOGGER::... constants for level name
         assert(
-            is_int($level) 
-            && $level >= Logger::EMERGENCY 
+            is_int($level)
+            && $level >= Logger::EMERGENCY
             && $level <= Logger::DEBUG
         );
         assert(is_string($message));
-        
+
         // set context data as base
-        $this->data = $context;
+        $data = $context;
         // set the time
         list($sec, $msec) = explode('.', microtime(true));
-        $this->data['time'] = array(
+        $data['time'] = array(
             'sec' => $sec,
             'msec' => $msec
         );
         // set the level
-        $this->data['level'] = array(
+        $data['level'] = array(
             'num' => $level,
             'name' => self::levelName($level)
         );
         // set message
-        $this->data['message'] = $message;
+        $data['message'] = $message;
+        // create event
+        parent::__construct($subject, self::$_alias[$level], $data);
     }
 }

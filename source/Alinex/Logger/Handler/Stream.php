@@ -93,7 +93,7 @@ class Stream extends Handler
      * - expect:// — Process Interaction Streams
      *
      * Read more details at http://www.php.net/manual/en/wrappers.php
-     * 
+     *
      * The stream will be opened for writing only.
      *
      * @param string $stream local file, stream wrapper or url specification
@@ -106,8 +106,12 @@ class Stream extends Handler
     {
         // $stream is text uri or real resource stream
         assert(is_string($stream) || is_resource($stream));
-        assert(is_bool($flags));
-        
+        // check possible flags
+        assert(
+            !isset($flags)
+            || (is_int($flags) && $flags == self::FLAG_CLOSE)
+        );
+
         $this->_context = $context;
         $this->_flags = $flags;
         if (is_string($stream)) {
@@ -155,7 +159,7 @@ class Stream extends Handler
         if (isset($context))
             $this->_stream = fopen($this->_uri, 'a', false, $context);
         else
-            $this->_stream = fopen($this->_uri, 'a');            
+            $this->_stream = fopen($this->_uri, 'a');
         restore_error_handler();
         if (!is_resource($this->_stream)) {
             $this->_stream = null;

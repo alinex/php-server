@@ -32,7 +32,6 @@ class Http
 
     /**
      * @copydoc DEFAULT_EXPIRE
-     * @registry
      */
     const REGISTRY_EXPIRE = 'http.expire';
 
@@ -275,7 +274,7 @@ class Http
     private static function checkIP($ip)
     {
         assert(is_string($ip));
-        
+
         if (!empty($ip) && ip2long($ip)!=-1 && ip2long($ip)!=false) {
             foreach (self::$_privateips as $r) {
                 $min = ip2long($r[0]);

@@ -21,9 +21,7 @@ namespace Alinex;
  *
  * Every Logger instance has a channel (name) and a stack of handlers. Whenever
  * you add a message to the logger, it traverses the handler stack. Each handler
- * decides whether it handle the message and how to record it.\n
- * This is done using the Event Observer Pattern. This means you may add any
- * class as EventObserver to the logger using the attach() method.
+ * decides whether it handle the message and how to record it.
  *
  * @dotfile Logger/Handler
  *
@@ -33,6 +31,25 @@ namespace Alinex;
  *
  * The class is compatible with the PEAR standards to enforce an
  * interchangeability in other standard conform projects.
+ *
+ * **Context information**
+ *
+ * If context data is used the array keys have to be choosen wisely, they might
+ * interefere with the geneeral or provider data. If so the Provider will
+ * overwrite them.
+ *
+ * @pattern{EventObserver}
+ * Used to add other listener objects to the Logger. The following events may 
+ * be send. The direct attached observers (Handler) will be served first and 
+ * the EventManager afterwords.
+ * @event{debug} - Debugging message
+ * @event{info} - Informational
+ * @event{notice} - Normal but significant
+ * @event{warning} - Warning conditions
+ * @event{error} - Error conditions
+ * @event{critical} - Critical conditions (will throw a LOG_Exception as well)
+ * @event{alert} - Immediate action required (will throw a LOG_Exception as well)
+ * @event{emergency} - System is unusable (will throw a LOG_Exception as well)
  */
 class Logger implements Util\EventSubject // implements \Psr\Log\LoggerInterface
 {
@@ -173,13 +190,21 @@ class Logger implements Util\EventSubject // implements \Psr\Log\LoggerInterface
         );
 
         // create message object
-        $logmessage = new Logger\Message($level, $message, $context);
-        // process handlers
+        $logmessage = new Logger\Message($this, $level, $message, $context);
+        // process own handlers
         foreach($this->_handler as $handler)
-            $handler->update($this, $logmessage);
+            $handler->update($logmessage);
+        // inform through EventManager
+        Util\EventManager::getInstance()
+            ->update($logmessage);
         return count($this->_handler);
     }
 
+    /**
+     * @name Logging Methods
+     * @{
+     */
+    
     /**
      * Adds a log record at the DEBUG level.
      *
@@ -292,4 +317,7 @@ class Logger implements Util\EventSubject // implements \Psr\Log\LoggerInterface
         return $this->log(static::EMERGENCY, $message, $context);
     }
 
+    /**
+     * @}
+     */
 }

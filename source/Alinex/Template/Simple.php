@@ -102,7 +102,7 @@ class Simple
     private function replace($text)
     {
         assert(is_string($text));
-        
+
         return preg_replace_callback(
             '/\{(\s?\w[^}]+?)\}/',
             array($this, 'replaceVariable'),
@@ -168,7 +168,7 @@ class Simple
     private function modifier($value, $modifier)
     {
         assert(is_string($modifier));
-        
+
         $parts = explode(' ', $modifier, 2);
         $function = $parts[0];
         // by default each modifier will be called with value and modifier
@@ -201,6 +201,11 @@ class Simple
     }
 
     /**
+     * @name Special modifier handling
+     * @{
+     */
+    
+    /**
      * Special handling for date modifier.
      *
      * The shortcut of the system constants are supported as parameters.
@@ -213,7 +218,7 @@ class Simple
         // $value has to be a timestamp
         assert(is_int($value));
         assert(is_string($param));
-        
+
         // allow use of DATE_XXX constants
         if (defined('DATE_'.$param))
             $param = constant('DATE_'.$param);
@@ -221,4 +226,7 @@ class Simple
         return date($param, $value);
     }
 
+    /**
+     * @}
+     */
 }

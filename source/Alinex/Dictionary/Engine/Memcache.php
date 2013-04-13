@@ -128,6 +128,11 @@ class Memcache extends Engine
     }
 
     /**
+     * @name Normal access methods
+     * @{
+     */
+    
+    /**
      * @copydoc Engine::set()
      */
     function set($key, $value = null, $ttl = null)
@@ -188,6 +193,15 @@ class Memcache extends Engine
     }
 
     /**
+     * @}
+     */
+    
+    /**
+     * @name Value modification
+     * @{
+     */
+    
+    /**
      * @copydoc Engine::inc()
      */
     public function inc($key, $num = 1)
@@ -221,6 +235,10 @@ class Memcache extends Engine
         return $this->_memcache->decrement($this->_context.$key, $num);
     }
 
+    /**
+     * @}
+     */
+    
     /**
      * Scope of the engine.
      * @var int

@@ -40,7 +40,7 @@ class ArrayStructureTest extends \PHPUnit_Framework_TestCase
                 'time' => $message->data['time'],
                 'level' => array('num' => 1, 'name' => 'Alert'),
                 'message' => 'This is a Test.',
-                'context' => array(1 => 'one'),
+                1 => 'one'
             ),
             $message->formatted
         );
@@ -61,8 +61,8 @@ class ArrayStructureTest extends \PHPUnit_Framework_TestCase
                 'time' => $message->data['time'],
                 'level' => array('num' => 1, 'name' => 'Alert'),
                 'message' => 'This is a Test.',
-                'context' => array(1 => 'one'),
-                'os' => 'unix'
+                'os' => 'unix',
+                1 => 'one'
             ),
             $message->formatted
         );
