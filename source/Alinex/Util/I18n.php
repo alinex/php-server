@@ -33,7 +33,6 @@ class I18n
 {
     /**
      * Name in the session to store selected locale
-     * @session
      */
     const SESSION_LOCALE = 'alinex.i18n.locale';
 
@@ -41,7 +40,6 @@ class I18n
      * Name in the registry to store possible locales.
      * If this entry is found only the locales listed here and included in the
      * system are possible to use.
-     * @registry
      */
     const REGISTRY_LOCALES = 'i18n.locales';
 

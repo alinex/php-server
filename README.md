@@ -58,11 +58,16 @@ In the moment the following parts are developed:
   alternative and included template language use (see below). The complete
   base is setup multilingual.
 
+- **Event Management**
+
+  A general event management allows to listen and react to specific events
+  on time.
+
 - **Dictionary**
 
-  An abstract layer for different key-value stores with different supported 
+  An abstract layer for different key-value stores with different supported
   storage engines like Redis, Memcache, APC, Xcache, Directory, ...\n
-  Each engine can import/export in many formats supports value  manipulation 
+  Each engine can import/export in many formats supports value  manipulation
   methods and time limits through garbage collection.
 
   The easy use for different scenarios are provided through the accessors like
@@ -74,7 +79,7 @@ In the moment the following parts are developed:
   the easy to use format specification through the simple template (see below).
   Logging to syslog, stdout, errorlog, streams, Dictionary, mail, files...
 
-- **Simple Template**
+- **Simple Templates**
 
   This is an easy template language which will work mostly on short text and is
   integrated into the internationalization, logging and error management

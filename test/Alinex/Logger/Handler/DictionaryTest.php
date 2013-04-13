@@ -16,10 +16,10 @@ class DictionaryTest extends \PHPUnit_Framework_TestCase
             Logger::ALERT, 'This is a Test'
         );
         $message->data['time'] = array('sec' => '1362084595', 'msec' => '834');
-        $this->assertTrue($handler->log($message));
+        $this->assertTrue($handler->update($message));
         $this->assertTrue($log->has('1362084595.834'));
         $result = $log->get('1362084595.834');
-        $this->assertEquals('This is a Test',$result['message']);
+        $this->assertEquals('This is a Test', $result['message']);
     }
 
 }

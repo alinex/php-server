@@ -43,6 +43,7 @@ namespace Alinex\Code;
  * but this one can easily be setup to work for nearly every third party
  * library, too.
  *
+ * @pattern{Singleton} To get the single instance.
  * @see https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md
  */
 class Autoloader

@@ -12,7 +12,7 @@ class TextTest extends \PHPUnit_Framework_TestCase
         $message = new Logger\Message(
             Logger::ALERT, 'This is a Test'
         );
-        $message->data['time'] = array('sec' => '1362084595', 'msec' => '834');
+        $message->data['time'] = array('sec' => 1362084595, 'msec' => 834);
         $formatter = new Text();
         $this->assertTrue($formatter->format($message));
         $this->assertEquals(
@@ -26,7 +26,7 @@ class TextTest extends \PHPUnit_Framework_TestCase
         $message = new Logger\Message(
             Logger::ALERT, 'This is a Test'
         );
-        $message->data['time'] = array('sec' => '1362084595', 'msec' => '834');
+        $message->data['time'] = array('sec' => 1362084595, 'msec' => 834);
         $formatter = new Line();
         $formatter->formatString = '{message} on {time.sec|date l}.';
         $this->assertTrue($formatter->format($message));

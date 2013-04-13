@@ -67,6 +67,11 @@ class Session extends Engine
     }
 
     /**
+     * @name Normal access methods
+     * @{
+     */
+    
+    /**
      * @copydoc Engine::set()
      */
     function set($key, $value = null, $ttl = null)
@@ -128,6 +133,15 @@ class Session extends Engine
     }
 
     /**
+     * @}
+     */
+    
+    /**
+     * @name Value modification
+     * @{
+     */
+    
+    /**
      * @copydoc Engine::inc()
      */
     public function inc($key, $num = 1)
@@ -172,6 +186,15 @@ class Session extends Engine
         return $_SESSION[$this->_context.$key];
     }
 
+    /**
+     * @}
+     */
+    
+    /**
+     * @name Hash value access
+     * @{
+     */
+    
     /**
      * @copydoc Engine::hashSet()
      */
@@ -238,6 +261,15 @@ class Session extends Engine
             : 0;
     }
 
+    /**
+     * @}
+     */
+    
+    /**
+     * @name List value access
+     * @{
+     */
+    
     /**
      * @copydoc Engine::listPush()
      */
@@ -317,6 +349,10 @@ class Session extends Engine
         return isset($_SESSION[$this->_context.$key]) ? count($_SESSION[$this->_context.$key]) : 0;
     }
 
+    /**
+     * @}
+     */
+    
     /**
      * Scope of the engine.
      * @var int

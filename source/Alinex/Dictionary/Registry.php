@@ -88,7 +88,7 @@ use Alinex\Validator;
  * different formats use the Transfer subclasses.
  *
  * **Automatic Configuration**
- * 
+ *
  * This is possible through the registry files itself using the data:
  *   registry.data[type] = 'Redis'
  *   registry.data[prefix] = 'ax:reg-d:',
@@ -96,7 +96,9 @@ use Alinex\Validator;
  *   registry.data[type] = 'Redis'
  *   registry.data[prefix] = 'ax:reg-v:',
  *   registry.data[server][0] = 'tcp://localhost:3456'
- * 
+ *
+ * @pattern{Singleton} Only one registry should be possibl.
+ * @pattern{ArrayAccess} For easy accessing the values.
  * @see Cache for more open multiple engine storage
  * @see Session to easy integrate any engine as session storage
  * @see Dictionary for overview of use
@@ -110,13 +112,11 @@ class Registry implements \Countable, \ArrayAccess
 
     /**
      * Dictionary Engine to use for data storage.
-     * @registry
      */
     const REGISTRY_DATA_ENGINE = 'registry.data';
 
     /**
      * Dictionary Engine to use for validator storage.
-     * @registry
      */
     const REGISTRY_VALIDATOR_ENGINE = 'registry.validator';
 
@@ -321,6 +321,11 @@ class Registry implements \Countable, \ArrayAccess
     }
 
     /**
+     * @name Normal access methods
+     * @{
+     */
+    
+    /**
      * Method to set a registry variable
      *
      * @param string $key   Registry array key
@@ -401,6 +406,15 @@ class Registry implements \Countable, \ArrayAccess
         return $this->_data->clear();
     }
 
+    /**
+     * @}
+     */
+    
+    /**
+     * @name Group access
+     * @{
+     */
+    
     /**
      * Get all values which start with the given string.
      *
@@ -512,6 +526,42 @@ class Registry implements \Countable, \ArrayAccess
         $this->remove($offset);
     }
 
+    /**
+     * @}
+     */
+    
+    /**
+     * Export registry entries
+     *
+     * @param ImportExport $exporter export/import format instance
+     * @return bool true on success
+     */
+    public function export(ImportExport $exporter)
+    {
+        $exporter->setDictionary($this->_data);
+        // TRANS: header in output file
+        $exporter->addHeader(tr(__NAMESPACE__, 'Registry data'));
+        $exporter->setCommentCallback(array($this, 'validatorDescription'));
+        return $exporter->export();
+    }
+
+    /**
+     * Import registry entries
+     *
+     * @param ImportExport $importer export/import format instance
+     * @return bool true on success
+     */
+    public function import(ImportExport $importer)
+    {
+        $importer->setDictionary($this->_data);
+        return $importer->import();
+    }
+    
+    /**
+     * @name Validator methods
+     * @{
+     */
+    
     /**
      * Check if a validator storage is added.
      *
@@ -678,33 +728,6 @@ class Registry implements \Countable, \ArrayAccess
      * @param ImportExport $exporter export/import format instance
      * @return bool true on success
      */
-    public function export(ImportExport $exporter)
-    {
-        $exporter->setDictionary($this->_data);
-        // TRANS: header in output file
-        $exporter->addHeader(tr(__NAMESPACE__, 'Registry data'));
-        $exporter->setCommentCallback(array($this, 'validatorDescription'));
-        return $exporter->export();
-    }
-
-    /**
-     * Import registry entries
-     *
-     * @param ImportExport $importer export/import format instance
-     * @return bool true on success
-     */
-    public function import(ImportExport $importer)
-    {
-        $importer->setDictionary($this->_data);
-        return $importer->import();
-    }
-
-    /**
-     * Export registry entries
-     *
-     * @param ImportExport $exporter export/import format instance
-     * @return bool true on success
-     */
     public function validatorExport(ImportExport $exporter)
     {
         $exporter->setDictionary($this->_validator);
@@ -724,4 +747,9 @@ class Registry implements \Countable, \ArrayAccess
         $importer->setDictionary($this->_validator);
         return $importer->import();
     }
+
+    /**
+     * @}
+     */
+
 }

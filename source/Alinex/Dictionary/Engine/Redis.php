@@ -141,6 +141,11 @@ class Redis extends Engine
     }
 
     /**
+     * @name Normal access methods
+     * @{
+     */
+    
+    /**
      * @copydoc Engine::set()
      */
     function set($key, $value = null, $ttl = null)
@@ -222,6 +227,10 @@ class Redis extends Engine
     }
 
     /**
+     * @}
+     */
+    
+    /**
      * Scope of the engine.
      * @var int
      */
@@ -250,6 +259,11 @@ class Redis extends Engine
         10000 => 0.8
     );
 
+    /**
+     * @name Value modification
+     * @{
+     */
+    
     /**
      * @copydoc Engine::inc()
      */
@@ -310,6 +324,15 @@ class Redis extends Engine
         return $this->_redis->get($this->_context.$key);
     }
 
+    /**
+     * @}
+     */
+    
+    /**
+     * @name Hash value access
+     * @{
+     */
+    
      /**
      * Set an value in the hash specified by key.
      * @param string $key name of storage entry
@@ -376,6 +399,15 @@ class Redis extends Engine
         return null;
     }
 
+    /**
+     * æ}
+     */
+    
+    /**
+     * @name List value access
+     * @{
+     */
+    
     /**
      * @copydoc Engine::listPush()
      */
@@ -482,4 +514,7 @@ class Redis extends Engine
         return null;
     }
 
+    /**
+     * @}
+     */
 }

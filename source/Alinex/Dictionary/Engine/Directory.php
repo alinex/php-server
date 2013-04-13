@@ -113,6 +113,11 @@ class Directory extends Engine
     }
 
     /**
+     * @name Normal access methods
+     * @{
+     */
+    
+    /**
      * @copydoc Engine::set()
      */
     function set($key, $value = null, $ttl = null)
@@ -201,6 +206,10 @@ class Directory extends Engine
     }
 
     /**
+     * @}
+     */
+    
+    /**
      * Get the list of keys by directory scanning
      *
      * @param string $dir dirctory to scan
@@ -227,6 +236,11 @@ class Directory extends Engine
     }
 
     /**
+     * @name Group access
+     * @{
+     */
+    
+    /**
      * @copydoc Engine::groupGet()
      */
     public function groupGet($group)
@@ -252,6 +266,10 @@ class Directory extends Engine
         return $result;
     }
 
+    /**
+     * @}
+     */
+    
     /**
      * Reset storage for this context
      *

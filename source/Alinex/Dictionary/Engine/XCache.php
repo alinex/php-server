@@ -66,6 +66,11 @@ class XCache extends Engine
     }
 
     /**
+     * @name Normal access methods
+     * @{
+     */
+    
+    /**
      * @copydoc Engine::set()
      */
     function set($key, $value = null, $ttl = null)
@@ -124,6 +129,15 @@ class XCache extends Engine
     }
 
     /**
+     * @}
+     */
+    
+    /**
+     * @name Value modification
+     * @{
+     */
+    
+    /**
      * @copydoc Engine::inc()
      */
     public function inc($key, $num = 1)
@@ -153,6 +167,10 @@ class XCache extends Engine
         return xcache_dec($this->_context.$key, $num);
     }
 
+    /**
+     * @}
+     */
+    
     /**
      * Persistence level of the engine.
      * @var int

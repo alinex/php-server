@@ -108,6 +108,11 @@ class ArrayList extends Engine
     }
 
     /**
+     * @name Normal access methods
+     * @{
+     */
+    
+    /**
      * @copydoc Engine::set()
      */
     public function set($key, $value = null, $ttl = null)
@@ -195,6 +200,15 @@ class ArrayList extends Engine
     }
 
     /**
+     * æ}
+     */
+    
+    /**
+     * @name Value modification
+     * @{
+     */
+    
+    /**
      * @copydoc Engine::inc()
      */
     public function inc($key, $num = 1)
@@ -239,6 +253,15 @@ class ArrayList extends Engine
         return $this->_storage[$key];
     }
 
+    /**
+     * @}
+     */
+    
+    /**
+     * @name Hash value access
+     * @{
+     */
+    
     /**
      * @copydoc Engine::hashSet()
      */
@@ -305,6 +328,15 @@ class ArrayList extends Engine
             : 0;
     }
 
+    /**
+     * @}
+     */
+    
+    /**
+     * @name List value access
+     * @{
+     */
+    
     /**
      * @copydoc Engine::listPush()
      */
@@ -384,6 +416,10 @@ class ArrayList extends Engine
         return isset($this->_storage[$key]) ? count($this->_storage[$key]) : 0;
     }
 
+    /**
+     * @}
+     */
+    
     /**
      * Scope of the engine.
      * @var int

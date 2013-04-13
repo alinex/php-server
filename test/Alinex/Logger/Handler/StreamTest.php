@@ -14,13 +14,13 @@ class StreamTest extends \PHPUnit_Framework_TestCase
         $message = new Logger\Message(
             Logger::ALERT, 'This is a Test'
         );
-        $message->data['time'] = array('sec' => '1362084595', 'msec' => '834');
-        $this->assertTrue($handler->log($message));
+        $message->data['time'] = array('sec' => 1362084595, 'msec' => 834);
+        $this->assertTrue($handler->update($message));
         fseek($log, 0);
         $this->assertEquals('2013-02-28T21:49:55+0100 ALERT: This is a Test.', fread($log, 100));
         fclose($log);
         $this->setExpectedException('Alinex\Validator\Exception');
-        $handler->log($message);
+        $handler->update($message);
     }
 
     function testOutput()
@@ -30,11 +30,11 @@ class StreamTest extends \PHPUnit_Framework_TestCase
         $message = new Logger\Message(
             Logger::ALERT, 'This is a Test'
         );
-        $message->data['time'] = array('sec' => '1362084595', 'msec' => '834');
-        $this->assertTrue($handler->log($message));
+        $message->data['time'] = array('sec' => 1362084595, 'msec' => 834);
+        $this->assertTrue($handler->update($message));
         $this->assertEquals('2013-02-28T21:49:55+0100 ALERT: This is a Test.', ob_get_contents());
         ob_end_clean();
     }
 
-    
+
 }

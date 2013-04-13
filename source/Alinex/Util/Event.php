@@ -16,12 +16,30 @@ namespace Alinex\Util;
  *
  * The event object allows loose coupling of Objects.
  *
- * This is implemented using an extended version of the Observer Pattern. Where
- * an EventObserver can itself attach to an EventSubject and will get the
- * Event object send each time it occures.
+ * Event Propagation
+ * @image html event.png
+ * @image latex event.png "Event Propagation" width=10cm
+ *
+ * This may be done in two possible ways like shown in the graphic above.
+ *
+ * **Private Listener**
+ *
+ * If the event origin class implements the EventSubject interface some
+ * classes implementing EventObserver may directly attach themselves to the
+ * origin object. They will be informed for any event which occure.
+ *
+ * **Global Events**
+ *
+ * If the origin class supports the EventManager by notifying it using
+ * EventManager::update() any other class implementing EventObserver may
+ * attach to the EventManager and be notified for specific events.
+ *
+ * **Event Information**
  *
  * The Event may transport an additional array structure with specific
  * information which may be interpreted by the EventObserver.
+ * 
+ * @pattern{EventObserver} Implementing the Transport layer for the pattern.
  */
 class Event
 {
@@ -69,6 +87,15 @@ class Event
     function getSubject()
     {
         return $this->_subject;
+    }
+
+    /**
+     * Get the origin class of this event.
+     * @return string class name of origin
+     */
+    function getClass()
+    {
+        return get_class($this->_subject);
     }
 
     /**

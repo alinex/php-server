@@ -29,7 +29,7 @@ class Number
         '1e+9'  => 'G',
         '1e+6'  => 'M',
         '1e+3'  => 'k',
-// seldom used        
+// seldom used
 //        '1e+2'  => 'h',
 //        '1e+1'  => 'da',
 //        '1e-1'  => 'd',
@@ -81,7 +81,7 @@ class Number
         'zt' => array('f','g'),
         'yt' => array('a','g')
     );
-    
+
     /**
      * Get the full name of the prefix to get a long form.
      * @param string $prefix prefix to be used
@@ -159,10 +159,10 @@ class Number
 
     /**
      * Fix the value and unit output.
-     * 
+     *
      * Some things are not possible between unit and prefix like Mg will be
      * called t.
-     * 
+     *
      * @param numeric $value value to be used
      * @param string $prefix prefix name
      * @param string $unit prefix with unit entry
@@ -179,16 +179,16 @@ class Number
             . ($long && $prefix ? ' '.self::getPrefixName($prefix, $value).' ' : $prefix)
             . $unit;
     }
-    
+
     /**
      * Convert numeric value in human readable short or long notation.
-     * 
+     *
      * @param numeric $value to be converted
      * @param string $unit to be added
      * @param int $digits number of floating point digits
      * @param bool $long should the long format be used
      * @param bool $binary for binary representation (1024 based)
-     * 
+     *
      * @return string optimized value
      */
     public static function toUnit($value, $unit, $digits=0,
@@ -200,7 +200,7 @@ class Number
             foreach (self::$_binaryPrefixes as $num => $prefix)
                 if ($value > $num*2)
                     return self::formatValue(
-                        $sign.round($value/$num, $digits), 
+                        $sign.round($value/$num, $digits),
                         $prefix, $unit, $digits, $long
                     );
             return self::formatValue(
@@ -230,12 +230,12 @@ class Number
 
     /**
      * Convert numeric value in human readable binary (1024 based) notation.
-     * 
+     *
      * @param numeric $value to be converted
      * @param string $unit to be added
      * @param int $digits number of floating point digits
      * @param bool $long should the long format be used
-     * 
+     *
      * @return string optimized value
      */
     static function toBinaryUnit($value, $unit, $digits=0,
@@ -306,14 +306,14 @@ class Number
                 }
             }
         }
-        if ($shorten || $secs == 0) 
+        if ($shorten || $secs == 0)
             return $secs . ' ' . self::getTimeUnitName($unit, $secs);
         // else use exact form
         $res = "";
         foreach ($units as $divisor => $unit) {
             if ($divisor == 0) {
                 if ($secs != 0)
-                    $res .= $secs . ' ' . 
+                    $res .= $secs . ' ' .
                         self::getTimeUnitName($unit, $secs).", ";
                 break;;
             }
@@ -323,7 +323,6 @@ class Number
                 $secs -= $quot * $divisor;
             }
         }
-        error_log($res);
         return substr($res, 0, -2);
     }
 

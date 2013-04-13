@@ -26,19 +26,23 @@ use Alinex\Logger;
  * scope, performance, persistence and its value size settings.
  *
  * Keep the list as short as possible to be performant.
- * 
+ *
  * You may call the garbage collector manual on the cache class or it will
  * be done automatically before setting a value if min. gctime is set.
  *
  * **Automatic Configuration**
- * 
+ *
  * This is possible using registry entries like in the following example:
  *   cache.gc_lastrun = [timestamp]
  *   cache.gc_time = 600
  *   cache.engine[0][type] = 'Redis'
  *   cache.engine[0][prefix] = 'ax:tmp:',
  *   cache.engine[0][server][0] = 'tcp://localhost:3456'
- * 
+ *
+ * @pattern{Singleton} One general cache, but individual additional caches
+ * through normal constructor are also possible.
+ * @pattern{Chaining} To add multiple engines in one chain.
+ * @pattern{ArrayAccess} Used for all the values.
  * @see Registry for storage with validation
  * @see Session to easy integrate any engine as session storage
  * @see Dictionary for overview of use
@@ -48,13 +52,11 @@ class Cache implements \Countable, \ArrayAccess
     /**
      * Dictionary engine definitions to use as storage.
      * This has to be a list of engine specifications.
-     * @registry
      */
     const REGISTRY_ENGINE = 'cache.engine';
 
     /**
      * Information then the last garbage collector run was.
-     * @registry
      */
     const REGISTRY_LASTRUN = 'cache.gc_lastrun';
 
@@ -73,7 +75,6 @@ class Cache implements \Countable, \ArrayAccess
 
     /**
      * @copydoc DEFAULT_GCTIME
-     * @registry
      */
     const REGISTRY_GCTIME = 'cache.gc_time';
 
@@ -160,43 +161,36 @@ class Cache implements \Countable, \ArrayAccess
     private $_engines = array();
 
     /**
+     * @name Chainable
+     * @{
+     */
+    
+    /**
      * Add a new engine to the end of the list.
      * @param \Alinex\Dictionary\Engine $engine to be added
-     * @return int the number of engines in the list
+     * @return Cache
      */
-    public function enginePush(Engine $engine)
-    {
-        return array_push($this->_engines, $engine);
+    public function engineAdd(Engine $engine)
+    {        
+        $this->_engines[spl_object_hash($engine)] = $engine;
+        return $this;
     }
 
     /**
      * Add a new engine to the start of the list.
      * @param \Alinex\Dictionary\Engine $engine to be added
-     * @return int the number of engines in the list
+     * @return Cache
      */
-    public function engineUnshift(Engine $engine)
+    public function engineRemove(Engine $engine)
     {
-        return array_unshift($this->_engines, $engine);
+        unset($this->_engines[spl_object_hash($engine)]);
+        return $this;
     }
 
     /**
-     * Remove the last engine of the list.
-     * @return \Alinex\Dictionary\Engine $engine last engine of the list
+     * @}
      */
-    public function enginePop()
-    {
-        return array_pop($this->_engines);
-    }
-
-    /**
-     * Remove the first engine of the list.
-     * @return \Alinex\Dictionary\Engine $engine first engine of the list
-     */
-    public function engineShift()
-    {
-        return array_shift($this->_engines);
-    }
-
+    
     /**
      * Search for engines with the given key.
      * @param string $key name of the entry
@@ -219,6 +213,11 @@ class Cache implements \Countable, \ArrayAccess
         return $all ? $list : (bool)count($list);
     }
 
+    /**
+     * @name Working with the values
+     * @{
+     */
+    
     /**
      * Method to set a cache variable.
      *
@@ -348,6 +347,15 @@ class Cache implements \Countable, \ArrayAccess
     }
 
     /**
+     * @}
+     */
+    
+    /**
+     * @name Group access
+     * @{
+     */
+    
+    /**
      * Get all values which start with the given string.
      *
      * The key name will be shortened by cropping the group name from the start.
@@ -402,6 +410,10 @@ class Cache implements \Countable, \ArrayAccess
     }
 
     /**
+     * @}
+     */
+    
+    /**
      * Get the number of elements in the cache.
      *
      * This method will called also with:
@@ -416,6 +428,11 @@ class Cache implements \Countable, \ArrayAccess
         return count($this->keys());
     }
 
+    /**
+     * @name Array access
+     * @{
+     */
+    
     /**
      * Check if key exists for ArrayAccess
      *
@@ -477,6 +494,15 @@ class Cache implements \Countable, \ArrayAccess
         $this->remove($offset);
     }
 
+    /**
+     * @}
+     */
+    
+    /**
+     * @name Value manipulation
+     * @{
+     */
+    
     /**
      * Increment value of given key.
      *
@@ -546,6 +572,15 @@ class Cache implements \Countable, \ArrayAccess
         return $this->searchEngines($key)->append($key, $text);
     }
 
+    /**
+     * @}
+     */
+    
+    /**
+     * @name Hash value access
+     * @{
+     */
+    
     /**
      * Set an value in the hash specified by key.
      *
@@ -618,6 +653,15 @@ class Cache implements \Countable, \ArrayAccess
         return $this->searchEngines($key)->hashCount($key);
     }
 
+    /**
+     * @}
+     */
+    
+    /**
+     * @name List value access
+     * @{
+     */
+    
     /**
      * Add an element to the end of the list.
      *
@@ -704,6 +748,10 @@ class Cache implements \Countable, \ArrayAccess
         return $this->searchEngines($key)->listCount($key);
     }
 
+    /**
+     * @}
+     */
+    
     /**
      * Run garbage collector on each engine now.
      *

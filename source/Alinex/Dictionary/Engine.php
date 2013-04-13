@@ -116,6 +116,9 @@ use Alinex\Validator;
  * you have to trigger this by calling gc(). Read more in the description of
  * each engine.
  *
+ * @pattern{Multiton} Create single instance for each context name. But this
+ * getInstance() method is also used to get a specific Engine by configuration.
+ * @pattern{ArrayAccess} For easy acessing values.
  * @see Dictionary for overview of use
  */
 abstract class Engine implements \Countable, \ArrayAccess
@@ -375,6 +378,11 @@ abstract class Engine implements \Countable, \ArrayAccess
     }
 
     /**
+     * @name Normal access routines
+     * @{
+     */
+    
+    /**
      * Method to set a storage variable
      *
      * If key already holds a value, it is overwritten, regardless of its type.
@@ -445,6 +453,15 @@ abstract class Engine implements \Countable, \ArrayAccess
     }
 
     /**
+     * @}
+     */
+    
+    /**
+     * @name Group access
+     * @{
+     */
+    
+    /**
      * Get all values which start with the given string.
      *
      * The key name will be shortened by cropping the group name from the start.
@@ -508,6 +525,10 @@ abstract class Engine implements \Countable, \ArrayAccess
     }
 
     /**
+     * @}
+     */
+    
+    /**
      * Get the number of elements in the storage.
      *
      * This method will be called also with:
@@ -522,6 +543,11 @@ abstract class Engine implements \Countable, \ArrayAccess
         return count($this->keys());
     }
 
+    /**
+     * @name Array access
+     * @{
+     */
+    
     /**
      * Check if key exists for ArrayAccess
      *
@@ -583,6 +609,15 @@ abstract class Engine implements \Countable, \ArrayAccess
         $this->set($offset);
     }
 
+    /**
+     * @}
+     */
+    
+    /**
+     * @name Value modification
+     * @{
+     */
+    
     /**
      * Increment value of given key.
      *
@@ -659,6 +694,15 @@ abstract class Engine implements \Countable, \ArrayAccess
         return $this->set($key, $value . $text);
     }
 
+    /**
+     * @}
+     */
+    
+    /**
+     * @name Hash value access
+     * @{
+     */
+    
     /**
      * Set an value in the hash specified by key.
      *
@@ -746,6 +790,15 @@ abstract class Engine implements \Countable, \ArrayAccess
         return isset($hash) ? $this->count($hash) : 0;
     }
 
+    /**
+     * @}
+     */
+    
+    /**
+     * @name List value access
+     * @{
+     */
+    
     /**
      * Add an element to the end of the list.
      *
@@ -862,6 +915,10 @@ abstract class Engine implements \Countable, \ArrayAccess
         return isset($list) ? count($list) : 0;
     }
 
+    /**
+     * @}
+     */
+    
     /**
      * Garbage collector run.
      *

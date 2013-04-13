@@ -66,7 +66,7 @@ use Alinex\Template\Simple;
  * @endcode
  *
  * **Automatic Configuration**
- * 
+ *
  * This is possible using registry entries like in the following example:
  *   session.inactive_time = 900
  *   session.login_time = 21600
@@ -77,6 +77,7 @@ use Alinex\Template\Simple;
  *   session.engine[prefix] = 'ax:ses:',
  *   session.engine[server][0] = 'tcp://localhost:3456'
  *
+ * @pattern{Singleton} Only one instance per Request possible.
  * @see Registry for storage with validation
  * @see Cache for more open multiple engine storage
  * @see Dictionary for overview of use
@@ -94,7 +95,6 @@ class Session implements SessionHandlerInterface
 
     /**
      * @copydoc DEFAULT_INACTIVETIME
-     * @registry
      */
     const REGISTRY_INACTIVETIME = 'session.inactive_time';
 
@@ -109,7 +109,6 @@ class Session implements SessionHandlerInterface
 
     /**
      * @copydoc DEFAULT_LOGINTIME
-     * @registry
      */
     const REGISTRY_LOGINTIME = 'session.login_time';
 
@@ -124,7 +123,6 @@ class Session implements SessionHandlerInterface
 
     /**
      * @copydoc DEFAULT_LIFETIME
-     * @registry
      */
     const REGISTRY_LIFETIME = 'session.life_time';
 
@@ -139,7 +137,6 @@ class Session implements SessionHandlerInterface
 
     /**
      * @copydoc DEFAULT_IPLOCK_TIME
-     * @registry
      */
     const REGISTRY_IPLOCK_TIME = 'session.iplock_time';
 
@@ -154,13 +151,11 @@ class Session implements SessionHandlerInterface
 
     /**
      * @copydoc DEFAULT_IPLOCK_NUM
-     * @registry
      */
     const REGISTRY_IPLOCK_NUM = 'session.iplock_num';
 
     /**
      * Dictionary engine definition to use as storage.
-     * @registry
      */
     const REGISTRY_ENGINE = 'session.engine';
 
@@ -171,38 +166,32 @@ class Session implements SessionHandlerInterface
 
     /**
      * Flag if session is already fully initiated.
-     * @session
      */
     const SESSION_INITIATED = 'session.initiated';
 
     /**
      * Md5 of user agent string to check for continuous access.
-     * @session
      */
     const SESSION_AGENT = 'session.agent';
 
     /**
      * Timestamp than the session will end it's lifetime.
-     * @session
      */
     const SESSION_LIFETIME = 'session.lifetime';
 
     /**
      * Timestamp till the session will end if inactive.
      * This will be updated on each access.
-     * @session
      */
     const SESSION_INACTIVE = 'session.inactive';
 
     /**
      * Time of the last login.
-     * @session
      */
     const SESSION_LOGINTIME = 'login.time';
 
     /**
      * Login user id, which will be deleted after end of login time.
-     * @session
      */
     const SESSION_LOGINID = 'login.id';
 
@@ -530,6 +519,11 @@ class Session implements SessionHandlerInterface
     }
 
     /**
+     * @name Session interface
+     * @{
+     */
+    
+    /**
      * Open the session and initialize it.
      *
      * This method will do nothing and return always <i>TRUE</i>.
@@ -664,4 +658,7 @@ class Session implements SessionHandlerInterface
         return $this->_engine->remove($id);
     }
 
+    /**
+     * @}
+     */
 }
