@@ -97,6 +97,9 @@ use Alinex\Validator;
  *   registry.data[prefix] = 'ax:reg-v:',
  *   registry.data[server][0] = 'tcp://localhost:3456'
  *
+ * @event{new} new registry entry with 'key' and 'to' value
+ * @event{remove} remove registry entry with 'key' and 'from' value
+ * @event{change} change registry 'key', 'from' and 'to'
  * @pattern{Singleton} Only one registry should be possibl.
  * @pattern{ArrayAccess} For easy accessing the values.
  * @see Cache for more open multiple engine storage
@@ -343,6 +346,21 @@ class Registry implements \Countable, \ArrayAccess
                 $value, $key, $validator[0], $validator[1]
             );
         }
+        $old = $this->get($key);
+        if ($value != $old)
+            \Alinex\Util\EventManager::getInstance()
+                ->update(
+                    new \Alinex\Util\Event(
+                        $this,
+                        !isset($value) ? 'remove' 
+                            : !isset($old) ? 'new' : 'change',
+                        array(
+                            'key' => $key,
+                            'from' => $old,
+                            'to' => $value
+                        )
+                    )
+                );
         // set value
         return $this->_data->set($key, $value);
     }

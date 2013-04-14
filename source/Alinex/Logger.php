@@ -42,14 +42,14 @@ namespace Alinex;
  * Used to add other listener objects to the Logger. The following events may 
  * be send. The direct attached observers (Handler) will be served first and 
  * the EventManager afterwords.
- * @event{debug} - Debugging message
- * @event{info} - Informational
- * @event{notice} - Normal but significant
- * @event{warning} - Warning conditions
- * @event{error} - Error conditions
- * @event{critical} - Critical conditions (will throw a LOG_Exception as well)
- * @event{alert} - Immediate action required (will throw a LOG_Exception as well)
- * @event{emergency} - System is unusable (will throw a LOG_Exception as well)
+ * @event{debug} - Debugging message with Message object
+ * @event{info} - Informational with Message object
+ * @event{notice} - Normal but significant with Message object
+ * @event{warning} - Warning conditions with Message object
+ * @event{error} - Error conditions with Message object
+ * @event{critical} - Critical conditions with Message object
+ * @event{alert} - Immediate action required with Message object
+ * @event{emergency} - System is unusable with Message object
  */
 class Logger implements Util\EventSubject // implements \Psr\Log\LoggerInterface
 {
