@@ -12,7 +12,7 @@ class StreamTest extends \PHPUnit_Framework_TestCase
         $log = $handle = fopen('php://memory', 'a+');
         $handler = new Stream($log);
         $message = new Logger\Message(
-            Logger::ALERT, 'This is a Test'
+            $this, Logger::ALERT, 'This is a Test'
         );
         $message->data['time'] = array('sec' => 1362084595, 'msec' => 834);
         $this->assertTrue($handler->update($message));
@@ -28,7 +28,7 @@ class StreamTest extends \PHPUnit_Framework_TestCase
         ob_start();
         $handler = new Stream('php://output');
         $message = new Logger\Message(
-            Logger::ALERT, 'This is a Test'
+            $this, Logger::ALERT, 'This is a Test'
         );
         $message->data['time'] = array('sec' => 1362084595, 'msec' => 834);
         $this->assertTrue($handler->update($message));

@@ -10,7 +10,7 @@ class JsonTest extends \PHPUnit_Framework_TestCase
     function testInitial()
     {
         $message = new Logger\Message(
-            Logger::ALERT, 'This is a Test.'
+            $this, Logger::ALERT, 'This is a Test.'
         );
         $message->data['time'] = array('sec' => '1362084595', 'msec' => '834');
         $formatter = new Json();
@@ -24,7 +24,7 @@ class JsonTest extends \PHPUnit_Framework_TestCase
     function testContext()
     {
         $message = new Logger\Message(
-            Logger::ALERT, 'This is a Test.', array(1 => 'one')
+            $this, Logger::ALERT, 'This is a Test.', array(1 => 'one')
         );
         $message->data['time'] = array('sec' => '1362084595', 'msec' => '834');
         $formatter = new Json();
@@ -38,7 +38,7 @@ class JsonTest extends \PHPUnit_Framework_TestCase
     function testData()
     {
         $message = new Logger\Message(
-            Logger::ALERT, 'This is a Test.', array(1 => 'one')
+            $this, Logger::ALERT, 'This is a Test.', array(1 => 'one')
         );
         $message->data['time'] = array('sec' => '1362084595', 'msec' => '834');
         $message->data['OS'] = 'unix';

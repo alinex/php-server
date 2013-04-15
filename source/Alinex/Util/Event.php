@@ -73,7 +73,7 @@ class Event
         // object has to be gibven to create an event
         assert(is_object($subject));
         // the name should be a short text as identifier of the type
-        assert(isstring($name));
+        assert(is_string($name));
 
         $this->_subject = $subject;
         $this->_name = $name;

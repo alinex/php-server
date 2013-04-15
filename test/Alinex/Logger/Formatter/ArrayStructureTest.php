@@ -10,7 +10,7 @@ class ArrayStructureTest extends \PHPUnit_Framework_TestCase
     function testInitial()
     {
         $message = new Logger\Message(
-            Logger::ALERT, 'This is a Test.'
+            $this, Logger::ALERT, 'This is a Test.'
         );
         $formatter = new ArrayStructure();
         $this->assertTrue(
@@ -29,7 +29,7 @@ class ArrayStructureTest extends \PHPUnit_Framework_TestCase
     function testContext()
     {
         $message = new Logger\Message(
-            Logger::ALERT, 'This is a Test.', array(1 => 'one')
+            $this, Logger::ALERT, 'This is a Test.', array(1 => 'one')
         );
         $formatter = new ArrayStructure();
         $this->assertTrue(
@@ -49,7 +49,7 @@ class ArrayStructureTest extends \PHPUnit_Framework_TestCase
     function testData()
     {
         $message = new Logger\Message(
-            Logger::ALERT, 'This is a Test.', array(1 => 'one')
+            $this, Logger::ALERT, 'This is a Test.', array(1 => 'one')
         );
         $message->data['os'] = 'unix';
         $formatter = new ArrayStructure();

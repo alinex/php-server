@@ -10,7 +10,7 @@ class LevelTest extends \PHPUnit_Framework_TestCase
     function testInitial()
     {
         $message = new Logger\Message(
-            Logger::ALERT, 'This is a Test'
+            $this, Logger::ALERT, 'This is a Test'
         );
         $filter = new Level();
         $this->assertFalse($filter->check($message));
@@ -22,7 +22,7 @@ class LevelTest extends \PHPUnit_Framework_TestCase
     function testLevels()
     {
         $message = new Logger\Message(
-            Logger::ALERT, 'This is a Test'
+            $this, Logger::ALERT, 'This is a Test'
         );
         $filter = new Level();
         $filter->setMinimum(Logger::WARNING);

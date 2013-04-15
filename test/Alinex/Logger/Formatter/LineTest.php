@@ -10,7 +10,7 @@ class LineTest extends \PHPUnit_Framework_TestCase
     function testInitial()
     {
         $message = new Logger\Message(
-            Logger::ALERT, 'This is a Test'
+            $this, Logger::ALERT, 'This is a Test'
         );
         $message->data['time'] = array('sec' => 1362084595, 'msec' => 834);
         $formatter = new Line();
@@ -24,7 +24,7 @@ class LineTest extends \PHPUnit_Framework_TestCase
     function testFormat()
     {
         $message = new Logger\Message(
-            Logger::ALERT, 'This is a Test'
+            $this, Logger::ALERT, 'This is a Test'
         );
         $message->data['time'] = array('sec' => 1362084595, 'msec' => 834);
         $formatter = new Line();
