@@ -145,13 +145,13 @@ class Cache implements \Countable, \ArrayAccess
             // set engine
             if ($registry->has(self::REGISTRY_ENGINE))
                 foreach ($registry->get(self::REGISTRY_ENGINE) as $engine)
-                    $this->enginePush(Engine::getInstance($engine));
+                    $this->engineAdd(Engine::getInstance($engine));
             else
-                $this->enginePush(Engine::getInstance(self::DEFAULT_PREFIX));
+                $this->engineAdd(Engine::getInstance(self::DEFAULT_PREFIX));
             if ($registry->has(self::REGISTRY_GCTIME))
                 $this->_gctime = $registry->get(self::REGISTRY_GCTIME);
         } else {
-            $this->enginePush(Engine::getInstance(self::DEFAULT_PREFIX));
+            $this->engineAdd(Engine::getInstance(self::DEFAULT_PREFIX));
         }
     }
 

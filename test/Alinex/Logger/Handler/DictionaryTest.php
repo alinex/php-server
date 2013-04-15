@@ -13,7 +13,7 @@ class DictionaryTest extends \PHPUnit_Framework_TestCase
         $log = Dictionary\Engine\ArrayList::getInstance('testlog');
         $handler = new Logger\Handler\Dictionary($log);
         $message = new Logger\Message(
-            Logger::ALERT, 'This is a Test'
+            $this, Logger::ALERT, 'This is a Test'
         );
         $message->data['time'] = array('sec' => '1362084595', 'msec' => '834');
         $this->assertTrue($handler->update($message));

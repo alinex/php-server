@@ -20,10 +20,8 @@ class CacheTest extends \PHPUnit_Framework_TestCase
     {
         $engine2 = ArrayList::getInstance('2');
         $engine3 = ArrayList::getInstance('3');
-        $this->assertEquals(2, $this->object->enginePush($engine2));
-        $this->assertEquals($engine2, $this->object->enginePop());
-        $this->assertEquals(2, $this->object->engineUnshift($engine3));
-        $this->assertEquals($engine3, $this->object->engineShift());
+        $this->object->engineAdd($engine2);
+        $this->object->engineRemove($engine2);
     }
 
     /**

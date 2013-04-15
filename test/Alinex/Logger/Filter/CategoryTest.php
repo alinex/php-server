@@ -10,7 +10,7 @@ class CategoryTest extends \PHPUnit_Framework_TestCase
     function testInitial()
     {
         $message = new Logger\Message(
-            Logger::ALERT, 'This is a Test'
+            $this, Logger::ALERT, 'This is a Test'
         );
         $filter = new Category();
         $this->assertFalse($filter->check($message));
@@ -24,7 +24,7 @@ class CategoryTest extends \PHPUnit_Framework_TestCase
     function testCategories()
     {
         $message = new Logger\Message(
-            Logger::ALERT, 'This is a Test'
+            $this, Logger::ALERT, 'This is a Test'
         );
         $message->data['code'] = array('class' => 'Alinex\Test\Namespace\Class');
         $filter = new Category();
