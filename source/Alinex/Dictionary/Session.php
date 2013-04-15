@@ -81,6 +81,7 @@ use Alinex\Template\Simple;
  * @see Registry for storage with validation
  * @see Cache for more open multiple engine storage
  * @see Dictionary for overview of use
+ * @see session for a list of used keys
  */
 class Session implements SessionHandlerInterface
 {
@@ -522,7 +523,7 @@ class Session implements SessionHandlerInterface
      * @name Session interface
      * @{
      */
-    
+
     /**
      * Open the session and initialize it.
      *

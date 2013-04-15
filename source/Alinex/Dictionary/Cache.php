@@ -46,6 +46,7 @@ use Alinex\Logger;
  * @see Registry for storage with validation
  * @see Session to easy integrate any engine as session storage
  * @see Dictionary for overview of use
+ * @see cache for a list of used keys
  */
 class Cache implements \Countable, \ArrayAccess
 {
@@ -164,14 +165,14 @@ class Cache implements \Countable, \ArrayAccess
      * @name Chainable
      * @{
      */
-    
+
     /**
      * Add a new engine to the end of the list.
      * @param \Alinex\Dictionary\Engine $engine to be added
      * @return Cache
      */
     public function engineAdd(Engine $engine)
-    {        
+    {
         $this->_engines[spl_object_hash($engine)] = $engine;
         return $this;
     }
@@ -190,7 +191,7 @@ class Cache implements \Countable, \ArrayAccess
     /**
      * @}
      */
-    
+
     /**
      * Search for engines with the given key.
      * @param string $key name of the entry
@@ -217,7 +218,7 @@ class Cache implements \Countable, \ArrayAccess
      * @name Working with the values
      * @{
      */
-    
+
     /**
      * Method to set a cache variable.
      *
@@ -349,12 +350,12 @@ class Cache implements \Countable, \ArrayAccess
     /**
      * @}
      */
-    
+
     /**
      * @name Group access
      * @{
      */
-    
+
     /**
      * Get all values which start with the given string.
      *
@@ -412,7 +413,7 @@ class Cache implements \Countable, \ArrayAccess
     /**
      * @}
      */
-    
+
     /**
      * Get the number of elements in the cache.
      *
@@ -432,7 +433,7 @@ class Cache implements \Countable, \ArrayAccess
      * @name Array access
      * @{
      */
-    
+
     /**
      * Check if key exists for ArrayAccess
      *
@@ -497,12 +498,12 @@ class Cache implements \Countable, \ArrayAccess
     /**
      * @}
      */
-    
+
     /**
      * @name Value manipulation
      * @{
      */
-    
+
     /**
      * Increment value of given key.
      *
@@ -575,12 +576,12 @@ class Cache implements \Countable, \ArrayAccess
     /**
      * @}
      */
-    
+
     /**
      * @name Hash value access
      * @{
      */
-    
+
     /**
      * Set an value in the hash specified by key.
      *
@@ -656,12 +657,12 @@ class Cache implements \Countable, \ArrayAccess
     /**
      * @}
      */
-    
+
     /**
      * @name List value access
      * @{
      */
-    
+
     /**
      * Add an element to the end of the list.
      *
@@ -751,7 +752,7 @@ class Cache implements \Countable, \ArrayAccess
     /**
      * @}
      */
-    
+
     /**
      * Run garbage collector on each engine now.
      *

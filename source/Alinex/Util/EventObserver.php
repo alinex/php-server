@@ -18,8 +18,10 @@ namespace Alinex\Util;
  * implement the Event Observer Design Pattern. This is an extension to hte
  * classical Observer Pattern and sends an Event with additional event
  * specific data.
- * 
+ *
  * @pattern{EventObserver} Interface for the observer.
+ * @see Event for a detailed overview
+ * @see event for a list of classes sending events
  */
 interface EventObserver
 {
