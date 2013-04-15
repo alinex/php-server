@@ -15,6 +15,8 @@ namespace Alinex\Util;
  * The event manager enables a multi-to-multi dependency through events.
  *
  * @pattern{Singleton} To work with only one instance of EventManager.
+ * @see Event for a detailed overview
+ * @see event for a list of classes sending events
  */
 class EventManager implements EventSubject, EventObserver
 {
@@ -87,7 +89,7 @@ class EventManager implements EventSubject, EventObserver
             $class = array($name);
         // add listener entries
         foreach ($class as $classEntry) {
-            foreach($name as $nameEntry) {
+            foreach ($name as $nameEntry) {
                 $key = $classEntry.'-'.$nameEntry;
                 $cid = spl_object_hash($observer);
                 if (!isset($this->_listener[$key]))
@@ -135,7 +137,7 @@ class EventManager implements EventSubject, EventObserver
             $class = array($name);
         // add listener entries
         foreach ($class as $classEntry) {
-            foreach($name as $nameEntry) {
+            foreach ($name as $nameEntry) {
                 $key = $classEntry.'-'.$nameEntry;
                 $cid = spl_object_hash($observer);
                 unset($this->_listener[$key][$cid]);
@@ -144,7 +146,7 @@ class EventManager implements EventSubject, EventObserver
     }
 
     /**
-     * @copydoc EventObject::update()
+     * @copydoc EventObserver::update()
      */
     public function update(Event $subject)
     {

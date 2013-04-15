@@ -38,8 +38,9 @@ namespace Alinex\Util;
  *
  * The Event may transport an additional array structure with specific
  * information which may be interpreted by the EventObserver.
- * 
+ *
  * @pattern{EventObserver} Implementing the Transport layer for the pattern.
+ * @see event for a list of classes sending events
  */
 class Event
 {

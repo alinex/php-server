@@ -105,6 +105,7 @@ use Alinex\Validator;
  * @see Cache for more open multiple engine storage
  * @see Session to easy integrate any engine as session storage
  * @see Dictionary for overview of use
+ * @see registry for a list of used keys
  */
 class Registry implements \Countable, \ArrayAccess
 {
@@ -327,7 +328,7 @@ class Registry implements \Countable, \ArrayAccess
      * @name Normal access methods
      * @{
      */
-    
+
     /**
      * Method to set a registry variable
      *
@@ -352,7 +353,7 @@ class Registry implements \Countable, \ArrayAccess
                 ->update(
                     new \Alinex\Util\Event(
                         $this,
-                        !isset($value) ? 'remove' 
+                        !isset($value) ? 'remove'
                             : !isset($old) ? 'new' : 'change',
                         array(
                             'key' => $key,
@@ -427,12 +428,12 @@ class Registry implements \Countable, \ArrayAccess
     /**
      * @}
      */
-    
+
     /**
      * @name Group access
      * @{
      */
-    
+
     /**
      * Get all values which start with the given string.
      *
@@ -547,7 +548,7 @@ class Registry implements \Countable, \ArrayAccess
     /**
      * @}
      */
-    
+
     /**
      * Export registry entries
      *
@@ -574,12 +575,12 @@ class Registry implements \Countable, \ArrayAccess
         $importer->setDictionary($this->_data);
         return $importer->import();
     }
-    
+
     /**
      * @name Validator methods
      * @{
      */
-    
+
     /**
      * Check if a validator storage is added.
      *
