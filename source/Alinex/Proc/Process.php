@@ -13,6 +13,8 @@
 
 namespace Alinex\Proc;
 
+use Alinex\Util;
+
 /**
  * System program execution and control.
  *
@@ -27,33 +29,40 @@ namespace Alinex\Proc;
  *
  * Most public methods are designed after the @ref chaining this allows to
  * easy concatenate them.
+ *
+ * @event{start} - called after starting an process
+ * @event{output} - called after something was output
+ * @event{error} - called after some error was output
+ * @event{end} - called after process has finished
+ * @event{success} - called after process finished successfull
+ * @event{fail} - called after process finished with failure
  */
 class Process // implements \Psr\Log\LoggerInterface
 {
     /**
      * stdin identifier (used for pipe index).
      */
-    const STDIN = 0;
+    const STDIN = 1;
 
     /**
      * stdout identifier (used for pipe index).
      */
-    const STDOUT = 1;
+    const STDOUT = 2;
 
     /**
      * stderr identifier (used for pipe index).
      */
-    const STDERR = 2;
+    const STDERR = 3;
 
     /**
      * Additional input pipe may be accessed from commands like GPG
      */
-    const ADDIN = 3;
+    const ADDIN = 4;
 
     /**
      * Additional output pipe may be accessed from siome commands
      */
-    const ADDOUT = 4;
+    const ADDOUT = 5;
 
     /**
      * Allow the use of wildcards within the command line
@@ -204,6 +213,12 @@ class Process // implements \Psr\Log\LoggerInterface
     );
 
     /**
+     * Protocol of all actions with time.
+     * @var array of array(time, pipe, string)
+     */
+    protected $_protocol = array();
+
+    /**
      * Exit status code of the command that was executed
      * @var int
      */
@@ -235,7 +250,7 @@ class Process // implements \Psr\Log\LoggerInterface
     {
         // possible flags are the FLAG_... constants
         assert(is_int($flags) && $flags >= 0);
-        
+
         $this->_flags = $flags;
     }
 
@@ -249,7 +264,7 @@ class Process // implements \Psr\Log\LoggerInterface
     {
         // time range in seconds
         assert(is_int($time) && $time >= 0);
-        
+
         $this->_timeout = $time;
         return $this;
     }
@@ -309,7 +324,6 @@ class Process // implements \Psr\Log\LoggerInterface
         // shell process
         if (!$this->_flags & self::FLAG_WILDCARD)
             $call = 'exec '.$call;
-
         // open handle and start process
         $handle = proc_open(
             $call,
@@ -347,6 +361,13 @@ class Process // implements \Psr\Log\LoggerInterface
         $status = proc_get_status($this->_handle);
         if (isset($status['pid']))
             $this->_pid = $status['pid'];
+        // protocol call
+        $this->_protocol[] = array(time(), 0, $call);
+        // call observers
+        Util\EventManager::getInstance()
+            ->update(
+                new Util\Event($this, 'start')
+            );
         return $this;
     }
 
@@ -432,6 +453,18 @@ class Process // implements \Psr\Log\LoggerInterface
                 // store if something got
                 if (strlen($str))
                     $this->_output[$pipe] .= $str;
+                // protocol output
+                $this->_protocol[] = array(time(), $pipe, $str);
+                // call observers
+                if ($pipe == self::STDOUT || $pipe == self::STDERR)
+                    Util\EventManager::getInstance()
+                        ->update(
+                            new Util\Event(
+                                $this,
+                                $pipe == self::STDOUT ? 'output' : 'error',
+                                array('text' => $str)
+                            )
+                        );
             }
         }
         // if everything read close the process
@@ -453,6 +486,8 @@ class Process // implements \Psr\Log\LoggerInterface
         fflush($this->_pipes[$pipe]);
         // store internally
         $this->_input[$pipe] .= $text;
+        // protocol input
+        $this->_protocol[] = array(time(), $pipe, $text);
         return $this;
     }
 
@@ -502,7 +537,18 @@ class Process // implements \Psr\Log\LoggerInterface
         $this->_status = $this->_exit
             ? self::STATUS_TERMINATED
             : self::STATUS_DONE;
-        return $this->_exit;
+        // protocol close
+        $this->_protocol[] = array(time(), 0, 'Call closed: '.$this->_exit);
+        // call observers
+        Util\EventManager::getInstance()
+            ->update(
+                new Util\Event($this, 'end')
+            );
+        Util\EventManager::getInstance()
+            ->update(
+                new Util\Event($this, $this->_exit ? 'success' : 'fail')
+            );
+         return $this->_exit;
     }
 
     /**
@@ -599,6 +645,21 @@ class Process // implements \Psr\Log\LoggerInterface
     }
 
     /**
+     * Get a combined string of all input and output.
+     *
+     * This may be scrambled up because of the different time slots for reading
+     * the pipes.
+     * @return string
+     */
+    function getProtocolString()
+    {
+        $result = '';
+        foreach ($this->_protocol as $entry)
+            $result .= $entry[2];
+        return $result;
+    }
+
+    /**
      * Get the exit code.
      * @return int 0 => normal end -1 => process killed >0 => something went
      * wrong
@@ -627,7 +688,7 @@ class Process // implements \Psr\Log\LoggerInterface
     {
         // valid exit code between -255 and 255
         assert(is_int($code) && $code >= -255 && $code <= 255);
-        
+
         if (!isset(self::$_exitCodes))
             self::$_exitCodes = array(
                 0 => tr(__NAMESPACE__, 'OK'),
