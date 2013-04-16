@@ -74,10 +74,12 @@ class Directory extends Engine
      */
     public function setDirectory($dir)
     {
-        assert(\Alinex\Validator::is(
-            $dir, 'storage-directory', 'IO::path',
-            array('writable' => true, 'allowBackreferences' => true)
-        ));
+        assert(
+            \Alinex\Validator::is(
+                $dir, 'storage-directory', 'IO::path',
+                array('writable' => true, 'allowBackreferences' => true)
+            )
+        );
         if (substr($dir, -1) != '/')
             $dir .= '/';
         $this->_dir = $dir;
@@ -108,7 +110,7 @@ class Directory extends Engine
      */
     private function pathToKey($path)
     {
-        $key = str_replace('/', '', substr($path, 0 ,-1));
+        $key = str_replace('/', '', substr($path, 0, -1));
         return substr($key, strlen($this->_context));
     }
 
@@ -116,7 +118,7 @@ class Directory extends Engine
      * @name Normal access methods
      * @{
      */
-    
+
     /**
      * @copydoc Engine::set()
      */
@@ -208,7 +210,7 @@ class Directory extends Engine
     /**
      * @}
      */
-    
+
     /**
      * Get the list of keys by directory scanning
      *
@@ -239,7 +241,7 @@ class Directory extends Engine
      * @name Group access
      * @{
      */
-    
+
     /**
      * @copydoc Engine::groupGet()
      */
@@ -269,7 +271,7 @@ class Directory extends Engine
     /**
      * @}
      */
-    
+
     /**
      * Reset storage for this context
      *

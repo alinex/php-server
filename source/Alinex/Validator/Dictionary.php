@@ -145,7 +145,9 @@ class Dictionary
                 array(
                     'notEmpty' => true,
                     'mandatoryKeys' => array('type', 'prefix'),
-                    'allowedKeys' => array('server', 'ttl', 'name'),
+                    'allowedKeys' => array(
+                        'server', 'ttl', 'name', 'directory'
+                    ),
                     'keySpec' => array(
                         'type' => array(
                             'Code::class',
@@ -157,7 +159,8 @@ class Dictionary
                         'prefix' => array(
                             'Type::string',
                             array(
-                                'maxLength' => 10, // maximal 10 char. prefix is used
+                                // maximal 10 char. prefix is used
+                                'maxLength' => 10,
                                 'match' => '/[A-Za-z_.:]*/'
                                 // pipe makes problems in session keys
                                 // - used as separator for array contents
@@ -192,6 +195,16 @@ class Dictionary
                                         array('match' => '#(tcp)://.*#')
                                     )
                                 )
+                            )
+                        );
+                    break;
+                case 'Alinex\Dictionary\Engine\Directory':
+                    if (isset($value['directory']))
+                        $value['directory'] = IO::path(
+                            $value['directory'], $name.'-directory',
+                            array(
+                                'filetype' => 'dir',
+                                'writable' => true
                             )
                         );
                     break;
@@ -281,7 +294,7 @@ class Dictionary
             array(
                 'notEmpty' => true,
                 'mandatoryKeys' => array('type', 'prefix'),
-                'allowedKeys' => array('server', 'ttl', 'name'),
+                'allowedKeys' => array('server', 'ttl', 'name', 'directory'),
                 'keySpec' => array(
                     'type' => array(
                         'Code::class',
@@ -323,6 +336,14 @@ class Dictionary
                         )
                     ),
                     'description' => tr(__NAMESPACE__, 'URIs of possible server.')
+                )
+            );
+        $desc .= ' '.tr(__NAMESPACE__, 'For type \'directory\' the storage path has to be added:')
+            .IO::pathDescription(
+                array(
+                    'filetype' => 'dir',
+                    'writable' => true,
+                    'description' => tr(__NAMESPACE__, 'Directory to store to.')
                 )
             );
         // check for engine specific options
