@@ -266,6 +266,11 @@ abstract class Engine implements \Countable, \ArrayAccess
                         array($engine, 'setTtl'),
                         $config['ttl']
                     );
+                if ($config['directory'])
+                    call_user_func(
+                        array($engine, 'setDirectory'),
+                        $config['directory']
+                    );
                 // analyze validator
                 return $engine;
             }
@@ -381,7 +386,7 @@ abstract class Engine implements \Countable, \ArrayAccess
      * @name Normal access routines
      * @{
      */
-    
+
     /**
      * Method to set a storage variable
      *
@@ -455,12 +460,12 @@ abstract class Engine implements \Countable, \ArrayAccess
     /**
      * @}
      */
-    
+
     /**
      * @name Group access
      * @{
      */
-    
+
     /**
      * Get all values which start with the given string.
      *
@@ -527,7 +532,7 @@ abstract class Engine implements \Countable, \ArrayAccess
     /**
      * @}
      */
-    
+
     /**
      * Get the number of elements in the storage.
      *
@@ -547,7 +552,7 @@ abstract class Engine implements \Countable, \ArrayAccess
      * @name Array access
      * @{
      */
-    
+
     /**
      * Check if key exists for ArrayAccess
      *
@@ -612,12 +617,12 @@ abstract class Engine implements \Countable, \ArrayAccess
     /**
      * @}
      */
-    
+
     /**
      * @name Value modification
      * @{
      */
-    
+
     /**
      * Increment value of given key.
      *
@@ -697,12 +702,12 @@ abstract class Engine implements \Countable, \ArrayAccess
     /**
      * @}
      */
-    
+
     /**
      * @name Hash value access
      * @{
      */
-    
+
     /**
      * Set an value in the hash specified by key.
      *
@@ -793,12 +798,12 @@ abstract class Engine implements \Countable, \ArrayAccess
     /**
      * @}
      */
-    
+
     /**
      * @name List value access
      * @{
      */
-    
+
     /**
      * Add an element to the end of the list.
      *
@@ -918,7 +923,7 @@ abstract class Engine implements \Countable, \ArrayAccess
     /**
      * @}
      */
-    
+
     /**
      * Garbage collector run.
      *

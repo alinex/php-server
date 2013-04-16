@@ -20,8 +20,8 @@ use Alinex\Dictionary\Cache;
  *
  * This will use the Cache to collect the messages so also there will be no
  * duplicate messages accross multiple servers.
- * 
- * The message will also get the number of occurrencies added as:
+ *
+ * The message will also get the number of occurrence added as:
  * - occurrence = int
  */
 class MinOccurrence extends NoDuplicate
@@ -29,7 +29,7 @@ class MinOccurrence extends NoDuplicate
     /**
      * Name of the group in cache under which the log hashes will be kept.
      */
-    const CACHE_GROUP = 'log.minoccurre';
+    const CACHE_GROUP = 'log.minoccurrence';
 
     /**
      * The default occurence for the message to log.
@@ -52,7 +52,7 @@ class MinOccurrence extends NoDuplicate
     {
         // each element ha to be executed at least once
         assert(is_int($num) && $num >= 1);
-        
+
         $this->_occurrence = $num;
         return $num;
     }
