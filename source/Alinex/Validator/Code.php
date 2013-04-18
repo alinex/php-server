@@ -113,6 +113,7 @@ class Code
      * - \c exists - true if existence have to be checked
      * - \c autoload - true if class should be loaded
      * - \c relative - base namespace to allow relative
+     * - \c instanceof - class have to be instance of one of the list
      *
      * @param mixed   $value    value to be checked
      * @param string  $name     readable origin identification
@@ -160,6 +161,20 @@ class Code
                 );
             }
         }
+        if (isset($options['instanceof']) && $options['instanceof']) {
+            $ok = false;
+            foreach ($options['instanceof'] as $class)
+                if ($value instanceof $class)
+                    $ok = true;
+            if (!$ok)
+                throw new Exception(
+                    tr(
+                        __NAMESPACE__,
+                        'Class {name} is none of the defined classes',
+                        array('name' => $value)
+                    ), $value, $name, __METHOD__
+                );
+        }
         return $value;
     }
 
@@ -188,7 +203,8 @@ class Code
                         'description',
                         'exists',
                         'autoload',
-                        'relative'
+                        'relative',
+                        'instanceof'
                     )
                 )
             ) == 0
@@ -196,7 +212,12 @@ class Code
         assert(!isset($options['exists']) || is_bool($options['exists']));
         assert(!isset($options['autoload']) || is_bool($options['autoload']));
         assert(!isset($options['relative']) || is_string($options['relative']));
-
+        if (isset($options['instanceof']) && is_string($options['instanceof']))
+            $options['instanceof'] = array($options['instanceof']);
+        assert(
+            !isset($options['instanceof'])
+            || is_array($options['instanceof'])
+        );
         if (isset($options['relative']) && isset($options['relative']) === true)
             $options['autoload'] = true;
         if (isset($options['autoload']) && isset($options['autoload']) === true)
@@ -235,6 +256,12 @@ class Code
                     array('namespace' => String::dump($options['relative']))
                 );
         }
+        if (isset($options['instanceof']) && $options['instanceof'])
+            $desc .= ' '.tr(
+                __NAMESPACE__,
+                'The class have to be of {list} or any subclass.',
+                array('list' => $options['instanceof'])
+            );
         return $desc;
     }
 

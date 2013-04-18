@@ -27,8 +27,7 @@ use Alinex\Util;
  * - additional pipes possible
  * - pseudo terminal support
  *
- * Most public methods are designed after the @ref chaining this allows to
- * easy concatenate them.
+ * @pattern{Chaining} In most public methods.
  *
  * @event{start} - called after starting an process
  * @event{output} - called after something was output
@@ -214,7 +213,8 @@ class Process // implements \Psr\Log\LoggerInterface
 
     /**
      * Protocol of all actions with time.
-     * @var array of array(time, pipe, string)
+     * Array of array(time, pipe, string)
+     * @var array
      */
     protected $_protocol = array();
 
@@ -223,7 +223,7 @@ class Process // implements \Psr\Log\LoggerInterface
      * @var int
      */
     protected $_exit = 0;
-
+    
     /**
      * Constructs the object, optionally setting the command to be executed.
      *
@@ -372,6 +372,23 @@ class Process // implements \Psr\Log\LoggerInterface
     }
 
     /**
+     * Get the value of progress as percent float.
+     * 
+     * This may be accurate, estimnated or only a big stepped value depending
+     * on the comands possibility to measure.
+     * @return float value between 0 = not started and 1 = finished
+     */
+    function getProgress()
+    {
+        $this->read(); // read if something there
+        if ($this->isFinished())
+            return 1;
+        if ($this->isRunning())
+            return 0.1;
+        return 0;
+    }
+    
+    /**
      * Is the process (still) running?
      * @return bool true if process is (still) running
      */
@@ -431,7 +448,7 @@ class Process // implements \Psr\Log\LoggerInterface
      * Read next chunk from process if anything output.
      * @return bool true if something was read
      */
-    protected function read()
+    public function read()
     {
         if ($this->_status != self::STATUS_RUNNING)
             return false;
