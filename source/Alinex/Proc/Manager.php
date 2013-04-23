@@ -178,28 +178,28 @@ class Manager
      * @var array
      */
     private $_queue = array();
-    
+
     /**
      * List of just running processes.
      * id => Process
      * @var array
      */
     private $_running = array();
-    
+
     /**
      * List of failed processes (not included skipped ones).
      * id => Process
      * @var array
      */
     private $_failed = array();
-    
+
     /**
      * List of successful processes.
      * id => Process
      * @var array
      */
     private $_success = array();
-    
+
     /**
      * Dependencies for each entry.
      * id => Array(ids)
@@ -208,17 +208,23 @@ class Manager
     private $_depend = array();
 
     /**
-     * Number of processes to run.
-     * @var int
+     * Sum of process weights to run.
+     * @var float
      */
-    private $_processNum = 0;
-    
+    private $_processMax = 0;
+
+    /**
+     * Current process count of finished processes.
+     * @var float
+     */
+    private $_processPos = 0;
+
     /**
      * Initialize the list to be run.
-     * 
+     *
      * This is called recursively to get the complete dependencies of the
      * serial run.
-     * 
+     *
      * @param array $list to check
      * @param bool $parallel true if paralell, false if serial list
      * @param array $upper list of upper dependencies
@@ -231,6 +237,7 @@ class Manager
         // step through list
         foreach ($list as $elem) {
             if (is_array($elem)) {
+                /* @var $elem array */
                 // call sublist with switched parallel/serial
                 $ids = $this->init($elem, !$parallel, isset($last) ? $last : $upper);
                 // for serial calls store the list as last dependency
@@ -239,9 +246,11 @@ class Manager
                 // add list to the list of ids in the surrounding array
                 array_push($idlist, $ids);
             } else {
+                /* @var $elem Process */
                 // create new process entry and queue it
                 $id = count($this->_queue);
                 $this->_queue[$id] = $elem;
+                $this->_processMax += $elem->getWeight();
                 // add to current surrounding list
                 $idlist[] = $id;
                 if ($parallel) {
@@ -273,6 +282,7 @@ class Manager
             foreach ($this->_running as $id => $proc) {
                 if ($proc->isFinished()) {
                     unset($this->_running[$id]);
+                    $this->_processPos += $proc->getWeight();
                     if ($proc->isSuccess())
                         $this->_success[$id] = $proc;
                     else
@@ -286,9 +296,11 @@ class Manager
                 // wait
                 usleep(100);
             // get progress
-            $percent = 1 - (count($this->_queue)/$this->_processNum);
+            $percent = 1 - ($this->_processPos/$this->_processMax);
             foreach($this->_running as $proc)
-                $percent -= 1 - ($proc->getProgress()/$this->_processNum);
+                $percent -= 1 -
+                    ($proc->getProgress() * $proc->getWeight()
+                    / $this->_processMax);
             Util\EventManager::getInstance()
                 ->update(
                     new Util\Event($this, 'progress', $percent)
@@ -309,9 +321,11 @@ class Manager
                     if (isset($this->_success[$depend]))
                         continue;
                     $check = false;
-                    if (isset($this->_failed[$depend]))
+                    if (isset($this->_failed[$depend])) {
                         // cancel because of prerequisit failed
                         unset($this->_queue[$id]);
+                        $this->_processPos += $proc->getWeight();
+                    }
                 }
                 if (!$check)
                     // not possible, yet - use next

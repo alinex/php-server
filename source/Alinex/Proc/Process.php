@@ -36,7 +36,7 @@ use Alinex\Util;
  * @event{success} - called after process finished successfull
  * @event{fail} - called after process finished with failure
  */
-class Process // implements \Psr\Log\LoggerInterface
+class Process
 {
     /**
      * stdin identifier (used for pipe index).
@@ -66,7 +66,7 @@ class Process // implements \Psr\Log\LoggerInterface
     /**
      * Allow the use of wildcards within the command line
      */
-    const FLAG_WILDCARD = 1;
+    const FLAG_USESHELL = 1;
 
     /**
      * Use a pseudo terminal.
@@ -93,6 +93,13 @@ class Process // implements \Psr\Log\LoggerInterface
      * Status flag if process is finished.
      */
     const STATUS_DONE = 4;
+
+    /**
+     * Weight for the process in time.
+     * This will be used in comparing and calculating the progress and optimal
+     * order by the Manager.
+     */
+    const WEIGHT = 1;
 
     /**
      * List of all pipes which are possibly used
@@ -223,7 +230,7 @@ class Process // implements \Psr\Log\LoggerInterface
      * @var int
      */
     protected $_exit = 0;
-    
+
     /**
      * Constructs the object, optionally setting the command to be executed.
      *
@@ -239,6 +246,15 @@ class Process // implements \Psr\Log\LoggerInterface
 
         $this->_command = $command;
         $this->_params = isset($params) ? $params : array();
+    }
+
+    /**
+     * Get the weight value for this process.
+     * @return float
+     */
+    function getWeight()
+    {
+        return static::WEIGHT;
     }
 
     /**
@@ -318,11 +334,10 @@ class Process // implements \Psr\Log\LoggerInterface
         $call = $this->_command;
         // add parameters
         if (isset($this->_params))
-            foreach ($this->_params as $param)
-                $call .= ' '.escapeshellarg($param);
+            $call .= implode (' ', $this->_params);
         // if wildcard support not neccessary replace use exec to replace the
         // shell process
-        if (!$this->_flags & self::FLAG_WILDCARD)
+        if (!$this->_flags & self::FLAG_USESHELL)
             $call = 'exec '.$call;
         // open handle and start process
         $handle = proc_open(
@@ -373,7 +388,7 @@ class Process // implements \Psr\Log\LoggerInterface
 
     /**
      * Get the value of progress as percent float.
-     * 
+     *
      * This may be accurate, estimnated or only a big stepped value depending
      * on the comands possibility to measure.
      * @return float value between 0 = not started and 1 = finished
@@ -387,7 +402,7 @@ class Process // implements \Psr\Log\LoggerInterface
             return 0.1;
         return 0;
     }
-    
+
     /**
      * Is the process (still) running?
      * @return bool true if process is (still) running
