@@ -25,7 +25,7 @@ If not, please see http://www.gnu.org/licenses/gpl-3.0.txt
 Alinex includes works under other copyright notices and distributed according to the terms of the
 GNU General Public License or a compatible license, including:
 - \b php-gettext - Copyright 2003, 2006, 2009 Danilo Segan - Licensed under GPLv2
-- \b creadis - Copyright 2009, 2011 - Licensed under MIT
+- \b credis - Copyright 2009, 2011 - Licensed under MIT
 - \b Doctrine - Copyright http://www.doctrine-project.org
 - \b qooxdoo - Copyright (c) 2004-2009 1&1 Internet AG, Germany, http://www.1und1.de
 
