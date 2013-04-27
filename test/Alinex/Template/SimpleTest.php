@@ -21,11 +21,181 @@ class SimpleTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+    function testPath()
+    {
+        $this->assertEquals(
+            'A 1. test',
+            Simple::run('A {num.one}. test', array('num' => array('one' => 1)))
+        );
+    }
+
+    // optional / default value
+
     function testOptional()
     {
         $this->assertEquals(
             'A . test',
             Simple::run('A {num?}. test', array())
+        );
+    }
+
+    // CONTROLS
+
+    function testComment()
+    {
+        $this->assertEquals(
+            'A 1. test',
+            Simple::run('A {num|default 1}. {%comment}NOT DISPLAYED{%endcomment}test', array())
+        );
+    }
+
+    function testIf()
+    {
+        $this->assertEquals(
+            'A 1. successful test',
+            Simple::run('A {num}. {%if num}successful{%endif} test', array('num' => 1))
+        );
+        $this->assertEquals(
+            'A 1.  test',
+            Simple::run('A {num}. {%if toc}successful{%endif} test', array('num' => 1))
+        );
+        $this->assertEquals(
+            'A 1. successful test',
+            Simple::run('A {num}. {%if num == 1}successful{%endif} test', array('num' => 1))
+        );
+        $this->assertEquals(
+            'A 1.  test',
+            Simple::run('A {num}. {%if num == 2}successful{%endif} test', array('num' => 1))
+        );
+        $this->assertEquals(
+            'A 1. successful test',
+            Simple::run('A {num}. {%if num != 2}successful{%endif} test', array('num' => 1))
+        );
+        $this->assertEquals(
+            'A 1.  test',
+            Simple::run('A {num}. {%if num != 1}successful{%endif} test', array('num' => 1))
+        );
+        $this->assertEquals(
+            'A 1. successful test',
+            Simple::run('A {num}. {%if num <> 2}successful{%endif} test', array('num' => 1))
+        );
+        $this->assertEquals(
+            'A 1.  test',
+            Simple::run('A {num}. {%if num <> 1}successful{%endif} test', array('num' => 1))
+        );
+        $this->assertEquals(
+            'A 1. successful test',
+            Simple::run('A {num}. {%if num >= 1}successful{%endif} test', array('num' => 1))
+        );
+        $this->assertEquals(
+            'A 1.  test',
+            Simple::run('A {num}. {%if num >= 2}successful{%endif} test', array('num' => 1))
+        );
+
+        $this->assertEquals(
+            'A 1. successful test',
+            Simple::run('A {num}. {%if num => 1}successful{%endif} test', array('num' => 1))
+        );
+        $this->assertEquals(
+            'A 1.  test',
+            Simple::run('A {num}. {%if num => 2}successful{%endif} test', array('num' => 1))
+        );
+        $this->assertEquals(
+            'A 1. successful test',
+            Simple::run('A {num}. {%if num <= 2}successful{%endif} test', array('num' => 1))
+        );
+        $this->assertEquals(
+            'A 1.  test',
+            Simple::run('A {num}. {%if num <= 0}successful{%endif} test', array('num' => 1))
+        );
+        $this->assertEquals(
+            'A 1. successful test',
+            Simple::run('A {num}. {%if num > 0}successful{%endif} test', array('num' => 1))
+        );
+        $this->assertEquals(
+            'A 1.  test',
+            Simple::run('A {num}. {%if num > 1}successful{%endif} test', array('num' => 1))
+        );
+        $this->assertEquals(
+            'A 1. successful test',
+            Simple::run('A {num}. {%if num < 2}successful{%endif} test', array('num' => 1))
+        );
+        $this->assertEquals(
+            'A 1.  test',
+            Simple::run('A {num}. {%if num < 1}successful{%endif} test', array('num' => 1))
+        );
+        $this->assertEquals(
+            'A 1. successful test',
+            Simple::run('A {num}. {%if num and num2}successful{%endif} test', array('num' => 1, 'num2' => 2))
+        );
+        $this->assertEquals(
+            'A 1.  test',
+            Simple::run('A {num}. {%if num and toc}successful{%endif} test', array('num' => 1, 'num2' => 2))
+        );        
+        $this->assertEquals(
+            'A 1. successful test',
+            Simple::run('A {num}. {%if num & num2}successful{%endif} test', array('num' => 1, 'num2' => 2))
+        );
+        $this->assertEquals(
+            'A 1.  test',
+            Simple::run('A {num}. {%if num & toc}successful{%endif} test', array('num' => 1, 'num2' => 2))
+        );
+        $this->assertEquals(
+            'A 1. successful test',
+            Simple::run('A {num}. {%if num or toc}successful{%endif} test', array('num' => 1, 'num2' => 2))
+        );
+        $this->assertEquals(
+            'A 1.  test',
+            Simple::run('A {num}. {%if toc2 or toc}successful{%endif} test', array('num' => 1, 'num2' => 2))
+        );
+        $this->assertEquals(
+            'A 1. successful test',
+            Simple::run('A {num}. {%if num | toc}successful{%endif} test', array('num' => 1, 'num2' => 2))
+        );
+        $this->assertEquals(
+            'A 1.  test',
+            Simple::run('A {num}. {%if toc2 | toc}successful{%endif} test', array('num' => 1, 'num2' => 2))
+        );
+    }
+
+    function testIfElse()
+    {
+        $this->assertEquals(
+            'A 1. successful test',
+            Simple::run('A {num}. {%if num}successful{%else}failure{%endif} test', array('num' => 1))
+        );
+    }
+    function xtestIfElse()
+    {
+        $this->assertEquals(
+            'A 1. successful test',
+            Simple::run('A {num}. {%if num}successful{%else}failure{%endif} test', array('num' => 1))
+        );
+        $this->assertEquals(
+            'A 1. successful test',
+            Simple::run('A {num}. {%if toc}failure{%else}successful{%endif} test', array('num' => 1))
+        );
+        $this->assertEquals(
+            'A 1. successful test',
+            Simple::run('A {num}. {%if toc}failure{%elseif num}successful{%endif} test', array('num' => 1))
+        );
+        $this->assertEquals(
+            'A 1. successful test',
+            Simple::run('A {num}. {%if toc}failure{%elseif num}successful{%else}failure{%endif} test', array('num' => 1))
+        );
+        $this->assertEquals(
+            'A 1. successful test',
+            Simple::run('A {num}. {%if toc}failure{%elseif toc2}failure{%else}successful{%endif} test', array('num' => 1))
+        );
+    }
+    
+    // MODIFIER
+
+    function testDefault()
+    {
+        $this->assertEquals(
+            'A 1. test',
+            Simple::run('A {num|default 1}. test', array())
         );
     }
 
