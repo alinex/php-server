@@ -46,10 +46,11 @@ class PhpFile extends File
     /**
      * Export hashtable entries to ini file
      *
+     * @param array $commentkeys list of keys 
      * @return bool TRUE on success
      * @throws Exception if storage can't be used
      */
-    function export()
+    function export(array $commentkeys)
     {
         assert($this->check());
 
@@ -60,16 +61,23 @@ class PhpFile extends File
         // add entries
         $list = $this->getValues();
         if (isset($list)) {
-            foreach ($list as $key => $value) {
+            $keys = array_merge($commentkeys, array_keys($list));
+            sort($keys);
+            foreach ($keys as $key) {
                 $content .= PHP_EOL; // empty lines between entries
-                if (isset($this->_commentCallback))
+                if (isset($this->_commentCallback)) {
                     $content .= $this->getCommentLines($key);
-                if (is_int($key))
-                    $content .= '$values['.$key.'] = '
-                        .var_export($value, 1).';'.PHP_EOL;
-                else
-                    $content .= '$values[\''.$key.'\'] = '
-                        .var_export($value, 1).';'.PHP_EOL;
+                    if (!isset($list[$key]))
+                        $content .= $this->getComment($key.' = ');
+                }
+                if (isset($list[$key])) {
+                    if (is_int($key))
+                        $content .= '$values['.$key.'] = '
+                            .var_export($list[$key], 1).';'.PHP_EOL;
+                    else
+                        $content .= '$values[\''.$key.'\'] = '
+                            .var_export($list[$key], 1).';'.PHP_EOL;
+                }
             }
             $content .= PHP_EOL;
         }
