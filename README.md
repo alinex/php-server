@@ -84,7 +84,8 @@ In the moment the following parts are developed:
   This is an easy template language which will work mostly on short text and is
   integrated into the internationalization, logging and error management
   processes.\n
-  It supports variable substitutions and different powerful modifiers.
+  It supports variable substitutions, different powerful modifiers and control
+  operators.
 
 - **Automatic Configuration**
 

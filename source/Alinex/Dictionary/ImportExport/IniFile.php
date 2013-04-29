@@ -131,10 +131,11 @@ class IniFile extends File
     /**
      * Export registry entries to ini file
      *
+     * @param array $commentkeys list of keys 
      * @return bool TRUE on success
      * @throws Exception if storage can't be used
      */
-    function export()
+    function export(array $commentkeys)
     {
         assert($this->check());
 
@@ -143,19 +144,25 @@ class IniFile extends File
         $content .= $this->getCommentHeader();
         $list = $this->getValues();
         if (isset($list)) {
+            $keys = array_merge($commentkeys, array_keys($list));
+            sort($keys);
             if ($this->_sections) {
                 $currentSection = null;
                 // write simple values without section first
-                foreach ($list as $key => $value) {
+                foreach ($keys as $key) {
                     if (strpos($key, $this->_sections) !== false)
                         continue;
                     $content .= PHP_EOL; // empty lines between entries
-                    if (isset($this->_commentCallback))
+                    if (isset($this->_commentCallback)) {
                         $content .= $this->getCommentLines($key);
-                    self::_writeIniLine($content, $key, $value);
+                        if (!isset($list[$key]))
+                            $content .= $this->getComment($key.' = ');
+                    }
+                    if (isset($list[$key]))
+                        self::_writeIniLine($content, $key, $list[$key]);
                 }
                 // write sections
-                foreach ($list as $key => $value) {
+                foreach ($keys as $key) {
                     if (strpos($key, $this->_sections) === false)
                         continue;
                     $content .= PHP_EOL; // empty lines between entries
@@ -165,17 +172,25 @@ class IniFile extends File
                         $content .= PHP_EOL.'['.$section.']'.PHP_EOL.PHP_EOL;
                         $currentSection = $section;
                     }
-                    if (isset($this->_commentCallback))
+                    if (isset($this->_commentCallback)) {
                         $content .= $this->getCommentLines($key);
-                    self::_writeIniLine($content, $subkey, $value);
+                        if (!isset($list[$key]))
+                            $content .= $this->getComment($key.' = ');
+                    }
+                    if (isset($list[$key]))
+                        self::_writeIniLine($content, $subkey, $list[$key]);
                 }
                 $content .= PHP_EOL;
             } else {
-                foreach ($list as $key => $value) {
+                foreach ($keys as $key) {
                     $content .= PHP_EOL; // empty lines between entries
-                    if (isset($this->_commentCallback))
+                    if (isset($this->_commentCallback)) {
                         $content .= $this->getCommentLines($key);
-                    self::_writeIniLine($content, $key, $value);
+                        if (!isset($list[$key]))
+                            $content .= $this->getComment($key.' = ');
+                    }
+                    if (isset($list[$key]))
+                        self::_writeIniLine($content, $key, $list[$key]);
                 }
                 $content .= PHP_EOL;
             }
@@ -198,7 +213,7 @@ class IniFile extends File
             $key .= $this->_group;
         $comment = call_user_func($this->_commentCallback, $key);
         if ($comment)
-            $content .= $this->getComment ($comment);
+            $content .= $this->getComment($comment);
         return $content;
     }
 

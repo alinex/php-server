@@ -91,7 +91,7 @@ class YamlFile extends File
         $content .= yaml_emit($this->getValues());
         // add comments
         if (isset($this->_commentCallback)) {
-            foreach ($this->getValues() as $key => $value) {
+            foreach (array_keys($this->getValues()) as $key) {
                 $comment = $this->getCommentLines($key);
                 // add on specific position
                 $content = preg_replace(

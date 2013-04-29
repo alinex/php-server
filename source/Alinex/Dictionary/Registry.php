@@ -561,7 +561,7 @@ class Registry implements \Countable, \ArrayAccess
         // TRANS: header in output file
         $exporter->addHeader(tr(__NAMESPACE__, 'Registry data'));
         $exporter->setCommentCallback(array($this, 'validatorDescription'));
-        return $exporter->export();
+        return $exporter->export($this->validatorKeys());
     }
 
     /**
