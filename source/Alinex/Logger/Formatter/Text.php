@@ -36,6 +36,23 @@ EOD;
     public $formatString = self::COMMON;
 
     /**
+     * Use <br /> tags instead of newlines
+     * @var bool
+     */
+    private $_br = false;
+    
+    /**
+     * Use <br /> tags instead of newlines
+     * @param bool $br Use <br /> tags instead of newlines
+     */
+    public function useBrTags($br)
+    {
+        assert(is_bool($br));
+        
+        $this->_br = $br;
+    }
+    
+    /**
      * Format the log line.
      *
      * @param  Message  $message Log message object
@@ -48,7 +65,9 @@ EOD;
             $this->formatString, $message->data
         );
         // replace all newlines with spaces
-        $message->formatted = $formatted;
+        $message->formatted = $this->_br
+            ? nl2br($formatted)
+            : $formatted;
         return true;
     }
 

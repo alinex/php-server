@@ -59,6 +59,10 @@ use Alinex\Util\ArrayStructure;
  * are also possible giving only the last part like 'RFC822'.
  * - upper - convert to upper case
  * - lower - convert to lower case
+ * - ucfirst - make first character upper case
+ * - lcfirst - make first character lower case
+ * - nl2br - replace newlines with html breaks
+ * - htmlencode - replace characters with their html representation
  * - timerange [&lt;shorten?&gt;] - output seconds human readable if short=true
  * not with the exact time but the most pregnant part
  * - unit &lt;unit&gt; [&lt;decimals&gt;] [&lt;long form?&gt;] - output numeric
@@ -76,7 +80,8 @@ use Alinex\Util\ArrayStructure;
  *
  * The following control comands are possible:
  * - comment / endcomment - the containing part will be removed
- *
+ * - if &lt;check&gt; / elseif &lt;check&gt; / else / endif
+ * - set &lt;name&gt; / endset
  */
 class Simple
 {
@@ -135,7 +140,7 @@ class Simple
 
         preg_replace_callback(
             '/\{(%?\s?\w[^}]+?)\}'    // variable or control
-            .'|[^{]+?/',              // other content
+            .'|[^{]+?/',              // or other content
             array($this, 'replacePart'),
             $text
         );
@@ -197,6 +202,10 @@ class Simple
         'printf' => array('call' => 'sprintf', 'reverse' => true),
         'upper' => array('call' => 'strtoupper'),
         'lower' => array('call' => 'strtolower'),
+        'ucfirst' => array('call' => 'ucfirst'),
+        'lcfirst' => array('call' => 'lcfirst'),
+        'nl2br' => array('call' => 'nl2br'),
+        'htmlencode' => array('call' => 'htmlentities'),
         'timerange' => array(
             'call' => array('\Alinex\Util\Number', 'toTimerange')
         ),
