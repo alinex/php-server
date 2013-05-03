@@ -13,6 +13,8 @@
 
 namespace Alinex;
 
+use Alinex\Dictionary\Registry;
+
 /**
  * Logging class.
  *
@@ -109,8 +111,9 @@ class Logger implements Util\EventSubject // implements \Psr\Log\LoggerInterface
     {
         assert(is_string($name));
 
-        if (! isset(self::$_instances[$name]))
+        if (! isset(self::$_instances[$name])) {
             self::$_instances[$name] = new self($name);
+        }
         return self::$_instances[$name];
     }
 

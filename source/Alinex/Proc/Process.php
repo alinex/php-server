@@ -302,6 +302,21 @@ class Process
         return $this;
     }
 
+    private $_ssh = '';
+    
+    /**
+     * Use this command through the secure shell
+     * @param string $connect [user@]host
+     * @param string $options additional connection settings
+     */
+    function useSsh($connect, $options = '')
+    {
+        assert(is_string($connect));
+        assert(is_string($options));
+        
+        $this->_ssh = 'ssh '.$options.' '.$connect.' ';
+    }
+
     /**
      * Sets the array of environment variables to be made available to the
      * command.
@@ -337,8 +352,8 @@ class Process
             $call .= implode (' ', $this->_params);
         // if wildcard support not neccessary replace use exec to replace the
         // shell process
-        if (!$this->_flags & self::FLAG_USESHELL)
-            $call = 'exec '.$call;
+        if ($this->_ssh || (!$this->_flags & self::FLAG_USESHELL))
+            $call = 'exec '.$this->_ssh.$call;
         // open handle and start process
         $handle = proc_open(
             $call,

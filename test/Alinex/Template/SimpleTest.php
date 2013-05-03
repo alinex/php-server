@@ -189,6 +189,15 @@ class SimpleTest extends \PHPUnit_Framework_TestCase
         );
     }
     
+    function testSet()
+    {
+        $this->assertEquals(
+            'A 1. test',
+            Simple::run('{%set num}1{%endset}A {num}. test', array())
+        );
+    }
+
+
     // MODIFIER
 
     function testDefault()
