@@ -27,6 +27,11 @@ use Alinex\Util;
  * - additional pipes possible
  * - pseudo terminal support
  *
+ * Use of this class is parted in three steps:
+ * - setup phase
+ * - processing phase
+ * - analyzing phase
+ *
  * @pattern{Chaining} In most public methods.
  *
  * @event{start} - called after starting an process
@@ -41,27 +46,27 @@ class Process
     /**
      * stdin identifier (used for pipe index).
      */
-    const STDIN = 1;
+    const STDIN = 0;
 
     /**
      * stdout identifier (used for pipe index).
      */
-    const STDOUT = 2;
+    const STDOUT = 1;
 
     /**
      * stderr identifier (used for pipe index).
      */
-    const STDERR = 3;
+    const STDERR = 2;
 
     /**
      * Additional input pipe may be accessed from commands like GPG
      */
-    const ADDIN = 4;
+    const ADDIN = 3;
 
     /**
      * Additional output pipe may be accessed from siome commands
      */
-    const ADDOUT = 5;
+    const ADDOUT = 4;
 
     /**
      * Allow the use of wildcards within the command line
@@ -93,6 +98,11 @@ class Process
      * Status flag if process is finished.
      */
     const STATUS_DONE = 4;
+
+    /**
+     * Status flag if process is finished.
+     */
+    const STATUS_FAILED = 8;
 
     /**
      * Weight for the process in time.
@@ -232,6 +242,11 @@ class Process
     protected $_exit = 0;
 
     /**
+     * @name Setup Phase
+     * @{
+     */
+
+    /**
      * Constructs the object, optionally setting the command to be executed.
      *
      * If you use wildcard expansion from the shell an additional subprocess
@@ -246,15 +261,6 @@ class Process
 
         $this->_command = $command;
         $this->_params = isset($params) ? $params : array();
-    }
-
-    /**
-     * Get the weight value for this process.
-     * @return float
-     */
-    function getWeight()
-    {
-        return static::WEIGHT;
     }
 
     /**
@@ -302,8 +308,12 @@ class Process
         return $this;
     }
 
+    /**
+     * Additional ssh conection string to use
+     * @var String
+     */
     private $_ssh = '';
-    
+
     /**
      * Use this command through the secure shell
      * @param string $connect [user@]host
@@ -313,7 +323,7 @@ class Process
     {
         assert(is_string($connect));
         assert(is_string($options));
-        
+
         $this->_ssh = 'ssh '.$options.' '.$connect.' ';
     }
 
@@ -335,6 +345,28 @@ class Process
     }
 
     /**
+     * @}
+     */
+
+    /**
+     * Gets the process status.
+     *
+     * The status is one of the STATUS_... constants
+     *
+     * @return int status number
+     */
+    public function getStatus()
+    {
+        $this->read(); // update status
+        return $this->_status;
+    }
+
+    /**
+     * @name Processing Phase
+     * @{
+     */
+
+    /**
      * Open the process handle and start the command execution.
      *
      * @return Process
@@ -349,11 +381,12 @@ class Process
         $call = $this->_command;
         // add parameters
         if (isset($this->_params))
-            $call .= implode (' ', $this->_params);
+            $call .= implode(' ', $this->_params);
         // if wildcard support not neccessary replace use exec to replace the
         // shell process
         if ($this->_ssh || (!$this->_flags & self::FLAG_USESHELL))
             $call = 'exec '.$this->_ssh.$call;
+
         // open handle and start process
         $handle = proc_open(
             $call,
@@ -386,7 +419,7 @@ class Process
         $this->_status = self::STATUS_RUNNING;
         $this->_starttime = microtime(true);
         // set non-blocking mode for output pipes
-        foreach (static::$_outPipes as $pipe)
+        foreach (self::$_outPipes as $pipe)
             stream_set_blocking($this->_pipes[$pipe], 0);
         $status = proc_get_status($this->_handle);
         if (isset($status['pid']))
@@ -399,69 +432,6 @@ class Process
                 new Util\Event($this, 'start')
             );
         return $this;
-    }
-
-    /**
-     * Get the value of progress as percent float.
-     *
-     * This may be accurate, estimnated or only a big stepped value depending
-     * on the comands possibility to measure.
-     * @return float value between 0 = not started and 1 = finished
-     */
-    function getProgress()
-    {
-        $this->read(); // read if something there
-        if ($this->isFinished())
-            return 1;
-        if ($this->isRunning())
-            return 0.1;
-        return 0;
-    }
-
-    /**
-     * Is the process (still) running?
-     * @return bool true if process is (still) running
-     */
-    function isRunning()
-    {
-        $this->read(); // read if something there
-        return $this->_status == self::STATUS_RUNNING;
-    }
-
-    /**
-     * Check if the process is outdated.
-     *
-     * Close the process if it is outdated.
-     * @return bool true if process is running to long
-     */
-    private function isTimeout()
-    {
-        if (!isset($this->_timeout))
-            return false; // no timeout set
-        $close = $this->_starttime+$this->_timeout < microtime(true);
-        if ($close)
-            $this->close();
-        return $close;
-    }
-
-    /**
-     * Is the process finished wtih success
-     * @return bool true if process is (still) running
-     */
-    function isFinished()
-    {
-        $this->read(); // read if something there
-        return $this->_status > self::STATUS_RUNNING;
-    }
-
-    /**
-     * Is the process finished wtih success
-     * @return bool true if process is (still) running
-     */
-    function isSuccess()
-    {
-        $this->read(); // read if something there
-        return $this->_status == self::STATUS_DONE;
     }
 
     /**
@@ -555,7 +525,7 @@ class Process
      *
      * @return int|null Exit status code of the command that was executed
      */
-    private function close()
+    public function close()
     {
         // if already closed return last exit status
         if ($this->_status != self::STATUS_RUNNING)
@@ -576,11 +546,14 @@ class Process
                     posix_kill($pid, 9); // send SIGKILL signal
         }
         // close process handle
-        if (is_resource($this->_handle))
+        $status = false;
+        if (is_resource($this->_handle)) {
+            $status = proc_get_status($this->_handle);
             $this->_exit = proc_close($this->_handle);
-        // set and return status
-        $status = proc_get_status($this->_handle);
-        $this->_exit = $status["running"] ? $this->_exit : $status["exitcode"];
+        }
+        $this->_exit = isset($status["running"]) && $status["running"]
+            ? $this->_exit
+            : $status["exitcode"];
         $this->_status = $this->_exit
             ? self::STATUS_TERMINATED
             : self::STATUS_DONE;
@@ -607,6 +580,96 @@ class Process
     }
 
     /**
+     * Get the value of progress as percent float.
+     *
+     * This may be accurate, estimnated or only a big stepped value depending
+     * on the comands possibility to measure.
+     * @return float value between 0 = not started and 1 = finished
+     */
+    function getProgress()
+    {
+        $this->read(); // read if something there
+        if ($this->isFinished())
+            return 1;
+        if ($this->isRunning())
+            return 0.1;
+        return 0;
+    }
+
+    /**
+     * Get the weight value for this process.
+     * @return float
+     */
+    function getWeight()
+    {
+        return static::WEIGHT;
+    }
+
+    /**
+     * Is the process (still) running?
+     * @return bool true if process is (still) running
+     */
+    function isRunning()
+    {
+        $this->read(); // read if something there
+        return $this->_status == self::STATUS_RUNNING;
+    }
+
+    /**
+     * Check if the process is outdated.
+     *
+     * Close the process if it is outdated.
+     * @return bool true if process is running to long
+     */
+    private function isTimeout()
+    {
+        if (!isset($this->_timeout))
+            return false; // no timeout set
+        $close = $this->_starttime+$this->_timeout < microtime(true);
+        if ($close)
+            $this->close();
+        return $close;
+    }
+
+    /**
+     * Is the process finished wtih success
+     * @return bool true if process is (still) running
+     */
+    function isFinished()
+    {
+        $this->read(); // read if something there
+        return $this->_status > self::STATUS_RUNNING;
+    }
+
+    /**
+     * @}
+     */
+
+    /**
+     * @name Analyzation Phase
+     * @{
+     */
+
+    /**
+     * Is the process finished wtih success
+     * @return bool true if process has successful finished
+     */
+    function isSuccess()
+    {
+        $this->read(); // read if something there
+        return $this->_status == self::STATUS_DONE;
+    }
+
+    /**
+     * Is the process finished wtih failure
+     * @return bool true if process finished with failure
+     */
+    function isFailed()
+    {
+        return $this->isFinished() && !$this->isSuccess();
+    }
+
+    /**
      * Get all informations about the system call
      * @return array
      */
@@ -625,19 +688,6 @@ class Process
                 ? $this->_endtime - $this->_starttime
                 : microtime(true) - $this->_starttime
         );
-    }
-
-    /**
-     * Gets the process status.
-     *
-     * The status is one of the STATUS_... constants
-     *
-     * @return int status number
-     */
-    public function getStatus()
-    {
-        $this->read(); // update status
-        return $this->_status;
     }
 
     /**
@@ -781,5 +831,10 @@ class Process
             ? self::$_exitCodes[$code]
             : 'Unknown code: '.$code;
     }
+
+    /**
+     * @}
+     */
+
 }
 
