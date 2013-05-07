@@ -91,7 +91,7 @@ class Touch extends Process
     }
 
     /**
-     * Set the date to a specific value.
+     * Set the date to a specific value. 
      * @param string $date value to set for file
      * @return Touch
      */
