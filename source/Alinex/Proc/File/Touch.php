@@ -30,9 +30,9 @@ class Touch extends Process
     /**
      * Constructs the object, optionally setting the command to be executed.
      */
-    function __construct($files = null)
+    function __construct($files)
     {
-        assert(is_string($files) || is_array($files) || !isset($files));
+        assert(is_string($files) || is_array($files));
         parent::__construct('touch');
         // set given paths
         $this->_params['files'] = '';
@@ -92,13 +92,14 @@ class Touch extends Process
 
     /**
      * Set the date to a specific value. 
-     * @param string $date value to set for file
+     * @param int $time unix time value to set for file
      * @return Touch
      */
-    function setDate($date)
+    function setTime($time)
     {
-        assert(is_string($file));
+        assert(is_int($time));
 
+        $time = date('Ymdhi.s', $time);
         $this->_params['-t'] = '-t '. escapeshellarg($time);
         return $this;
     }

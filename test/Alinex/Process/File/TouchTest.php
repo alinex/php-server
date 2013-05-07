@@ -2,22 +2,21 @@
 
 namespace Alinex\Proc\File;
 
-class RmTest extends \PHPUnit_Framework_TestCase
+class TouchTest extends \PHPUnit_Framework_TestCase
 {
-
+    const TESTDIR = '../../../data/proc/';
+    
     function testInitial()
     {
-        $pr = new Rm();
-        $this->assertEmpty($pr->getOutput());
+        $pr = new Touch(self::TESTDIR.'file1');
+        $this->assertTrue($pr->isSuccess());        
+        $this->assertTrue(file_exists(self::TESTDIR.'file1'));
+        $pr = new Touch(self::TESTDIR.'file2');
+        $pr->setTime(time()-6000);
+        $this->assertTrue($pr->isSuccess());        
+        $pr = new Touch(self::TESTDIR.'file3');
+        $pr->copyTimeFrom(self::TESTDIR.'file2');
+        $this->assertTrue($pr->isSuccess());        
     }
-
-    function XXXXtestSimple()
-    {
-        $pr = new Rm(__DIR__);
-        $this->assertEquals(1, count($pr->getFiles()));
-#        error_log(print_r($pr->getFiles(), 1));
-#        error_log(print_r($pr->getMeta(), 1));
-    }
-
 
 }
