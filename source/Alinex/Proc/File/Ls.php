@@ -204,6 +204,11 @@ class Ls extends Process
         }
         return $result;
     }
+
+    /**
+     * @}
+     */
+
 }
 
 

@@ -1,0 +1,6 @@
+/** @namespace Alinex\Proc
+
+Shell wrapper for file/directory operations.
+
+These are only possible on a linux system.
+*/
