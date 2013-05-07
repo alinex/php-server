@@ -677,7 +677,7 @@ class Process
      */
     function isSuccess()
     {
-        $this->read(); // read if something there
+        $this->exec();
         return $this->_status == self::STATUS_DONE;
     }
 
@@ -687,6 +687,7 @@ class Process
      */
     function isFailed()
     {
+        $this->exec();
         return $this->isFinished() && !$this->isSuccess();
     }
 
