@@ -22,15 +22,22 @@ use Alinex\Util;
  * system calls. It adds an easy interface with simplified functions for secure
  * use with all abilities like:
  * - complete control
- * - unblocked buffer reading
+ * - unblocked buffered reading
+ * - full control
  * - interactions
  * - additional pipes possible
  * - pseudo terminal support
+ *
+ * This class should not be used directly but using its specific subclasses.
+ * Most of the control mechanism are not public available to not pollute all
+ * the subclass's public interface.
  *
  * Use of this class is parted in three steps:
  * - setup phase
  * - processing phase
  * - analyzing phase
+ *
+ * The process goes automatically on if a method of the next step is used.
  *
  * @pattern{Chaining} In most public methods.
  *
@@ -156,6 +163,12 @@ class Process
     protected $_params;
 
     /**
+     * Direct call of command
+     * @var string
+     */
+    protected $_call;
+
+    /**
      * Special execution flags.
      * @var int
      */
@@ -171,7 +184,7 @@ class Process
      * Array of environment variables to me made available to the command.
      * @var array
      */
-    protected $_environment;
+    protected $_environment = array();
 
     /**
      * Max execution time, process will, be kiled after this time.
@@ -268,7 +281,7 @@ class Process
      * Use a combination of FLAG_... constants here.
      * @param int $flags
      */
-    function setCommandFlags($flags)
+    protected function setCommandFlags($flags)
     {
         // possible flags are the FLAG_... constants
         assert(is_int($flags) && $flags >= 0);
@@ -297,7 +310,7 @@ class Process
      * @param string $path Directory path
      * @return Process
      */
-    public function setWorkingDirectory($path)
+    protected function setWorkingDirectory($path)
     {
         // this can only be done before opening the process
         assert($this->_status == self::STATUS_INIT);
@@ -338,7 +351,7 @@ class Process
      * @param array $vars environment vars to set
      * @return Process
      */
-    public function setEnvironmentVars(array $vars)
+    protected function setEnvironmentVars(array $vars)
     {
         $this->_environment = $vars;
         return $this;
@@ -369,27 +382,33 @@ class Process
     /**
      * Open the process handle and start the command execution.
      *
+     * The given parameter will be sorted by key. This means the ones with
+     * indexed numbers coming first, bevor this with alphanumeric indexes.
+     * That makes it possible to create a specific order while adding the
+     * parameters in scrambled mode.
+     *
      * @return Process
      * @throws RuntimeException
      */
-    function open()
+    protected function open()
     {
         // process should only be opened once
         assert($this->_status == self::STATUS_INIT);
 
         // get systemcall
-        $call = $this->_command;
+        $this->_call = $this->_command;
         // add parameters
+        ksort($this->_params);
         if (isset($this->_params))
-            $call .= implode(' ', $this->_params);
+            $this->_call .= ' '.implode(' ', $this->_params);
         // if wildcard support not neccessary replace use exec to replace the
         // shell process
         if ($this->_ssh || (!$this->_flags & self::FLAG_USESHELL))
-            $call = 'exec '.$this->_ssh.$call;
+            $this->_call = 'exec '.$this->_ssh.$this->_call;
 
         // open handle and start process
         $handle = proc_open(
-            $call,
+            $this->_call,
             $this->_flags & self::FLAG_PTY
             ? array(
                 self::STDIN => array('pty'),
@@ -425,7 +444,7 @@ class Process
         if (isset($status['pid']))
             $this->_pid = $status['pid'];
         // protocol call
-        $this->_protocol[] = array(time(), 0, $call);
+        $this->_protocol[] = array(time(), 0, $this->_call);
         // call observers
         Util\EventManager::getInstance()
             ->update(
@@ -448,8 +467,10 @@ class Process
      * Read next chunk from process if anything output.
      * @return bool true if something was read
      */
-    public function read()
+    protected function read()
     {
+        if ($this->_status == self::STATUS_INIT)
+            $this->open();
         if ($this->_status != self::STATUS_RUNNING)
             return false;
         $this->isTimeout(); // check for timeoutd
@@ -497,7 +518,7 @@ class Process
      * @param int $pipe number of the pipe use STDIN or ADDIN
      * @return Process
      */
-    function write($text, $pipe = self::STDIN)
+    protected function write($text, $pipe = self::STDIN)
     {
         fwrite($this->_pipes[$pipe], $text);
         fflush($this->_pipes[$pipe]);
@@ -512,7 +533,7 @@ class Process
      * Read all ouput pipes till process is finished.
      * @return Process
      */
-    function readAll()
+    function exec()
     {
         while ($this->read())
             usleep(10000); // 10ms
@@ -525,7 +546,7 @@ class Process
      *
      * @return int|null Exit status code of the command that was executed
      */
-    public function close()
+    protected function close()
     {
         // if already closed return last exit status
         if ($this->_status != self::STATUS_RUNNING)
@@ -680,6 +701,9 @@ class Process
             'params' => $this->_params,
             'cwd' => isset($this->_cwd) ? $this->_cwd : getcwd(),
             'environment' => $this->_environment,
+            'ssh' => $this->_ssh,
+            'usePty' => $this->_flags & self::FLAG_PTY,
+            'call' => $this->_call,
             'timeout' => $this->_timeout,
             'pid' => $this->_pid,
             'start' => $this->_starttime,
@@ -715,7 +739,7 @@ class Process
     function getOutput()
     {
         // read rest first, wait for finish
-        $this->readAll();
+        $this->exec();
         return $this->_output[self::STDOUT];
     }
 
@@ -726,7 +750,7 @@ class Process
     function getErrors()
     {
         // read rest first, wait for finish
-        $this->readAll();
+        $this->exec();
         return $this->_output[self::STDERR];
     }
 
@@ -737,7 +761,7 @@ class Process
     function getAdditionalOutput()
     {
         // read rest first, wait for finish
-        $this->readAll();
+        $this->exec();
         return $this->_output[self::ADDOUT];
     }
 
@@ -764,7 +788,7 @@ class Process
     function getExitCode()
     {
         // read rest first, wait for finish
-        $this->readAll();
+        $this->exec();
         return $this->_exit;
     }
 
@@ -781,7 +805,7 @@ class Process
      * @param int $code exit code from command
      * @return string description text
      */
-    public static function exitDescription($code)
+    protected static function exitDescription($code)
     {
         // valid exit code between -255 and 255
         assert(is_int($code) && $code >= -255 && $code <= 255);
