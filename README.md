@@ -37,7 +37,8 @@ next generation php projects.
 Platform Features
 -----------------
 
-In the moment the following parts are developed:
+All of the following basic features will cooperate strong together to get the
+optimal base for the application. The main concept is on easy but powerful use.
 
 - **Autoloader**
 
@@ -46,11 +47,16 @@ In the moment the following parts are developed:
 
 - **Validation**
 
-  This is a central point for stability, maintenance and security.
+  This is a central point for stability, maintenance and security. Each and any
+  value may be validated before use by a a deep analyzation based on different
+  extensible validators. Problems will be reported in human understandable
+  detailed description.
 
 - **I18n support**
 
-  complete translation support with powerful but easy text format
+  Complete translation support over any and all base classes. The translator
+  supports the use of the simple templates (described below) to easy include
+  formatted values.
 
 - **Multilingual Support**
 
@@ -61,7 +67,8 @@ In the moment the following parts are developed:
 - **Event Management**
 
   A general event management allows to listen and react to specific events
-  on time.
+  on time. Any class can work as consumer or sender of events which may be send
+  directly or through the event manager to all currently registered classes.
 
 - **Dictionary**
 
@@ -89,14 +96,17 @@ In the moment the following parts are developed:
 
 - **Automatic Configuration**
 
-  Most parts are automatically configured to be used or may be specified using
-  the configuration file.
+  Classes may be configured directly using an initializer function you write
+  or automatically using the registry configuration.\n
+  Parts of the base system are already supporting this. If a configuration
+  is found it will be used.
 
 - **System execution**
 
   A Process execution and management package makes it easy to call external
-  system routines on any Unix like System. With this PHP can be also be used
-  as replacement for bash scripts...
+  system routines on any Unix like System. With this PHP can also be used
+  as replacement for bash scripts or use powerful comand line tools where they
+  are better than the php solution like media conversion...
 
 
 API Documentation & More
