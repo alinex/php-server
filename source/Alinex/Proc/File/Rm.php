@@ -27,6 +27,7 @@ class Rm extends Process
 
     /**
      * Constructs the object, optionally setting the command to be executed.
+     * @param string|array $files files to remove
      */
     function __construct($files = null)
     {

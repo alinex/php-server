@@ -29,6 +29,7 @@ class Touch extends Process
 
     /**
      * Constructs the object, optionally setting the command to be executed.
+     * @param string|array $files files to touch
      */
     function __construct($files)
     {

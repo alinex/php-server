@@ -30,6 +30,7 @@ class Ls extends Process
 
     /**
      * Constructs the object, optionally setting the command to be executed.
+     * @param string|array $files directories or files to list
      */
     function __construct($files = null)
     {

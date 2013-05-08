@@ -27,6 +27,7 @@ class Mkdir extends Process
 
     /**
      * Constructs the object, optionally setting the command to be executed.
+     * @param string|array $files directories to create
      */
     function __construct($files = null)
     {
