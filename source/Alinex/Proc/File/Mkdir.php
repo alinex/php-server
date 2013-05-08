@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Process wrapper for rm:  Remove (unlink) the FILE(s).
+ * Process wrapper for mkdir: make directories
  *
  * @author    Alexander Schilling <info@alinex.de>
  * @copyright 2009-2013 Alexander Schilling (\ref Copyright)
@@ -16,9 +16,9 @@ namespace Alinex\Proc\File;
 use Alinex\Proc\Process;
 
 /**
- * Process wrapper for rm:  Remove (unlink) the FILE(s).
+ * Process wrapper for mkdir: make directories
  */
-class Rm extends Process
+class Mkdir extends Process
 {
     /**
      * @name Setup Phase
@@ -31,9 +31,9 @@ class Rm extends Process
     function __construct($files = null)
     {
         assert(is_string($files) || is_array($files) || !isset($files));
-        parent::__construct('rm');
+        parent::__construct('mkdir');
         // set default options
-        $this->_params['-fv'] = '-fv';
+        $this->_params['-v'] = '-v';
         // set given paths
         $this->_params['files'] = '';
         if (isset($files)) {
@@ -46,12 +46,12 @@ class Rm extends Process
     }
 
     /**
-     * Remove directories recursive.
-     * @return Rm
+     * Make parent directories if needed, no error if existing
+     * @return Mkdir
      */
-    function recursive()
+    function createParents()
     {
-        $this->_params['-r'] = '-r';
+        $this->_params['-p'] = '-p';
         return $this;
     }
 
@@ -65,10 +65,10 @@ class Rm extends Process
      */
 
     /**
-     * Get the list of files
-     * @return array list of removed files
+     * Get the list of directories created
+     * @return array list of created directories
      */
-    function getFiles()
+    function getDirectories()
     {
         $this->exec();
         // return null if not successfull
