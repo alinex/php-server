@@ -17,6 +17,13 @@ class TouchTest extends \PHPUnit_Framework_TestCase
         $pr = new Touch(self::TESTDIR.'file3');
         $pr->copyTimeFrom(self::TESTDIR.'file2');
         $this->assertTrue($pr->isSuccess());        
+        // cleanup
+        $pr = new Rm(self::TESTDIR.'file1');
+        $pr->exec();
+        $pr = new Rm(self::TESTDIR.'file2');
+        $pr->exec();
+        $pr = new Rm(self::TESTDIR.'file3');
+        $pr->exec();        
     }
 
 }
