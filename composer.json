@@ -31,7 +31,8 @@
         }
     ],
     "require": {
-        "php": ">=5.3.2"
+        "php": ">=5.3.2",
+        "doctrine/orm": "*"
     },
     "suggest": {
         "ext-gettext": "Allows fast non threaded internationalization",
