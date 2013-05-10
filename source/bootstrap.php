@@ -31,6 +31,7 @@ require_once __DIR__.DIRECTORY_SEPARATOR
 $loader = Code\Autoloader::getInstance();
 $loader->add('Alinex', __DIR__);
 $loader->addBackports(__DIR__.DIRECTORY_SEPARATOR.'backport');
+$loader->add('Doctrine', __DIR__.DIRECTORY_SEPARATOR.'vnd');
 $loader->register();
 
 // internationalization
