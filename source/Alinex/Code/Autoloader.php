@@ -138,7 +138,7 @@ class Autoloader
      * directories.
      *
      * @note If no prefix is given the paths will be added as general path for
-     * all lasses.
+     * all classes.
      *
      * @param string       $prefix The classes prefix
      * @param array|string $paths  The location(s) of the classes
@@ -244,6 +244,7 @@ class Autoloader
      * The file eill be searched in:
      * # in the class map
      * # for this prefix defined directories
+     * # also in lowercase
      * # all general directories
      * # in the php include path
      *
@@ -285,6 +286,14 @@ class Autoloader
 #error_log("check a: ".$dir . DIRECTORY_SEPARATOR . $classPath);
                     if (file_exists($dir . DIRECTORY_SEPARATOR . $classPath))
                         return $dir . DIRECTORY_SEPARATOR . $classPath;
+                    else if (
+                        file_exists(
+                            $dir . DIRECTORY_SEPARATOR
+                            . strtolower($classPath)
+                            )
+                        )
+                        return $dir . DIRECTORY_SEPARATOR 
+                            . strtolower($classPath);
                 }
             }
         }
