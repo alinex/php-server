@@ -131,11 +131,11 @@ class IniFile extends File
     /**
      * Export registry entries to ini file
      *
-     * @param array $commentkeys list of keys 
+     * @param array $commentkeys list of keys
      * @return bool TRUE on success
      * @throws Exception if storage can't be used
      */
-    function export(array $commentkeys)
+    function export(array $commentkeys = null)
     {
         assert($this->check());
 
@@ -144,7 +144,8 @@ class IniFile extends File
         $content .= $this->getCommentHeader();
         $list = $this->getValues();
         if (isset($list)) {
-            $keys = array_merge($commentkeys, array_keys($list));
+            if (isset($commentkeys))
+                $keys = array_merge($commentkeys, array_keys($list));
             sort($keys);
             if ($this->_sections) {
                 $currentSection = null;

@@ -197,7 +197,7 @@ class Cache implements \Countable, \ArrayAccess
      * @param string $key name of the entry
      * @param bool $all true to find all engines holding this key false for
      * first only
-     * @return Engine|array one or all engines as list
+     * @return Engine|array one engine or all engines as list
      */
     protected function searchEngines($key, $all = false)
     {
@@ -211,7 +211,9 @@ class Cache implements \Countable, \ArrayAccess
                     return $test;
             }
         }
-        return $all ? $list : (bool)count($list);
+        return $all
+            ? $list
+            : (count($list) ? $list[0] : null);
     }
 
     /**
@@ -290,7 +292,9 @@ class Cache implements \Countable, \ArrayAccess
      */
     public final function get($key)
     {
-        return $this->searchEngines($key)->get($key);
+        $engine = $this->searchEngines($key);
+        error_log(json_encode($engine));
+        return isset($engine) ? $engine->get($key) : null;
     }
 
     /**

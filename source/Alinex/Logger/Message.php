@@ -101,7 +101,7 @@ class Message extends \Alinex\Util\Event
         // set context data as base
         $data = $context;
         // set the time
-        list($sec, $msec) = explode('.', microtime(true));
+        list($msec, $sec) = explode(' ', microtime());
         $data['time'] = array(
             'sec' => $sec,
             'msec' => $msec

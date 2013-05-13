@@ -306,14 +306,14 @@ class I18n
     {
         // get from files
         $locales = scandir(__DIR__.'/../../tr');
-        $registry = Registry::getInstance();
-        if ($registry->has(self::REGISTRY_LOCALES)) {
-            // filter with registry setting
-            $locales = array_intersect(
-                $locales,
-                $registry->get(self::REGISTRY_LOCALES)
-            );
-        }
+#        $registry = Registry::getInstance();
+#        if ($registry->has(self::REGISTRY_LOCALES)) {
+#            // filter with registry setting
+#            $locales = array_intersect(
+#                $locales,
+#                $registry->get(self::REGISTRY_LOCALES)
+#            );
+#        }
         usort(
             $locales, function($a, $b)
             {

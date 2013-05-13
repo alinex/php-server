@@ -25,13 +25,18 @@ ini_set('display_errors', false);
 // autoloader
 
 require_once __DIR__.DIRECTORY_SEPARATOR
-        .'Alinex'.DIRECTORY_SEPARATOR
-        .'Code'.DIRECTORY_SEPARATOR
-        .'Autoloader.php';
+    .'Alinex'.DIRECTORY_SEPARATOR
+    .'Code'.DIRECTORY_SEPARATOR
+    .'Autoloader.php';
 $loader = Code\Autoloader::getInstance();
 $loader->add('Alinex', __DIR__);
 $loader->addBackports(__DIR__.DIRECTORY_SEPARATOR.'backport');
-$loader->add('Doctrine', __DIR__.DIRECTORY_SEPARATOR.'vnd');
+$loader->add(
+    'Doctrine',
+    __DIR__.DIRECTORY_SEPARATOR
+    .'vnd'.DIRECTORY_SEPARATOR
+    .'doctrine'
+);
 $loader->register();
 
 // internationalization
@@ -48,8 +53,9 @@ Code\AssertHandler::enabled(true);
 
 $dir = __DIR__.'/';
 Registry::getInstance(
-    'file://'.$dir.'registryData.ini',
-    'file://'.$dir.'registryValidators.ini'
+    file_exists($dir.'config.ini')
+    ? 'file://'.$dir.'config.ini'
+    : null
 );
 
 // configure internationalization

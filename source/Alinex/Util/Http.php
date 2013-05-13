@@ -229,7 +229,7 @@ class Http
      */
     static function determineIP()
     {
-        if (checkIP($_SERVER["HTTP_CLIENT_IP"])) {
+        if (self::checkIP($_SERVER["HTTP_CLIENT_IP"])) {
             return $_SERVER["HTTP_CLIENT_IP"];
         }
         foreach (explode(",", $_SERVER["HTTP_X_FORWARDED_FOR"]) as $ip) {
@@ -237,7 +237,7 @@ class Http
                 return $ip;
             }
         }
-        if (checkIP($_SERVER["HTTP_X_FORWARDED"])) {
+        if (self::checkIP($_SERVER["HTTP_X_FORWARDED"])) {
             return $_SERVER["HTTP_X_FORWARDED"];
         } elseif (self::checkIP($_SERVER["HTTP_X_CLUSTER_CLIENT_IP"])) {
             return $_SERVER["HTTP_X_CLUSTER_CLIENT_IP"];
@@ -273,8 +273,11 @@ class Http
      */
     private static function checkIP($ip)
     {
-        assert(is_string($ip));
+        assert(!isset($ip) || is_string($ip));
 
+        if (!isset($ip))
+            return false;
+        
         if (!empty($ip) && ip2long($ip)!=-1 && ip2long($ip)!=false) {
             foreach (self::$_privateips as $r) {
                 $min = ip2long($r[0]);

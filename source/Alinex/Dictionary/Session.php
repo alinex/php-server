@@ -83,7 +83,7 @@ use Alinex\Template\Simple;
  * @see Dictionary for overview of use
  * @see session for a list of used keys
  */
-class Session implements SessionHandlerInterface
+class Session implements \SessionHandlerInterface
 {
     /**
      * Time period till the session will be declared as inactive.
@@ -195,6 +195,12 @@ class Session implements SessionHandlerInterface
      * Login user id, which will be deleted after end of login time.
      */
     const SESSION_LOGINID = 'login.id';
+
+    /**
+     * Entry group to store iplock times and numbers to detect bruteforce
+     * attacks.
+     */
+    const CACHE_BRUTEFORCE = 'bruteforce.';
 
     /**
      * The current session object.
@@ -392,7 +398,7 @@ class Session implements SessionHandlerInterface
      */
     public function start($sid)
     {
-        assert(is_string($sid));
+        assert(!isset($sid) || is_string($sid));
 
         if (session_id() != "")
             return; // session already started
@@ -437,7 +443,7 @@ class Session implements SessionHandlerInterface
                 unset($_SESSION[self::SESSION_LOGINID]);
             }
             // set new inactive time
-            $_SESSION[self::SESSION_INACTIVE] = time() + self::$inactive;
+            $_SESSION[self::SESSION_INACTIVE] = time() + $this->_inactivetime;
         }
     }
 
@@ -462,7 +468,18 @@ class Session implements SessionHandlerInterface
         if (isset($ip)) {
             $check = $cache->get(self::CACHE_BRUTEFORCE.$ip);
             $time = time();
-            if (isset($check) && $check[0] > $time) {
+            if (isset($check) && $check[0] < $time)
+                // cache is outdated
+                $check = null;
+            if (!isset($check)) {
+                // cache missing
+                $cache->set(
+                    self::CACHE_BRUTEFORCE.$ip,
+                    array($time + $this->_iplocktime, 1),
+                    Engine::SCOPE_GLOBAL
+                );
+            } else if ($check[0] > $time) {
+                // cache entry existing
                 if ($check[1] > $this->_iplocknum) {
                     // block the session by using a new one
                     session_regenerate_id();
@@ -470,21 +487,22 @@ class Session implements SessionHandlerInterface
                     throw new \Exception(
                         tr(
                             __NAMESPACE__,
-                            'Session could not be creatred because of possible bruteforce attack from {ip]',
+                            'Session could not be created because of possible bruteforce attack from {ip]',
                             array('ip' => $ip)
                         )
                     );
+                } else {
+                    // count up the session num in time range
+                    $cache->set(
+                        self::CACHE_BRUTEFORCE.$ip,
+                        array($check[0], ++$check[1]),
+                        Engine::SCOPE_GLOBAL
+                    );
                 }
-            } else {
-                $cache->set(
-                    self::CACHE_BRUTEFORCE.$ip,
-                    array($time + $this->_iplocktime, 1),
-                    Engine::SCOPE_GLOBAL
-                );
             }
         }
         # create the new session
-        Logger::getInstance()->info(
+        \Alinex\Logger::getInstance()->info(
             'New session will be created for '.$ip
         );
         session_regenerate_id($removeOld);
@@ -532,10 +550,13 @@ class Session implements SessionHandlerInterface
      * Opening of session is not needed on this platform because the
      * cache system should already be initialized and running.
      *
+     * @param string $savePath The path where to store/retrieve the session.
+     * @param string $sessionName The session name.
+     *
      * @return bool always <i>TRUE</i>
      * @see http://www.php.net/manual/en/sessionhandlerinterface.open.php
      */
-    public static function open()
+    public function open($savePath, $sessionName)
     {
         return TRUE;
     }
@@ -551,7 +572,7 @@ class Session implements SessionHandlerInterface
      * @return bool always <i>TRUE</i>
      * @see http://www.php.net/manual/en/sessionhandlerinterface.close.php
      */
-    public static function close()
+    public function close()
     {
         return TRUE;
     }
@@ -575,7 +596,7 @@ class Session implements SessionHandlerInterface
      * @return bool always <i>TRUE</i>
      * @see http://www.php.net/manual/en/sessionhandlerinterface.gc.php
      */
-    public static function gc($ttl)
+    public function gc($ttl)
     {
         return true;
     }
@@ -604,7 +625,7 @@ class Session implements SessionHandlerInterface
      *
      * @see http://www.php.net/manual/en/sessionhandlerinterface.read.php
      */
-    public static function read($id)
+    public function read($id)
     {
         return $this->_engine->has($id)
             ? $this->_engine->get($id)
@@ -637,7 +658,7 @@ class Session implements SessionHandlerInterface
      * failure). Note this value is returned internally to PHP for processing.
      * @see http://www.php.net/manual/en/sessionhandlerinterface.write.php
      */
-    public static function write($id, $data)
+    public function write($id, $data)
     {
         return $this->_engine->set($id, $data) ? true : false;
     }
@@ -654,7 +675,7 @@ class Session implements SessionHandlerInterface
      * failure). Note this value is returned internally to PHP for processing.
      * @see http://www.php.net/manual/en/sessionhandlerinterface.destroy.php
      */
-    public static function destroy($id)
+    public function destroy($id)
     {
         return $this->_engine->remove($id);
     }

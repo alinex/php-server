@@ -30,6 +30,6 @@ Thumbs.db
 /source/example/
 /doc/
 /test/data/
-/source/vnd/doctrine/common/
-/source/vnd/doctrine/dbal/
-/source/vnd/doctrine/orm/
+/source/vnd/doctrine/Doctrine/Common/*
+/source/vnd/doctrine/Doctrine/DBAL/*
+/source/vnd/doctrine/Doctrine/ORM/*

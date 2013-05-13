@@ -1,3 +1,4 @@
+<h1>Testseite</h1>
 <?php
 /**
  * @file
@@ -28,5 +29,9 @@ include_once 'bootstrap.php';
 Alinex\Dictionary\Session::getInstance()->start();
 
 
-Alinex\Util\I18n::test();
+#Alinex\Util\I18n::test();
 
+echo('kkkk');
+
+?>
+<h1>Ende</h1>
