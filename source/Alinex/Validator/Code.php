@@ -331,7 +331,7 @@ class Code
                 throw new Exception(
                     tr(
                         __NAMESPACE__,
-                        'Method {method} didn\'t exist in class {class}',
+                        'Method \'{method}\' didn\'t exist in class {class}',
                         array('class' => $value[0], 'method' => $value[1])
                     ), $value, $name, __METHOD__, $options
                 );

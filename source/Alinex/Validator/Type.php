@@ -1177,7 +1177,8 @@ class Type
                 PHP_EOL.'The array may have the following values:'
             );
             foreach (array_keys($options['keySpec']) as $key) {
-                if (!\in_array($key, $options['allowedKeys'])
+                if (isset($options['allowedKeys'])
+                    && !\in_array($key, $options['allowedKeys'])
                     && (!isset($options['mandatoryKeys'])
                         || !\in_array($key, $options['mandatoryKeys'])))
                     continue;

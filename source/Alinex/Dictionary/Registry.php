@@ -353,8 +353,9 @@ class Registry implements \Countable, \ArrayAccess
                 ->update(
                     new \Alinex\Util\Event(
                         $this,
-                        !isset($value) ? 'remove'
-                            : !isset($old) ? 'new' : 'change',
+                        !isset($value)
+                        ? 'remove'
+                        : !isset($old) ? 'new' : 'change',
                         array(
                             'key' => $key,
                             'from' => $old,

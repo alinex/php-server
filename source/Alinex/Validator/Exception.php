@@ -77,7 +77,7 @@ class Exception extends \Exception
         $func = preg_replace('#^.*?(\w+(::|->)?\w+)$#', '$1', $method);
         $location = tr(
             __NAMESPACE__,
-            ' in check \'{method}\' for variable \'{name}\'.',
+            ' detected by check \'{method}\' for variable \'{name}\'.',
             array('method' => $func, 'name' => $name)
         ) . PHP_EOL;
         parent::__construct($message.$location, null, $previous);

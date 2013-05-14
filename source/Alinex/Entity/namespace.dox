@@ -1,0 +1,10 @@
+/** @namespace Alinex\Entity Database ORM Entities
+
+This package contains entities connected to the database through the doctrine
+ORM Mapper.
+
+Only entities of the core are located here. Find entities of other packages
+in their specific namespace.
+
+@see http://www.doctrine-project.org/projects/orm
+*/

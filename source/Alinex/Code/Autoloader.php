@@ -224,7 +224,7 @@ class Autoloader
         $file = $this->findFile($class);
 #error_log($class.'->'.$file);
         $backtrace = debug_backtrace();
-        if ($backtrace[2]['function'] == 'class_exists'
+        if (count($backtrace)>2 && $backtrace[2]['function'] == 'class_exists'
             && (!isset($backtrace[2]['args'][1]) || !$backtrace[2]['args'][1]))
             return isset($file) ? true : false;
         if ($file) {
@@ -292,7 +292,7 @@ class Autoloader
                             . strtolower($classPath)
                             )
                         )
-                        return $dir . DIRECTORY_SEPARATOR 
+                        return $dir . DIRECTORY_SEPARATOR
                             . strtolower($classPath);
                 }
             }

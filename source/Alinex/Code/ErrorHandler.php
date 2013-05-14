@@ -120,20 +120,28 @@ class ErrorHandler
             return;
 
         if (ini_get('xdebug.scream'))
-            $message .= PHP_EOL.PHP_EOL.
-'Warning: You have xdebug.scream enabled, the warning above may be
-a legitimately suppressed error that you were not supposed to see.';
+            $message .= PHP_EOL
+                .'Warning: You have xdebug.scream enabled, the warning above may be a legitimately suppressed error that you were not supposed to see'
+                .PHP_EOL;
 
-        if ($level & self::$_logLevel)
-            \Alinex\Logger::getInstance()->log(
-                self::$_logPhpMapping[$level][0],
-                $message,
-                array(
-                    'type' => self::$_logPhpMapping[$level][1],
-                    'file' => $file,
-                    'line' => $line
-                )
-            );
+        if ($level & self::$_logLevel) {
+            if (isset($GLOBALS['initialized']) && $GLOBALS['initialized'])
+                \Alinex\Logger::getInstance()->log(
+                    self::$_logPhpMapping[$level][0],
+                    $message,
+                    array(
+                        'type' => self::$_logPhpMapping[$level][1],
+                        'file' => $file,
+                        'line' => $line
+                    )
+                );
+            else
+                // fallback handling if not properly initialized
+                error_log(
+                    self::$_logPhpMapping[$level][1].': '.$message
+                    .' at '.$file.' on line '.$line
+                );
+        }
 
         if ($level & self::$_exceptionLevel)
             throw new \ErrorException($message, 0, $level, $file, $line);

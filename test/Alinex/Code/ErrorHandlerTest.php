@@ -15,7 +15,6 @@ class ErrorHandlerTest extends \PHPUnit_Framework_TestCase
         ini_set('xdebug.scream', TRUE); // to also test the warning
         ErrorHandler::register();
         $array = array('foo' => 'bar');
-        $array['baz'];
         ErrorHandler::setExceptionLevel(E_ALL);
         $this->setExpectedException('\ErrorException', 'Undefined index: baz');
         $array['baz'];

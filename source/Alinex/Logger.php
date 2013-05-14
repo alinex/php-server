@@ -13,8 +13,6 @@
 
 namespace Alinex;
 
-use Alinex\Dictionary\Registry;
-
 /**
  * Logging class.
  *
@@ -41,8 +39,8 @@ use Alinex\Dictionary\Registry;
  * overwrite them.
  *
  * @pattern{EventObserver}
- * Used to add other listener objects to the Logger. The following events may 
- * be send. The direct attached observers (Handler) will be served first and 
+ * Used to add other listener objects to the Logger. The following events may
+ * be send. The direct attached observers (Handler) will be served first and
  * the EventManager afterwords.
  * @event{debug} - Debugging message with Message object
  * @event{info} - Informational with Message object
@@ -207,7 +205,7 @@ class Logger implements Util\EventSubject // implements \Psr\Log\LoggerInterface
      * @name Logging Methods
      * @{
      */
-    
+
     /**
      * Adds a log record at the DEBUG level.
      *

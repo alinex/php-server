@@ -396,7 +396,7 @@ class Session implements \SessionHandlerInterface
      * @return void
      * @throw \Exception in case of bruteforce attacks
      */
-    public function start($sid)
+    public function start($sid = null)
     {
         assert(!isset($sid) || is_string($sid));
 

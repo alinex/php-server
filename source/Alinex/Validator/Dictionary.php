@@ -69,35 +69,6 @@ class Dictionary
             || $options['performance'] == Engine::PERFORMANCE_MEDIUM
             || $options['performance'] == Engine::PERFORMANCE_HIGH
         );
-
-        // fill description
-        if (!isset(self::$_engineScopes))
-            self::$_engineScopes = array(
-                // TRANS: title for session scope
-                Engine::SCOPE_SESSION => tr(__NAMESPACE__, 'session'),
-                // TRANS: title for local scope
-                Engine::SCOPE_LOCAL => tr(__NAMESPACE__, 'local'),
-                // TRANS: title for global scope
-                Engine::SCOPE_GLOBAL => tr(__NAMESPACE__, 'global')
-            );
-        if (!isset(self::$_enginePersistence))
-            self::$_enginePersistence = array(
-                // TRANS: title for short persistence
-                Engine::PERSISTENCE_SHORT => tr(__NAMESPACE__, 'short'),
-                // TRANS: title for medium persistence
-                Engine::PERSISTENCE_MEDIUM => tr(__NAMESPACE__, 'medium'),
-                // TRANS: title for long persistence
-                Engine::PERSISTENCE_LONG => tr(__NAMESPACE__, 'long')
-            );
-        if (!isset(self::$_enginePerformance))
-            self::$_enginePerformance = array(
-                // TRANS: title for low performance
-                Engine::PERFORMANCE_LOW => tr(__NAMESPACE__, 'low'),
-                // TRANS: title for medium performance
-                Engine::PERFORMANCE_MEDIUM => tr(__NAMESPACE__, 'medium'),
-                // TRANS: title for high performance
-                Engine::PERFORMANCE_HIGH => tr(__NAMESPACE__, 'high')
-            );
     }
 
     /**
@@ -151,9 +122,9 @@ class Dictionary
                     ),
                     'keySpec' => array(
                         'type' => array(
-                            'Code::class',
+                            'Code::phpClass',
                             array(
-                                'exists' => 1,
+                                'exists' => true,
                                 'relative' => 'Alinex\Dictionary\Engine'
                             )
                         ),
@@ -285,7 +256,34 @@ class Dictionary
      */
     static function engineDescription()
     {
-        $options = $this->engineOptions($options);
+        // fill description
+        if (!isset(self::$_engineScopes))
+            self::$_engineScopes = array(
+                // TRANS: title for session scope
+                Engine::SCOPE_SESSION => tr(__NAMESPACE__, 'session'),
+                // TRANS: title for local scope
+                Engine::SCOPE_LOCAL => tr(__NAMESPACE__, 'local'),
+                // TRANS: title for global scope
+                Engine::SCOPE_GLOBAL => tr(__NAMESPACE__, 'global')
+            );
+        if (!isset(self::$_enginePersistence))
+            self::$_enginePersistence = array(
+                // TRANS: title for short persistence
+                Engine::PERSISTENCE_SHORT => tr(__NAMESPACE__, 'short'),
+                // TRANS: title for medium persistence
+                Engine::PERSISTENCE_MEDIUM => tr(__NAMESPACE__, 'medium'),
+                // TRANS: title for long persistence
+                Engine::PERSISTENCE_LONG => tr(__NAMESPACE__, 'long')
+            );
+        if (!isset(self::$_enginePerformance))
+            self::$_enginePerformance = array(
+                // TRANS: title for low performance
+                Engine::PERFORMANCE_LOW => tr(__NAMESPACE__, 'low'),
+                // TRANS: title for medium performance
+                Engine::PERFORMANCE_MEDIUM => tr(__NAMESPACE__, 'medium'),
+                // TRANS: title for high performance
+                Engine::PERFORMANCE_HIGH => tr(__NAMESPACE__, 'high')
+            );
 
         $desc = tr(
             __NAMESPACE__,
@@ -298,9 +296,9 @@ class Dictionary
                 'allowedKeys' => array('server', 'ttl', 'name', 'directory'),
                 'keySpec' => array(
                     'type' => array(
-                        'Code::class',
+                        'Code::phpClass',
                         array(
-                            'exists' => 1,
+                            'exists' => true,
                             'relative' => 'Alinex\Dictionary\Engine',
                             'description' => tr(__NAMESPACE__, 'Type of storage engine to use.')
                         )

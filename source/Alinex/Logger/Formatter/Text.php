@@ -35,18 +35,24 @@ class Text extends Formatter
      */
     public $formatMap = array(
         array(
-            'vars' => array('file', 'line', 'trace'),
-            'format' => <<<'EOD'
-{time.sec|date} {level.name|upper}: {message}.
-In {file} on line {line} called through:
-{trace}
-EOD
-        ),
-        array(
             'vars' => array('file', 'line'),
             'format' => <<<'EOD'
 {time.sec|date} {level.name|upper}: {message}.
-In {file} on line {line}
+In {file} on line {line} {%if trace}called through:
+{trace}{%endif}
+EOD
+        ),
+        array(
+            'vars' => array('timing', 'params'),
+            'format' => <<<'EOD'
+{time.sec|date} {level.name|upper}: {message} (in {timing|printf %.3f}s).{%if paramas}
+Using parameters: {params}{%endif}
+EOD
+        ),
+        array(
+            'vars' => array('timing'),
+            'format' => <<<'EOD'
+{time.sec|date} {level.name|upper}: {message} (in {timing}ms).
 EOD
         ),
         array(
