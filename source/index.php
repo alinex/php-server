@@ -1,4 +1,4 @@
-<h1>Testseite</h1>
+<h1>Testsystem</h1>
 <?php
 /**
  * @file
@@ -23,15 +23,51 @@
  * @see       http://alinex.de
  */
 
+/**
+ * Configuration file to use.
+ */
+define('CONFIGFILE', 'file://'.__DIR__.'/config.ini');
+
+/**
+ * Is the system productively used or for test and debugging.
+ */
+define('PRODUCTIVE', false);
+
+use Alinex\Dictionary\ImportExport;
+
 include_once 'bootstrap.php';
 
-// init session
+// init session handling
 Alinex\Dictionary\Session::getInstance()->start();
 
+// initial creation of config file
+if (!file_exists(CONFIGFILE)) {
+    $registry = Alinex\Dictionary\Registry::getInstance();
+    $registry->export(
+        ImportExport\Autodetect::findInstance(CONFIGFILE)
+    );
+}
 
-#Alinex\Util\I18n::test();
+// TEST STUFF
 
 echo('kkkk');
+
+$config = new \Doctrine\DBAL\Configuration();
+//..
+$connectionParams = array(
+    'dbname' => 'a3',
+    'user' => 'alinex',
+    'password' => 'test',
+    'host' => 'localhost',
+    'driver' => 'pdo_mysql',
+);
+#$conn = \Doctrine\DBAL\DriverManager::getConnection($connectionParams, $config);
+$conn = Alinex\DB\Connection::get();
+$sql = "SELECT * FROM test";
+$stmt = $conn->query($sql);
+while ($row = $stmt->fetch()) {
+    echo $row['name'];
+}
 
 ?>
 <h1>Ende</h1>
