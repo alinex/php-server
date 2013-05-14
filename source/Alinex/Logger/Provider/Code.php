@@ -54,8 +54,11 @@ class Code extends Provider
         foreach ($trace as $entry) {
             ++$offset;
             // step through
-            if (strpos($entry['class'], 'Logger') !== false
-                || strpos($entry['class'], 'ErrorHandler') !== false) 
+            if (isset($entry['class'])
+                && (
+                    strpos($entry['class'], 'Logger') !== false
+                    || strpos($entry['class'], 'ErrorHandler') !== false
+                ) )
                 continue;
             $message->data['code'] = $entry;
 #            error_log($entry['file'].':'.$entry['line']);

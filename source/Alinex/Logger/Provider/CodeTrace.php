@@ -27,13 +27,13 @@ use Alinex\Logger\Provider;
  * - code.type - The current call type. If a method call "->" is returned.
  * If a static method call "::" is returned. If a function call nothing is
  * returned.
- * - code.args - If inside a function, this lists the functions arguments. If inside
- * an included file, this lists the included file name(s).
+ * - code.args - If inside a function, this lists the functions arguments. If
+ * inside an included file, this lists the included file name(s).
  * - code.trace - same information of the calling methods if required
  *
  * @codeCoverageIgnore because backtrace not possible through phpunit
  */
-class CodeTrace extends Provider
+class CodeTrace extends Code
 {
     /**
      * Should the trace be included.

@@ -127,6 +127,15 @@ class Stream extends Handler
     }
 
     /**
+     * Get the formatter to configure it.
+     * @return \Alinex\Logger\Formatter\Line
+     */
+    public function getFormatter()
+    {
+        return $this->_formatter;
+    }
+
+    /**
      * This will open the given stream if not done.
      * @return resource strem to be used
      * @throws \Exception if stream could not be reopened or opened.
@@ -195,7 +204,8 @@ class Stream extends Handler
     protected function write(Message $message)
     {
         $this->openStream();
-        fwrite($this->_stream, $message->formatted);
+#        fwrite($this->_stream, print_r($message,1));
+        fwrite($this->_stream, $message->formatted . PHP_EOL);
         $this->closeStream();
     }
 }

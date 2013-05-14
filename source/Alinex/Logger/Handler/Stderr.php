@@ -14,6 +14,9 @@ namespace Alinex\Logger\Handler;
 
 /**
  * Logging to stderr which may be the terminal or apache error log.
+ *
+ * By default this will log multiline entries with trace for debugging using
+ * Alinex\Logger\Formatter\Text
  */
 class Stderr extends Stream
 {
@@ -23,5 +26,8 @@ class Stderr extends Stream
     function __construct()
     {
         parent::__construct('php://stderr');
+        // add code output
+        $this->setFormatter(new \Alinex\Logger\Formatter\Text());
+        $this->addProvider('Code'); // needed to get the information
     }
 }

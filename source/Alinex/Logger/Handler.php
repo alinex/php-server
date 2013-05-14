@@ -27,7 +27,7 @@ use Alinex\Util;
  * the Provider retrieves additional information and the formatter will create
  * the message out of the collected data. The result will be published from the
  * handler directly.
- * 
+ *
  * @pattern{Chaining} For the addition of Provider and Filter.
  */
 abstract class Handler implements Util\EventObserver
@@ -76,6 +76,15 @@ abstract class Handler implements Util\EventObserver
     public function getFormatter()
     {
         return $this->_formatter;
+    }
+
+    /**
+     * Set the formatter to use
+     * @param \Alinex\Logger\Formatter $formatter Formatter instance to use
+     */
+    public function setFormatter(Formatter $formatter)
+    {
+        $this->_formatter = $formatter;
     }
 
     /**

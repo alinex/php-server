@@ -15,32 +15,61 @@ namespace Alinex\Logger\Formatter;
 use Alinex\Logger\Message;
 use Alinex\Logger\Formatter;
 use Alinex\Template;
+use Alinex\Util\ArrayStructure;
 
 /**
  * Formatter writing message as simple text.
+ *
+ * This formatter holds different templates in the $formatMap. Depending on the
+ * defined variables in the message it will choose the first possible format.
+ *
+ * Through this the formatter will automatically add information if it is
+ * available. The formats may be changed here for an handler or a specific
+ * format class may be written.
  */
 class Text extends Formatter
 {
     /**
-     * Default format
+     * Format mapping with neccessary variables.
+     * @var array
      */
-    const COMMON = <<<'EOD'
+    public $formatMap = array(
+        array(
+            'vars' => array('file', 'line', 'trace'),
+            'format' => <<<'EOD'
 {time.sec|date} {level.name|upper}: {message}.
-At {code.file} at line {code.line}
-EOD;
-    
-    /**
-     * Used format string to create message.
-     * @var string
-     */
-    public $formatString = self::COMMON;
+In {file} on line {line} called through:
+{trace}
+EOD
+        ),
+        array(
+            'vars' => array('file', 'line'),
+            'format' => <<<'EOD'
+{time.sec|date} {level.name|upper}: {message}.
+In {file} on line {line}
+EOD
+        ),
+        array(
+            'vars' => array('code.file', 'code.line'),
+            'format' => <<<'EOD'
+{time.sec|date} {level.name|upper}: {message}.
+In {code.file} on line {code.line}
+EOD
+        ),
+        array(
+            'vars' => array(),
+            'format' => <<<'EOD'
+{time.sec|date} {level.name|upper}: {message}.
+EOD
+        )
+    );
 
     /**
      * Use <br /> tags instead of newlines
      * @var bool
      */
     private $_br = false;
-    
+
     /**
      * Use <br /> tags instead of newlines
      * @param bool $br Use <br /> tags instead of newlines
@@ -48,10 +77,29 @@ EOD;
     public function useBrTags($br)
     {
         assert(is_bool($br));
-        
+
         $this->_br = $br;
     }
-    
+
+    /**
+     * Find the proper format depending on context variables.
+     * @param  Message  $message Log message object
+     * @return string format string to use
+     */
+    private function findFormat(Message $message)
+    {
+        foreach ($this->formatMap as $check) {
+            $valid = true;
+            foreach ($check['vars'] as $varname)
+                if (!ArrayStructure::has($message->data, $varname, '.')) {
+                    $valid = false;
+                    break;
+                }
+            if ($valid)
+                return $check['format'];
+        }
+    }
+
     /**
      * Format the log line.
      *
@@ -62,7 +110,7 @@ EOD;
     {
         // set the final structure
         $formatted = Template\Simple::run(
-            $this->formatString, $message->data
+            $this->findFormat($message), $message->data
         );
         // replace all newlines with spaces
         $message->formatted = $this->_br

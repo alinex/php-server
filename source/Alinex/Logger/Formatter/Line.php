@@ -15,9 +15,14 @@ namespace Alinex\Logger\Formatter;
 use Alinex\Logger\Message;
 use Alinex\Logger\Formatter;
 use Alinex\Template;
+use Alinex\Util\ArrayStructure;
 
 /**
  * Formatter writing message as single line.
+ *
+ * This formatter holds different templates in the $formatMap. Depending on the
+ * defined variables in the message it will choose the first possible format
+ * like the Text formatter.
  *
  * Any containing newlines within the message or values will be automatically
  * removed by spaces.
@@ -25,15 +30,42 @@ use Alinex\Template;
 class Line extends Formatter
 {
     /**
-     * Default format
+     * Format mapping with neccessary variables.
+     * @var array
      */
-    const COMMON = '{time.sec|date} {level.name|upper}: {message}.';
+    public $formatMap = array(
+        array(
+            'vars' => array('file', 'line'),
+            'format' => '{time.sec|date} {level.name|upper}: {message} in {file} on line {line}'
+        ),
+        array(
+            'vars' => array('code.file', 'code.line'),
+            'format' => '{time.sec|date} {level.name|upper}: {message} in {code.file} on line {code.line}'
+        ),
+        array(
+            'vars' => array(),
+            'format' => '{time.sec|date} {level.name|upper}: {message}'
+        )
+    );
 
     /**
-     * Used format string to create message.
-     * @var string
+     * Find the proper format depending on context variables.
+     * @param  Message  $message Log message object
+     * @return string format string to use
      */
-    public $formatString = self::COMMON;
+    private function findFormat(Message $message)
+    {
+        foreach ($this->formatMap as $check) {
+            $valid = true;
+            foreach ($check['vars'] as $varname)
+                if (!ArrayStructure::has($message->data, $varname, '.')) {
+                    $valid = false;
+                    break;
+                }
+            if ($valid)
+                return $check['format'];
+        }
+    }
 
     /**
      * Format the log line.
@@ -45,11 +77,10 @@ class Line extends Formatter
     {
         // set the final structure
         $formatted = Template\Simple::run(
-            $this->formatString, $message->data
+            $this->findFormat($message), $message->data
         );
         // replace all newlines with tab
-        $message->formatted = preg_replace('/[\n\r]+/s', "\t", $formatted);
-        $message->formatted .= PHP_EOL;
+        $message->formatted = preg_replace('/[\n\r]+/s', " ", $formatted);
         return true;
     }
 
