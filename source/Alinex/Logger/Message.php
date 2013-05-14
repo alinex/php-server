@@ -103,8 +103,8 @@ class Message extends \Alinex\Util\Event
         // set the time
         list($msec, $sec) = explode(' ', microtime());
         $data['time'] = array(
-            'sec' => $sec,
-            'msec' => $msec
+            'sec' => (int)$sec,
+            'msec' => (int)$msec
         );
         // set the level
         $data['level'] = array(
