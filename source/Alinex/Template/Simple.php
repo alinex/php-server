@@ -295,7 +295,11 @@ class Simple
      */
     private function mod_default($value, $param = '')
     {
-        return isset($value) ? $value : $param;
+        $context =& $this->_context[count($this->_context)-1];
+        $pvalue = ArrayStructure::get($context['values'], $param, '.');
+        return isset($value)
+            ? $value
+            : (isset($pvalue) ? $pvalue : $param);
     }
 
     /**
@@ -379,7 +383,7 @@ class Simple
         do {
             $if = array_pop($this->_context);
         } while ($if['ctrl'] != 'if');
-        // if check ok change if param to true 
+        // if check ok change if param to true
         if ($this->checkCondition($if['param'], $if)) {
             $if['param'] = 1;
             // readd to context
@@ -420,7 +424,7 @@ class Simple
             ? $if['out']
             : (isset($else) ? $else : '');
     }
-    
+
     /**
      * Create a new context for the comment.
      * @param string $param variable to set
@@ -445,10 +449,10 @@ class Simple
             $set = array_pop($this->_context);
         } while ($set['ctrl'] != 'set');
         $context =& $this->_context[count($this->_context)-1];
-        $context['values'][$set['param']] = $set['out'];        
+        $context['values'][$set['param']] = $set['out'];
     }
 
-    
+
 
     /**
      * @}
@@ -474,7 +478,7 @@ class Simple
             $context =& $this->_context[count($this->_context)-1];
         $parts = preg_split('/\s+/', trim($condition));
         if (count($parts) == 1) {
-            if (is_numeric($parts[0])) 
+            if (is_numeric($parts[0]))
                 return true;
             $value = ArrayStructure::get($context['values'], $parts[0], '.');
             return isset($value) && $value;
@@ -491,10 +495,10 @@ class Simple
             if (isset($value) && $value)
                 $parts[$i] = $value;
             else if (!is_numeric($parts[$i])
-                && !($parts[$i][0] == '"' 
+                && !($parts[$i][0] == '"'
                     && $parts[$i][strlen($parts[$i])-1] == '"')
                 && !in_array($parts[$i], $operators))
-                $parts[$i] = false; 
+                $parts[$i] = false;
         }
         // step through expression: phase 1
         if (count($parts) > 2)
