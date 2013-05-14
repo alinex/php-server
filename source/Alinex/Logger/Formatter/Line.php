@@ -47,8 +47,9 @@ class Line extends Formatter
         $formatted = Template\Simple::run(
             $this->formatString, $message->data
         );
-        // replace all newlines with spaces
-        $message->formatted = preg_replace('/[\n\r]+/', ' ', $formatted);
+        // replace all newlines with tab
+        $message->formatted = preg_replace('/[\n\r]+/s', "\t", $formatted);
+        $message->formatted .= PHP_EOL;
         return true;
     }
 
