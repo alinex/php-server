@@ -14,7 +14,7 @@ namespace Alinex\Dictionary\ImportExport;
 
 /**
  * Import and export hashtable values using php-style file.
- * 
+ *
  * This can be reincluded in PHP using include().
  *
  * @verbinclude Alinex/Dictionary/ImportExport/storage.php
@@ -46,11 +46,11 @@ class PhpFile extends File
     /**
      * Export hashtable entries to ini file
      *
-     * @param array $commentkeys list of keys 
+     * @param array $commentkeys list of keys
      * @return bool TRUE on success
      * @throws Exception if storage can't be used
      */
-    function export(array $commentkeys)
+    function export(array $commentkeys = null)
     {
         assert($this->check());
 
@@ -61,7 +61,10 @@ class PhpFile extends File
         // add entries
         $list = $this->getValues();
         if (isset($list)) {
-            $keys = array_merge($commentkeys, array_keys($list));
+            if (isset($commentkeys))
+                $keys = array_merge($commentkeys, array_keys($list));
+            else
+                $keys = array_keys($list);
             sort($keys);
             foreach ($keys as $key) {
                 $content .= PHP_EOL; // empty lines between entries

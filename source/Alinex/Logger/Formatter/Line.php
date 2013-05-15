@@ -15,20 +15,33 @@ namespace Alinex\Logger\Formatter;
 use Alinex\Logger\Message;
 use Alinex\Logger\Formatter;
 use Alinex\Template;
-use Alinex\Util\ArrayStructure;
+use Alinex\Util;
 
 /**
  * Formatter writing message as single line.
  *
  * This formatter holds different templates in the $formatMap. Depending on the
- * defined variables in the message it will choose the first possible format
- * like the Text formatter.
+ * defined variables in the message it will choose the first possible format.
+ * Alternatively a fixed $formatString may be set which will always be used.
  *
- * Any containing newlines within the message or values will be automatically
- * removed by spaces.
+ * The format strings is defined using Alinex\Template\Simple syntax.
+ *
+ * @note Any containing newlines within the message or values will be automatically
+ * replaced with spaces.
+ *
+ * **Mapping:**
+ * Through this the formatter will automatically add information if it is
+ * available. The formats may be changed here for an handler or a specific
+ * format class may be written.
  */
 class Line extends Formatter
 {
+    /**
+     * String to use for general format instead of map.
+     * @var string
+     */
+    public $formatString = null;
+
     /**
      * Format mapping with neccessary variables.
      * @var array
@@ -55,10 +68,14 @@ class Line extends Formatter
      */
     private function findFormat(Message $message)
     {
+        // use fixed format, if set
+        if (isset($this->formatString))
+            return $this->formatString;
+        // else use the defined mapping
         foreach ($this->formatMap as $check) {
             $valid = true;
             foreach ($check['vars'] as $varname)
-                if (!ArrayStructure::has($message->data, $varname, '.')) {
+                if (!Util\ArrayStructure::has($message->data, $varname, '.')) {
                     $valid = false;
                     break;
                 }

@@ -56,42 +56,42 @@ class Logger implements Util\EventSubject // implements \Psr\Log\LoggerInterface
     /**
      * System is unusable (will throw a LOG_Exception as well)
      */
-    const EMERGENCY = 0;
+    const EMERGENCY = 1;
 
     /**
      * Immediate action required (will throw a LOG_Exception as well)
      */
-    const ALERT = 1;
+    const ALERT = 2;
 
     /**
      * Critical conditions (will throw a LOG_Exception as well)
      */
-    const CRITICAL = 2;
+    const CRITICAL = 4;
 
     /**
      * Error conditions
      */
-    const ERROR = 3;
+    const ERROR = 8;
 
     /**
      * Warning conditions
      */
-    const WARNING = 4;
+    const WARNING = 16;
 
     /**
      * Normal but significant
      */
-    const NOTICE = 5;
+    const NOTICE = 32;
 
     /**
      * Informational
      */
-    const INFO = 6;
+    const INFO = 64;
 
     /**
      * Debug-level messages
      */
-    const DEBUG = 7;
+    const DEBUG = 128;
 
     /**
      * List of active logger instances.

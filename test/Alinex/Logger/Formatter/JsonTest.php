@@ -16,7 +16,7 @@ class JsonTest extends \PHPUnit_Framework_TestCase
         $formatter = new Json();
         $this->assertTrue($formatter->format($message));
         $this->assertEquals(
-            '{"time":{"sec":"1362084595","msec":"834"},"level":{"num":1,"name":"Alert"},"message":"This is a Test."}',
+            '{"time":{"sec":"1362084595","msec":"834"},"level":{"num":2,"name":"Alert"},"message":"This is a Test."}',
             $message->formatted
         );
     }
@@ -30,7 +30,7 @@ class JsonTest extends \PHPUnit_Framework_TestCase
         $formatter = new Json();
         $this->assertTrue($formatter->format($message));
         $this->assertEquals(
-            '{"1":"one","time":{"sec":"1362084595","msec":"834"},"level":{"num":1,"name":"Alert"},"message":"This is a Test."}',
+            '{"1":"one","time":{"sec":"1362084595","msec":"834"},"level":{"num":2,"name":"Alert"},"message":"This is a Test."}',
             $message->formatted
         );
     }
@@ -45,7 +45,7 @@ class JsonTest extends \PHPUnit_Framework_TestCase
         $formatter = new Json();
         $this->assertTrue($formatter->format($message));
         $this->assertEquals(
-            '{"1":"one","time":{"sec":"1362084595","msec":"834"},"level":{"num":1,"name":"Alert"},"message":"This is a Test.","OS":"unix"}',
+            '{"1":"one","time":{"sec":"1362084595","msec":"834"},"level":{"num":2,"name":"Alert"},"message":"This is a Test.","OS":"unix"}',
             $message->formatted
         );
     }

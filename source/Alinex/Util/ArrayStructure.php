@@ -52,7 +52,7 @@ class ArrayStructure
     )
     {
         // path has to be string or array
-        assert((is_string($path) || is_array($path)) && strlen($path));
+        assert((is_string($path) && strlen($path)) || is_array($path));
         // delimiter must be an string
         assert(!isset($delim) || is_string($delim));
         // unset have to be aboolean value

@@ -13,6 +13,7 @@ class ErrorHandlerTest extends \PHPUnit_Framework_TestCase
     public function testErrorHandlerCaptureNotice()
     {
         ini_set('xdebug.scream', TRUE); // to also test the warning
+        ErrorHandler::setLogLevel(\Alinex\Logger::EMERGENCY);
         ErrorHandler::register();
         $array = array('foo' => 'bar');
         ErrorHandler::setExceptionLevel(E_ALL);
@@ -25,10 +26,10 @@ class ErrorHandlerTest extends \PHPUnit_Framework_TestCase
      */
     public function testErrorHandlerCaptureWarning()
     {
+        ErrorHandler::setLogLevel(\Alinex\Logger::EMERGENCY);
         ErrorHandler::register();
         $this->setExpectedException('\ErrorException', 'array_merge(): Argument #2 is not an array');
         array_merge(array(), 'string'); // only notice
-
     }
 
     /**

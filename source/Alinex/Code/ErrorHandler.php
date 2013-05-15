@@ -63,7 +63,7 @@ class ErrorHandler
      * Current setting of levels to throw exceptions.
      * @var int
      */
-    private static $_exceptionLevel = 341;
+    private static $_exceptionLevel = 15;
 
     /**
      * Set the error levels on which to throw an exception.
@@ -118,13 +118,16 @@ class ErrorHandler
         // respect error_reporting being disabled
         if (!error_reporting())
             return;
-
-        if (ini_get('xdebug.scream'))
-            $message .= PHP_EOL
-                .'Warning: You have xdebug.scream enabled, the warning above may be a legitimately suppressed error that you were not supposed to see'
-                .PHP_EOL;
+#error_log('----------');
+#if (strpos($message, 'assert')!== false)
+#    error_log(print_r(debug_backtrace(), 1));
 
         if ($level & self::$_logLevel) {
+            error_log($level.' '.self::$_logLevel);
+            if (ini_get('xdebug.scream'))
+                $message .= PHP_EOL
+                    .'Warning: You have xdebug.scream enabled, the warning above may be a legitimately suppressed error that you were not supposed to see'
+                    .PHP_EOL;
             if (isset($GLOBALS['initialized']) && $GLOBALS['initialized'])
                 \Alinex\Logger::getInstance()->log(
                     self::$_logPhpMapping[$level][0],

@@ -11,9 +11,9 @@
  * @see       http://alinex.de Alinex Project
  */
 
-namespace Alinex\Proc\File;
+namespace Alinex\Process\File;
 
-use Alinex\Proc\Process;
+use Alinex\Process\Process;
 
 /**
  * Process wrapper for rm:  Remove (unlink) the FILE(s).

@@ -146,6 +146,8 @@ class IniFile extends File
         if (isset($list)) {
             if (isset($commentkeys))
                 $keys = array_merge($commentkeys, array_keys($list));
+            else
+                $keys = array_keys($list);
             sort($keys);
             if ($this->_sections) {
                 $currentSection = null;

@@ -11,7 +11,7 @@
  * @see       http://alinex.de Alinex Project
  */
 
-namespace Alinex\Proc;
+namespace Alinex\Process;
 
 /**
  * Manager to run multiple Process objects serial or parallel.
@@ -19,7 +19,7 @@ namespace Alinex\Proc;
  * The proccesses to run are collected in a mixed list of parallel and serial
  * process calls. See below the simplified structure of such an list structure:
  *
- * @dotfile Proc/Manager-list
+ * @dotfile Process/Manager-list
  *
  * This have to be added as:
  * @code
@@ -57,10 +57,10 @@ namespace Alinex\Proc;
  *
  * The following four graphs show the actual process order for different number
  * of parallel processes (if every process takes the same time):
- * @dotfile Proc/Manager-exec1
- * @dotfile Proc/Manager-exec2
- * @dotfile Proc/Manager-exec3
- * @dotfile Proc/Manager-exec4
+ * @dotfile Process/Manager-exec1
+ * @dotfile Process/Manager-exec2
+ * @dotfile Process/Manager-exec3
+ * @dotfile Process/Manager-exec4
  *
  * @pattern{Chaining} To add() multiple times.
  * @event{progress} - called after starting an process
@@ -127,7 +127,7 @@ class Manager
                                 'Code::phpClass',
                                 array(
                                     'exists' => true,
-                                    'instanceof' => 'Alinex\Proc\Process'
+                                    'instanceof' => 'Alinex\Process\Process'
                                 )
                             )
                         )

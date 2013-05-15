@@ -11,7 +11,7 @@
  * @see       http://alinex.de Alinex Project
  */
 
-namespace Alinex\Proc;
+namespace Alinex\Process;
 
 use Alinex\Util;
 

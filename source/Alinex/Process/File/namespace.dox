@@ -1,4 +1,4 @@
-/** @namespace Alinex\Proc
+/** @namespace Alinex\Process
 
 Shell wrapper for file/directory operations.
 

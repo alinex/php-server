@@ -1,9 +1,10 @@
 <?php
 
-namespace Alinex\Proc\File;
+namespace Alinex\Process\File;
 
 class LsTest extends \PHPUnit_Framework_TestCase
 {
+    const FILENUM = 5;
 
     function testInitial()
     {
@@ -11,49 +12,53 @@ class LsTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue((bool)$pr->getOutput());
     }
 
+    /**
+     * @depends testInitial
+     */
     function testSimple()
     {
         $pr = new Ls(__DIR__);
-        $this->assertEquals(1, count($pr->getFiles()));
+        $this->assertEquals(self::FILENUM, count($pr->getFiles()));
         $pr = new Ls(__DIR__);
         $pr->showAll();
-        $this->assertEquals(3, count($pr->getFiles()));
+        $this->assertEquals(self::FILENUM+2, count($pr->getFiles()));
         $pr = new Ls(__DIR__);
         $pr->showAlmostAll();
-        $this->assertEquals(1, count($pr->getFiles()));
+        $this->assertEquals(self::FILENUM, count($pr->getFiles()));
         $pr = new Ls(__DIR__);
         $pr->addTrailingSlash();
-        $this->assertEquals(1, count($pr->getFiles()));
+        $this->assertEquals(self::FILENUM, count($pr->getFiles()));
         $pr = new Ls(__DIR__);
         $pr->setSort('time');
         $pr->setTime('atime');
         $pr->sortReverse();
-        $this->assertEquals(1, count($pr->getFiles()));
+        $this->assertEquals(self::FILENUM, count($pr->getFiles()));
 #        error_log(print_r($pr->getFiles(), 1));
 #        error_log(print_r($pr->getMeta(), 1));
     }
 
+    /**
+     * @depends testSimple
+     */
     function testList()
     {
         $pr = new Ls(__DIR__);
         $pr->useLongFormat();
-        error_log(print_r($pr->getFiles(), 1));
-        error_log(print_r($pr->getMeta(), 1));
-        $this->assertEquals(1, count($pr->getFiles()));
+        $this->assertEquals(self::FILENUM, count($pr->getFiles()));
         $pr = new Ls(__DIR__);
         $pr->showAll();
-        $this->assertEquals(3, count($pr->getFiles()));
+        $this->assertEquals(self::FILENUM+2, count($pr->getFiles()));
         $pr = new Ls(__DIR__);
         $pr->showAlmostAll();
-        $this->assertEquals(1, count($pr->getFiles()));
+        $this->assertEquals(self::FILENUM, count($pr->getFiles()));
         $pr = new Ls(__DIR__);
         $pr->addTrailingSlash();
-        $this->assertEquals(1, count($pr->getFiles()));
+        $this->assertEquals(self::FILENUM, count($pr->getFiles()));
         $pr = new Ls(__DIR__);
         $pr->setSort('time');
         $pr->setTime('atime');
         $pr->sortReverse();
-        $this->assertEquals(1, count($pr->getFiles()));
+        $this->assertEquals(self::FILENUM, count($pr->getFiles()));
     }
 
 }

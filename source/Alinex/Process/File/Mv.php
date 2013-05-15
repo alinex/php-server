@@ -11,9 +11,9 @@
  * @see       http://alinex.de Alinex Project
  */
 
-namespace Alinex\Proc\File;
+namespace Alinex\Process\File;
 
-use Alinex\Proc\Process;
+use Alinex\Process\Process;
 
 /**
  * Process wrapper for mv: move (rename) files
@@ -34,7 +34,7 @@ class Mv extends Process
     {
         assert(is_string($files) || is_array($files) || !isset($files));
         assert(is_string($dest));
-        
+
         parent::__construct('mv');
         // set default options
         $this->_params['-v'] = '-v';

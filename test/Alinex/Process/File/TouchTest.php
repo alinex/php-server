@@ -1,42 +1,43 @@
 <?php
 
-namespace Alinex\Proc\File;
+namespace Alinex\Process\File;
 
 class TouchTest extends \PHPUnit_Framework_TestCase
 {
-    const TESTDIR = '../../../data/proc/';
-    
+    const TESTDIR = '/../../../data/proc/';
+
     function testInitial()
     {
+        $testdir = __DIR__.self::TESTDIR;
         // cleanup
         $pr = new Rm(
             array(
-                self::TESTDIR.'touch1',
-                self::TESTDIR.'touch2',
-                self::TESTDIR.'touch3'
+                $testdir.'touch1',
+                $testdir.'touch2',
+                $testdir.'touch3'
             )
         );
         $pr->exec();
         // run test
-        $pr = new Touch(self::TESTDIR.'touch1');
-        $this->assertTrue($pr->isSuccess());        
-        $this->assertFileExists(self::TESTDIR.'touch1');        
+        $pr = new Touch($testdir.'touch1');
+        $this->assertTrue($pr->isSuccess());
+        $this->assertFileExists($testdir.'touch1');
         // time
-        $pr = new Touch(self::TESTDIR.'touch2');
+        $pr = new Touch($testdir.'touch2');
         $pr->setTime(time()-6000);
-        $this->assertTrue($pr->isSuccess());        
-        $this->assertFileExists(self::TESTDIR.'touch2');        
+        $this->assertTrue($pr->isSuccess());
+        $this->assertFileExists($testdir.'touch2');
         // copy time
-        $pr = new Touch(self::TESTDIR.'touch3');
-        $pr->copyTimeFrom(self::TESTDIR.'touch2');
-        $this->assertTrue($pr->isSuccess());        
-        $this->assertFileExists(self::TESTDIR.'touch3');        
+        $pr = new Touch($testdir.'touch3');
+        $pr->copyTimeFrom($testdir.'touch2');
+        $this->assertTrue($pr->isSuccess());
+        $this->assertFileExists($testdir.'touch3');
         // cleanup
         $pr = new Rm(
             array(
-                self::TESTDIR.'touch1',
-                self::TESTDIR.'touch2',
-                self::TESTDIR.'touch3'
+                $testdir.'touch1',
+                $testdir.'touch2',
+                $testdir.'touch3'
             )
         );
         $pr->exec();
@@ -47,15 +48,16 @@ class TouchTest extends \PHPUnit_Framework_TestCase
      */
     function testMultiple()
     {
+        $testdir = __DIR__.self::TESTDIR;
         $pr = new Touch(
-            array(self::TESTDIR.'touch4', self::TESTDIR.'touch5')
+            array($testdir.'touch4', $testdir.'touch5')
         );
-        $this->assertTrue($pr->isSuccess());        
-        $this->assertFileExists(self::TESTDIR.'touch4');        
-        $this->assertFileExists(self::TESTDIR.'touch5');        
+        $this->assertTrue($pr->isSuccess());
+        $this->assertFileExists($testdir.'touch4');
+        $this->assertFileExists($testdir.'touch5');
         // cleanup
         $pr = new Rm(
-            array(self::TESTDIR.'touch4', self::TESTDIR.'touch5')
+            array($testdir.'touch4', $testdir.'touch5')
         );
         $pr->exec();
     }

@@ -16,7 +16,7 @@ class TextTest extends \PHPUnit_Framework_TestCase
         $formatter = new Text();
         $this->assertTrue($formatter->format($message));
         $this->assertEquals(
-            "2013-02-28T21:49:55+0100 ALERT: This is a Test.\nAt {code.file} at line {code.line}",
+            "2013-02-28T21:49:55+0100 ALERT: This is a Test.",
             $message->formatted
         );
     }

@@ -13,12 +13,38 @@
 namespace Alinex\DB;
 
 use Doctrine\DBAL\DriverManager;
+use Alinex\Dictionary\Engine;
 
 /**
  * Get a doctrine database connection.
  */
 class Connection
 {
+    /**
+     * Cache group to store SQL results.
+     * This will hold the SQL codes which are generated out of DQL syntax.
+     */
+    const CACHE_GROUP = 'dbsql.';
+
+    /**
+     * Specific result cache to use.
+     * @var \Doctrine\Common\Cache\Cache
+     */
+    private static $_resultCache = null;
+
+    /**
+     * Set specific result cache to use.
+     *
+     * If not set the \Alinex\DB\Cache will be used which is a wrapper for the
+     * \Alinex\Dictionary\Cache. This is done with
+     *
+     * @param \Doctrine\Common\Cache\Cache $cache doctrine cache implementation
+     * to use.
+     */
+    public static function setResultCacheImpl(\Doctrine\Common\Cache\Cache $cache)
+    {
+        self::$_resultCache = $cache;
+    }
 
     /**
      * Creates a doctrine connection object.
@@ -28,23 +54,20 @@ class Connection
      * This method returns a Doctrine\DBAL\Connection which wraps the underlying
      * driver connection.
      *
-     * $params must contain at least one of the following.
-     * Either 'driver' with one of the following values:  pdo_mysql pdo_sqlite pdo_pgsql pdo_oci (unstable) pdo_sqlsrv pdo_ibm (unstable) pdo_sqlsrv mysqli sqlsrv ibm_db2 (unstable) drizzle_pdo_mysql
-     * OR 'driverClass' that contains the full class name (with namespace) of the driver class to instantiate.
-     *
-     * Other (optional) parameters:
-     * user (string): The username to use when connecting.
-     * password (string): The password to use when connecting.
-     * driverOptions (array): Any additional driver-specific options for the driver. These are just passed through to the driver.
-     * pdo: You can pass an existing PDO instance through this parameter. The PDO instance will be wrapped in a Doctrine\DBAL\Connection.
-     * wrapperClass: You may specify a custom wrapper class through the 'wrapperClass' parameter but this class MUST inherit from Doctrine\DBAL\Connection.
-     * driverClass: The driver class to use.
-     *
      * @return \Doctrine\DBAL\Connection
      */
     public static function get()
     {
+        // check for cache
+        $cache = self::$_resultCache;
+        if (!isset($cache)) {
+            $cache = new Cache();
+            $cache->setFlags(Engine::PERFORMANCE_HIGH & Engine::SCOPE_GLOBAL);
+            $cache->setNamespace(self::CACHE_GROUP);
+        }
+        // setup config
         $config = new \Doctrine\DBAL\Configuration();
+        $config->setResultCacheImpl($cache);
         if (!PRODUCTIVE)
             $config->setSQLLogger(new SQLLogger());
         //..

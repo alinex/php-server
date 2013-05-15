@@ -14,8 +14,9 @@ class RedisTest extends \PHPUnit_Framework_TestCase
 
     function setUp()
     {
-        if (!Redis::isAvailable())
+        if (!Redis::isAvailable() || !@fsockopen("localhost",3680))
             $this->markTestSkipped('The redis library have to be included.');
+
     }
 
     function testInitial()

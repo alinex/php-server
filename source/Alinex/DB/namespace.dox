@@ -1,0 +1,11 @@
+/** @namespace Alinex\DB Database access routines.
+
+This package contains helper classes for the database access realized through
+doctrine http://www.doctrine-project.org.
+
+The database settings can be set in the \ref configuration. All access will be throught the
+doctrine abstraction layer to be database independent. Mostly the ORM Mapping through the
+EntityManager will be used for access. This makes the code more readable and manageable.
+
+A list of all accessible objects can be fount under \ref entity.
+*/

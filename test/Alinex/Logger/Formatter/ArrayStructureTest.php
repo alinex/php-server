@@ -19,7 +19,7 @@ class ArrayStructureTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
             array(
                 'time' => $message->data['time'],
-                'level' => array('num' => 1, 'name' => 'Alert'),
+                'level' => array('num' => 2, 'name' => 'Alert'),
                 'message' => 'This is a Test.',
             ),
             $message->formatted
@@ -38,7 +38,7 @@ class ArrayStructureTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
             array(
                 'time' => $message->data['time'],
-                'level' => array('num' => 1, 'name' => 'Alert'),
+                'level' => array('num' => 2, 'name' => 'Alert'),
                 'message' => 'This is a Test.',
                 1 => 'one'
             ),
@@ -59,7 +59,7 @@ class ArrayStructureTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
             array(
                 'time' => $message->data['time'],
-                'level' => array('num' => 1, 'name' => 'Alert'),
+                'level' => array('num' => 2, 'name' => 'Alert'),
                 'message' => 'This is a Test.',
                 'os' => 'unix',
                 1 => 'one'

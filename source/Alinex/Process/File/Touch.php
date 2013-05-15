@@ -11,9 +11,9 @@
  * @see       http://alinex.de Alinex Project
  */
 
-namespace Alinex\Proc\File;
+namespace Alinex\Process\File;
 
-use Alinex\Proc\Process;
+use Alinex\Process\Process;
 
 /**
  * Process wrapper for touch: change file access and modification time.
@@ -92,7 +92,7 @@ class Touch extends Process
     }
 
     /**
-     * Set the date to a specific value. 
+     * Set the date to a specific value.
      * @param int $time unix time value to set for file
      * @return Touch
      */
