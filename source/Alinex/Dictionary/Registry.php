@@ -184,7 +184,7 @@ class Registry implements \Countable, \ArrayAccess
                     Validator::check(
                         $temp->get(self::REGISTRY_DATA_ENGINE),
                         'registry-data',
-                        'Dictionary::engine'
+                        __NAMESPACE__.'\Validator::engine'
                     )
                 );
                 // analyze validator
@@ -200,7 +200,7 @@ class Registry implements \Countable, \ArrayAccess
                             Validator::check(
                                 $temp->get(self::REGISTRY_VALIDATOR_ENGINE),
                                 'registry-validator',
-                                'Dictionary::engine'
+                                __NAMESPACE__.'\Validator::engine'
                             )
                         );
                     }
@@ -313,11 +313,13 @@ class Registry implements \Countable, \ArrayAccess
         if (isset($this->_validator)) {
             if (!$this->validatorHas(self::REGISTRY_DATA_ENGINE))
                 $this->validatorSet(
-                    self::REGISTRY_DATA_ENGINE, 'Dictionary::engine'
+                    self::REGISTRY_DATA_ENGINE, 
+                    __NAMESPACE__.'\Validator::engine'
                 );
             if (!$this->validatorHas(self::REGISTRY_VALIDATOR_ENGINE))
                 $this->validatorSet(
-                    self::REGISTRY_VALIDATOR_ENGINE, 'Dictionary::engine'
+                    self::REGISTRY_VALIDATOR_ENGINE,
+                    __NAMESPACE__.'\Validator::engine'
                 );
             // validators of general static classes
             \Alinex\Util\Http::addRegistryValidators($this);

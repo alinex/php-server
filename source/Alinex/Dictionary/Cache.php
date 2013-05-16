@@ -122,7 +122,7 @@ class Cache implements \Countable, \ArrayAccess
                         self::REGISTRY_ENGINE, 'Type::arraylist',
                         array(
                             'keySpec' => array(
-                                '' => array('Dictionary::engine')
+                                '' => array(__NAMESPACE__.'\Validator::engine')
                             ),
                             'description' => tr(
                                 __NAMESPACE__,

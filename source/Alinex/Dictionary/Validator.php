@@ -10,9 +10,7 @@
  * @see       http://alinex.de
  */
 
-namespace Alinex\Validator;
-
-use Alinex\Dictionary\Engine;
+namespace Alinex\Dictionary;
 
 /**
  * Validator for dictionary package.
@@ -20,7 +18,7 @@ use Alinex\Dictionary\Engine;
  * This validator is specific for the dictionary package. It provides enhanced
  * checks over the cory types.
  */
-class Dictionary
+class Validator
 {
     /**
      * Names for the scope settings
@@ -39,6 +37,55 @@ class Dictionary
      * @var array
      */
     private static $_enginePerformance = null;
+
+    /**
+     * Structure definition for the engine entry.
+     * @var array
+     */
+    private static $_engineDefList = array(
+        'notEmpty' => true,
+        'mandatoryKeys' => array('type', 'prefix'),
+        'allowedKeys' => array('server', 'ttl', 'name', 'directory'),
+        'keySpec' => array(
+            'type' => array(
+                'Code::phpClass',
+                array(
+                    'exists' => true,
+                    'relative' => 'Alinex\Dictionary\Engine'
+                )
+            ),
+            'prefix' => array(
+                'Type::string',
+                array(
+                    'maxLength' => 10, // maximal 10 char. prefix is used
+                    'match' => '/[A-Za-z_.:]*/'
+                    // pipe makes problems in session keys
+                    // - used as separator for array contents
+                )
+            ),
+            'ttl' => array(
+                'Type::integer',
+                array(
+                    'unsigned' => true
+                )
+            )
+        )
+    );
+    
+    /**
+     * Add description Text to the structure information.
+     */
+    private static function engineTextInit()
+    {
+        if (isset(self::$_engineDefList['keySpec']['type'][1]['description']))
+            return;
+        self::$_engineDefList['keySpec']['type'][1]['description'] = 
+            tr(__NAMESPACE__, 'Type of storage engine to use.');
+        self::$_engineDefList['keySpec']['prefix'][1]['description'] = 
+            tr(__NAMESPACE__, 'Prefix or context name to use.');
+        self::$_engineDefList['keySpec']['ttl'][1]['description'] = 
+            tr(__NAMESPACE__, 'Default time to live for the entries.');
+    }
 
     /**
      * Optimize the options.
@@ -112,41 +159,7 @@ class Dictionary
         $options = $this->engineOptions($options);
         // check the base configuration
         try {
-            $value = Type::arraylist(
-                $value, $name,
-                array(
-                    'notEmpty' => true,
-                    'mandatoryKeys' => array('type', 'prefix'),
-                    'allowedKeys' => array(
-                        'server', 'ttl', 'name', 'directory'
-                    ),
-                    'keySpec' => array(
-                        'type' => array(
-                            'Code::phpClass',
-                            array(
-                                'exists' => true,
-                                'relative' => 'Alinex\Dictionary\Engine'
-                            )
-                        ),
-                        'prefix' => array(
-                            'Type::string',
-                            array(
-                                // maximal 10 char. prefix is used
-                                'maxLength' => 10,
-                                'match' => '/[A-Za-z_.:]*/'
-                                // pipe makes problems in session keys
-                                // - used as separator for array contents
-                            )
-                        ),
-                        'ttl' => array(
-                            'Type::integer',
-                            array(
-                                'unsigned' => true
-                            )
-                        )
-                    )
-                )
-            );
+            $value = Type::arraylist($value, $name, self::$_engineDefList);
         } catch (Exception $ex) {
             throw $ex->createOuter(__METHOD__, $options);
         }
@@ -256,6 +269,7 @@ class Dictionary
      */
     static function engineDescription()
     {
+        self::engineTextInit();
         // fill description
         if (!isset(self::$_engineScopes))
             self::$_engineScopes = array(
@@ -284,45 +298,12 @@ class Dictionary
                 // TRANS: title for high performance
                 Engine::PERFORMANCE_HIGH => tr(__NAMESPACE__, 'high')
             );
-
+        
         $desc = tr(
             __NAMESPACE__,
             'The value has to be a dictionary engine specification structure.'
         );
-        $desc .= ' '.Type::arraylistDescription(
-            array(
-                'notEmpty' => true,
-                'mandatoryKeys' => array('type', 'prefix'),
-                'allowedKeys' => array('server', 'ttl', 'name', 'directory'),
-                'keySpec' => array(
-                    'type' => array(
-                        'Code::phpClass',
-                        array(
-                            'exists' => true,
-                            'relative' => 'Alinex\Dictionary\Engine',
-                            'description' => tr(__NAMESPACE__, 'Type of storage engine to use.')
-                        )
-                    ),
-                    'prefix' => array(
-                        'Type::string',
-                        array(
-                            'maxLength' => 10, // maximal 10 char. prefix is used
-                            'match' => '/[A-Za-z_.:]*/',
-                            // pipe makes problems in session keys
-                            // - used as separator for array contents
-                            'description' => tr(__NAMESPACE__, 'Prefix or context name to use.')
-                        )
-                    ),
-                    'ttl' => array(
-                        'Type::integer',
-                        array(
-                            'unsigned' => true,
-                            'description' => tr(__NAMESPACE__, 'Default time to live for the entries.')
-                        )
-                    )
-                )
-            )
-        );
+        $desc .= ' '.Type::arraylistDescription(self::$_engineDefList);
         // check for engine specific options
         $desc .= ' '.tr(__NAMESPACE__, 'For type \'redis\' and \'memcache\' servers are specified as:')
             .Type::arraylistDescription(

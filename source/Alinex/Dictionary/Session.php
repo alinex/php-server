@@ -264,100 +264,102 @@ class Session implements \SessionHandlerInterface
     {
         // check for registry settings
         $registry = Registry::getInstance();
-        if ($registry) {
-            // add validators
-            if ($registry->validatorCheck()) {
-                if (!$registry->validatorHas(self::REGISTRY_ENGINE))
-                    $registry->validatorSet(
-                        self::REGISTRY_ENGINE, 'Dictionary::engine',
-                        array(
-                            'exclude' => 'Session',
-                            'description' => tr(
-                                __NAMESPACE__,
-                                'Storage engine used for session data.'
-                            )
-                        )
-                    );
-                if (!$registry->validatorHas(self::REGISTRY_INACTIVETIME))
-                    $registry->validatorSet(
-                        self::REGISTRY_INACTIVETIME, 'Type::integer',
-                        array(
-                            'unsigned' => true,
-                            'description' => tr(
-                                __NAMESPACE__,
-                                'Time of no access till an session will be declared as inactive.'
-                            )
-                        )
-                    );
-                if (!$registry->validatorHas(self::REGISTRY_LOGINTIME))
-                    $registry->validatorSet(
-                        self::REGISTRY_LOGINTIME, 'Type::integer',
-                        array(
-                            'unsigned' => true,
-                            'description' => tr(
-                                __NAMESPACE__,
-                                'Maximum time to keep an user logged in.'
-                            )
-                        )
-                    );
-                if (!$registry->validatorHas(self::REGISTRY_LIFETIME))
-                    $registry->validatorSet(
-                        self::REGISTRY_LIFETIME, 'Type::integer',
-                        array(
-                            'unsigned' => true,
-                            'description' => tr(
-                                __NAMESPACE__,
-                                'Maximum time to keep an session active.'
-                            )
-                        )
-                    );
-                if (!$registry->validatorHas(self::REGISTRY_IPLOCK_TIME))
-                    $registry->validatorSet(
-                        self::REGISTRY_IPLOCK_TIME, 'Type::integer',
-                        array(
-                            'unsigned' => true,
-                            'description' => tr(
-                                __NAMESPACE__,
-                                'Timerange for calculating iplock accesses.'
-                            )
-                        )
-                    );
-                if (!$registry->validatorHas(self::REGISTRY_IPLOCK_NUM))
-                    $registry->validatorSet(
-                        self::REGISTRY_IPLOCK_NUM, 'Type::integer',
-                        array(
-                            'unsigned' => true,
-                            'description' => tr(
-                                __NAMESPACE__,
-                                'Maximum number of session creation per ip in time range.'
-                            )
-                        )
-                    );
-            }
-            // set engine
-            $this->setEngine(
-                $registry->has(self::REGISTRY_ENGINE)
-                ? Engine::getInstance($registry->get(self::REGISTRY_ENGINE))
-                : Engine::getInstance(self::DEFAULT_PREFIX)
-            );
-            // config times
-            if ($registry->has(self::REGISTRY_INACTIVETIME))
-                $this->_inactivetime = $registry->get(
-                    self::REGISTRY_INACTIVETIME
-                );
-            if ($registry->has(self::REGISTRY_LOGINTIME))
-                $this->_logintime = $registry->get(self::REGISTRY_LOGINTIME);
-            if ($registry->has(self::REGISTRY_LIFETIME))
-                $this->_lifetime = $registry->get(self::REGISTRY_LIFETIME);
-            if ($registry->has(self::REGISTRY_IPLOCK_TIME))
-                $this->_iplocktime = $registry->get(self::REGISTRY_IPLOCK_TIME);
-            if ($registry->has(self::REGISTRY_IPLOCK_NUM))
-                $this->_iplocknum = $registry->get(self::REGISTRY_IPLOCK_NUM);
-        } else {
+        if (!isset($registry)) {
+            // registry not set get a new one
             $this->setEngine(
                 Engine::getInstance(self::DEFAULT_PREFIX)
             );
+            return;
         }
+        // add validators
+        if ($registry->validatorCheck()) {
+            if (!$registry->validatorHas(self::REGISTRY_ENGINE))
+                $registry->validatorSet(
+                    self::REGISTRY_ENGINE, 
+                    __NAMESPACE__.'\Validator::engine',
+                    array(
+                        'exclude' => 'Session',
+                        'description' => tr(
+                            __NAMESPACE__,
+                            'Storage engine used for session data.'
+                        )
+                    )
+                );
+            if (!$registry->validatorHas(self::REGISTRY_INACTIVETIME))
+                $registry->validatorSet(
+                    self::REGISTRY_INACTIVETIME, 'Type::integer',
+                    array(
+                        'unsigned' => true,
+                        'description' => tr(
+                            __NAMESPACE__,
+                            'Time of no access till an session will be declared as inactive.'
+                        )
+                    )
+                );
+            if (!$registry->validatorHas(self::REGISTRY_LOGINTIME))
+                $registry->validatorSet(
+                    self::REGISTRY_LOGINTIME, 'Type::integer',
+                    array(
+                        'unsigned' => true,
+                        'description' => tr(
+                            __NAMESPACE__,
+                            'Maximum time to keep an user logged in.'
+                        )
+                    )
+                );
+            if (!$registry->validatorHas(self::REGISTRY_LIFETIME))
+                $registry->validatorSet(
+                    self::REGISTRY_LIFETIME, 'Type::integer',
+                    array(
+                        'unsigned' => true,
+                        'description' => tr(
+                            __NAMESPACE__,
+                            'Maximum time to keep an session active.'
+                        )
+                    )
+                );
+            if (!$registry->validatorHas(self::REGISTRY_IPLOCK_TIME))
+                $registry->validatorSet(
+                    self::REGISTRY_IPLOCK_TIME, 'Type::integer',
+                    array(
+                        'unsigned' => true,
+                        'description' => tr(
+                            __NAMESPACE__,
+                            'Timerange for calculating iplock accesses.'
+                        )
+                    )
+                );
+            if (!$registry->validatorHas(self::REGISTRY_IPLOCK_NUM))
+                $registry->validatorSet(
+                    self::REGISTRY_IPLOCK_NUM, 'Type::integer',
+                    array(
+                        'unsigned' => true,
+                        'description' => tr(
+                            __NAMESPACE__,
+                            'Maximum number of session creation per ip in time range.'
+                        )
+                    )
+                );
+        }
+        // set engine
+        $this->setEngine(
+            $registry->has(self::REGISTRY_ENGINE)
+            ? Engine::getInstance($registry->get(self::REGISTRY_ENGINE))
+            : Engine::getInstance(self::DEFAULT_PREFIX)
+        );
+        // config times
+        if ($registry->has(self::REGISTRY_INACTIVETIME))
+            $this->_inactivetime = $registry->get(
+                self::REGISTRY_INACTIVETIME
+            );
+        if ($registry->has(self::REGISTRY_LOGINTIME))
+            $this->_logintime = $registry->get(self::REGISTRY_LOGINTIME);
+        if ($registry->has(self::REGISTRY_LIFETIME))
+            $this->_lifetime = $registry->get(self::REGISTRY_LIFETIME);
+        if ($registry->has(self::REGISTRY_IPLOCK_TIME))
+            $this->_iplocktime = $registry->get(self::REGISTRY_IPLOCK_TIME);
+        if ($registry->has(self::REGISTRY_IPLOCK_NUM))
+            $this->_iplocknum = $registry->get(self::REGISTRY_IPLOCK_NUM);
     }
 
     /**

@@ -12,7 +12,6 @@
 
 namespace Alinex\Dictionary;
 
-use Alinex\Validator;
 use Alinex\Util\String;
 
 /**
@@ -155,7 +154,7 @@ abstract class ImportExport
      */
     function setCommentCallback($callback)
     {
-        $callback = Validator\Code::callable(
+        $callback = \Alinex\Validator\Code::callable(
             $callback, 'callback', array('relative' => __CLASS__)
         );
         $this->_commentCallback = $callback;

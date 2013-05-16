@@ -64,7 +64,7 @@ use Alinex\Validator;
  * - by specification using Engine::getInstance($spec)
  *
  * The engine specification may also be checked using the
- * Alinex\Validator\Dictionary::engine Validator.
+ * Alinex\Dictionary\Validator::engine Validator.
  *
  * For this to work some engine specifica are set by each engine like $_scope,
  * $_performance, $_persistence and the $_limitSize. This may be requested
