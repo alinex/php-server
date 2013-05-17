@@ -22,23 +22,101 @@ class Net
     /**
      * Check for port number.
      *
+     * - \c disallowSystem - disallow the system ports 0-1023
+     * - \c disallowUser - disallow the user ports 1024-49151
+     * - \c disallowDynamic - disallow the dynamic ports 49152-65535
+     * 
      * @param int $value    value to be checked
      * @param string  $name     readable variable identification
-     * @param array   $options  for conformance only (not used)
+     * @param array   $options  options for allowed numbers
      * 
      * @return integer port number
      * @throws Exception if not valid
      */
     public static function port($value, $name, array $options = null)
     {
+        // name of origin have to be a string
+        assert(is_string($name));
+        
+        $options = self::pathOptions($options);
         try {
+            // set the port ranges
+            $intopt = array('type' => 16, 'unsigned' => true);
+            if (isset($options['disallowSystem']) 
+                && $options['disallowSystem'])
+                $intopt['minRange'] = 1024;
+            if (isset($options['disallowDynamic']) 
+                && $options['disallowDynamic'])
+                $intopt['maxRange'] = 49151;
+            if (isset($options['disallowUser']) 
+                && $options['disallowUser']) {
+                if (isset($intopt['minRange']))
+                    $intopt['minRange'] = 49152;
+                else if (isset($intopt['maxRange']))
+                    $intopt['maxRange'] = 1023;
+            }
             return Type::integer(
-                $value, $name,
-                array('type' => 16, 'unsigned' => true)
+                $value, $name, $intopt
             );
         } catch (Exception $ex) {
             throw $ex->createOuter(__METHOD__);
         }
+    }
+
+    /**
+     * Optimize the options.
+     *
+     * @param array $options specific settings
+     * @return array optimized options
+     */
+    private static function portOptions(array $options = null)
+    {
+        if (!isset($options))
+            $options = array();
+        
+        // options have to be an array
+        assert(is_array($options));
+        // check for invalid options
+        assert(
+            count(
+                array_diff(
+                    array_keys($options),
+                    array(
+                        'disallowSystem',
+                        'disallowUser',
+                        'disallowDynamic'
+                    )
+                )
+            ) == 0
+        );
+        // check options format
+        assert(
+            !isset($options['disallowSystem'])
+            || is_bool($options['disallowSystem'])
+        );
+        assert(
+            !isset($options['disallowUser'])
+            || is_bool($options['disallowUser'])
+        );
+        assert(
+            !isset($options['disallowDynamic'])
+            || is_bool($options['disallowDynamic'])
+        );
+        // it's not possible to enable system and dynamic ports but disable user
+        assert(
+            (isset($options['disallowDynamic']) && $options['disallowDynamic'])
+            || (!isset($options['disallowUser']) || !$options['disallowUser'])
+            || (isset($options['disallowSystem']) && $options['disallowSystem'])
+        );
+        // it's not possible to disable all
+        assert(
+            isset($options['disallowDynamic']) && $options['disallowDynamic']
+            && isset($options['disallowUser']) && $options['disallowUser']
+            && isset($options['disallowSystem']) && $options['disallowSystem']
+        );
+            
+        // return optimized array
+        return $options;
     }
 
     /**
@@ -49,10 +127,23 @@ class Net
      */
     public static function portDescription(array $options = null)
     {
+        // set the port ranges
+        $intopt = array('type' => 16, 'unsigned' => true);
+        if (isset($options['disallowSystem']) 
+            && $options['disallowSystem'])
+            $intopt['minRange'] = 1024;
+        if (isset($options['disallowDynamic']) 
+            && $options['disallowDynamic'])
+            $intopt['maxRange'] = 49151;
+        if (isset($options['disallowUser']) 
+            && $options['disallowUser']) {
+            if (isset($intopt['minRange']))
+                $intopt['minRange'] = 49152;
+            else if (isset($intopt['maxRange']))
+                $intopt['maxRange'] = 1023;
+        }
         $desc = tr(__NAMESPACE__, 'The value has to be a port number.')
-            .' '.Type::integerDescription(
-                array('type' => 16, 'unsigned' => true)
-            );
+            .' '.Type::integerDescription($intopt);
         return $desc;
     }
 
