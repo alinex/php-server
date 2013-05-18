@@ -24,8 +24,8 @@ class IO
      * Check for path
      *
      * <b>Stringcheck Options:</b>
-     * - \c disallowRelative - disallow relative paths
-     * - \c disallowAbsolute - disallow absolute paths
+     * - \c denyRelative - deny relative paths
+     * - \c denyAbsolute - deny absolute paths
      * - \c allowBackreferences - allow backreferences in relative file names
      *
      * <b>Resolve Options:</b>
@@ -74,8 +74,8 @@ class IO
 
         // check for relative paths
         if ($value[0] != '/'
-            && isset($options['disallowRelative'])
-            && $options['disallowRelative'] === true)
+            && isset($options['denyRelative'])
+            && $options['denyRelative'] === true)
             throw new Exception(
                 tr(
                     __NAMESPACE__,
@@ -85,8 +85,8 @@ class IO
             );
         // check for absolute paths
         if ($value[0] == '/'
-            && isset($options['disallowAbsolute'])
-            && $options['disallowAbsolute'] === true)
+            && isset($options['denyAbsolute'])
+            && $options['denyAbsolute'] === true)
             throw new Exception(
                 tr(
                     __NAMESPACE__,
@@ -111,8 +111,8 @@ class IO
         else
             $realpath = $value;
         // calculate realfile
-        if ((!isset($options['disallowRelative'])
-                || $options['disallowRelative'] === false)
+        if ((!isset($options['denyRelative'])
+                || $options['denyRelative'] === false)
             && ((isset($options['makeAbsolute'])
                     && $options['makeAbsolute'] === true)
                 || (isset($options['exists'])
@@ -241,8 +241,8 @@ class IO
                     array_keys($options),
                     array(
                         'description',
-                        'disallowRelative',
-                        'disallowAbsolute',
+                        'denyRelative',
+                        'denyAbsolute',
                         'allowBackreferences',
                         'base',
                         'makeAbsolute',
@@ -259,12 +259,12 @@ class IO
         );
         // check options format
         assert(
-            !isset($options['disallowRelative'])
-            || is_bool($options['disallowRelative'])
+            !isset($options['denyRelative'])
+            || is_bool($options['denyRelative'])
         );
         assert(
-            !isset($options['disallowAbsolute'])
-            || is_bool($options['disallowAbsolute'])
+            !isset($options['denyAbsolute'])
+            || is_bool($options['denyAbsolute'])
         );
         assert(
             !isset($options['allowBackreferences'])
@@ -297,8 +297,8 @@ class IO
         // at least one path alternative should be allowed
         assert(
             !(
-                isset($options['disallowAbsolute'])
-                && isset($options['disallowRelative'])
+                isset($options['denyAbsolute'])
+                && isset($options['denyRelative'])
             )
         );
         assert(
@@ -370,14 +370,14 @@ class IO
                 'The file have to be one of the following mimetypes: {list}',
                 array('list' => String::dump($options['mimetype']))
             );
-        if (!isset($options['disallowAbsolute'])
-            || $options['disallowAbsolute'] === true)
+        if (!isset($options['denyAbsolute'])
+            || $options['denyAbsolute'] === true)
             $desc .= ' '.tr(
                 __NAMESPACE__,
                 'An absolute path starting with \'/\' is not allowed.'
             );
-        if (!isset($options['disallowRelative'])
-            || $options['disallowRelative'] === true)
+        if (!isset($options['denyRelative'])
+            || $options['denyRelative'] === true)
             $desc .= ' '.tr(
                 __NAMESPACE__,
                 'Only an absolute path starting with \'/\' is allowed.'

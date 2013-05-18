@@ -89,7 +89,7 @@ class Category extends Filter
             if (String::startsWith($message->data['code']['class'], $allow)) {
                 $ok = true;
                 foreach (array_keys($this->_deny) as $deny) {
-                    // disallow if in forbidden namespace, too
+                    // deny if in forbidden namespace, too
                     if (strlen($deny) >= strlen($allow)
                         && String::startsWith(
                             $message->data['code']['class'], $deny
@@ -100,7 +100,7 @@ class Category extends Filter
                     return true;
             }
         }
-        // not defined -> disallow
+        // not defined -> deny
         return false;
     }
 }

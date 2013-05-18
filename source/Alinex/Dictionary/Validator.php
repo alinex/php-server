@@ -12,6 +12,8 @@
 
 namespace Alinex\Dictionary;
 
+use Alinex\Validator\Exception;
+
 /**
  * Validator for dictionary package.
  *

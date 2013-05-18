@@ -40,80 +40,25 @@ Platform Features
 All of the following basic features will cooperate strong together to get the
 optimal base for the application. The main concept is on easy but powerful use.
 
-- **Autoloader**
+- Universal Autoloader
+- Strict Validation
+- Complete Multilingual Support
+- Event Based Handling
+- Dictionary Services
+- Individual Logging
+- Simple Templates
+- Automatic Configuration
+- System Command Execution
 
-  Universal and standard conform autoloader for platform, vendor and system
-  files. Using lazy loading.
-
-- **Validation**
-
-  This is a central point for stability, maintenance and security. Each and any
-  value may be validated before use by a a deep analyzation based on different
-  extensible validators. Problems will be reported in human understandable
-  detailed description.
-
-- **I18n support**
-
-  Complete translation support over any and all base classes. The translator
-  supports the use of the simple templates (described below) to easy include
-  formatted values.
-
-- **Multilingual Support**
-
-  Using an gettext approach for easy use and translation with thread safe
-  alternative and included template language use (see below). The complete
-  base is setup multilingual.
-
-- **Event Management**
-
-  A general event management allows to listen and react to specific events
-  on time. Any class can work as consumer or sender of events which may be send
-  directly or through the event manager to all currently registered classes.
-
-- **Dictionary**
-
-  An abstract layer for different key-value stores with different supported
-  storage engines like Redis, Memcache, APC, Xcache, Directory, ...\n
-  Each engine can import/export in many formats supports value  manipulation
-  methods and time limits through garbage collection.
-
-  The easy use for different scenarios are provided through the accessors like
-  Registry, Cache, Session and Queue... classes.
-
-- **Logging**
-
-  A framework for standard conform logging with lots of handlers, filter and
-  the easy to use format specification through the simple template (see below).
-  Logging to syslog, stdout, errorlog, streams, Dictionary, mail, files...
-
-- **Simple Templates**
-
-  This is an easy template language which will work mostly on short text and is
-  integrated into the internationalization, logging and error management
-  processes.\n
-  It supports variable substitutions, different powerful modifiers and control
-  operators.
-
-- **Automatic Configuration**
-
-  Classes may be configured directly using an initializer function you write
-  or automatically using the registry configuration.\n
-  Parts of the base system are already supporting this. If a configuration
-  is found it will be used.
-
-- **System execution**
-
-  A Process execution and management package makes it easy to call external
-  system routines on any Unix like System. With this PHP can also be used
-  as replacement for bash scripts or use powerful comand line tools where they
-  are better than the php solution like media conversion...
+Read more about each of this features in the API Documentation under
+http://alinex.de/server/html/d3/dde/features.html.
 
 
 API Documentation & More
 ---------------------
 
-A complete API documentation is included in the code and is accessible
-under the projects homepage http://alinex.de/server.
+A complete API documentation and more is included in the code and is 
+accessible under the projects homepage http://alinex.de/server.
 This will be updated with each version step only.
 
 Installation

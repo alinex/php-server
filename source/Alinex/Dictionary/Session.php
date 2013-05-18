@@ -265,7 +265,7 @@ class Session implements \SessionHandlerInterface
         // check for registry settings
         $registry = Registry::getInstance();
         if (!isset($registry)) {
-            // registry not set get a new one
+            // registry not set get a default session store
             $this->setEngine(
                 Engine::getInstance(self::DEFAULT_PREFIX)
             );

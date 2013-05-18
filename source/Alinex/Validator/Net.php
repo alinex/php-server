@@ -22,9 +22,9 @@ class Net
     /**
      * Check for port number.
      *
-     * - \c disallowSystem - disallow the system ports 0-1023
-     * - \c disallowUser - disallow the user ports 1024-49151
-     * - \c disallowDynamic - disallow the dynamic ports 49152-65535
+     * - \c denySystem - deny the system ports 0-1023
+     * - \c denyUser - deny the user ports 1024-49151
+     * - \c denyDynamic - deny the dynamic ports 49152-65535
      * 
      * @param int $value    value to be checked
      * @param string  $name     readable variable identification
@@ -42,14 +42,14 @@ class Net
         try {
             // set the port ranges
             $intopt = array('type' => 16, 'unsigned' => true);
-            if (isset($options['disallowSystem']) 
-                && $options['disallowSystem'])
+            if (isset($options['denySystem']) 
+                && $options['denySystem'])
                 $intopt['minRange'] = 1024;
-            if (isset($options['disallowDynamic']) 
-                && $options['disallowDynamic'])
+            if (isset($options['denyDynamic']) 
+                && $options['denyDynamic'])
                 $intopt['maxRange'] = 49151;
-            if (isset($options['disallowUser']) 
-                && $options['disallowUser']) {
+            if (isset($options['denyUser']) 
+                && $options['denyUser']) {
                 if (isset($intopt['minRange']))
                     $intopt['minRange'] = 49152;
                 else if (isset($intopt['maxRange']))
@@ -82,37 +82,37 @@ class Net
                 array_diff(
                     array_keys($options),
                     array(
-                        'disallowSystem',
-                        'disallowUser',
-                        'disallowDynamic'
+                        'denySystem',
+                        'denyUser',
+                        'denyDynamic'
                     )
                 )
             ) == 0
         );
         // check options format
         assert(
-            !isset($options['disallowSystem'])
-            || is_bool($options['disallowSystem'])
+            !isset($options['denySystem'])
+            || is_bool($options['denySystem'])
         );
         assert(
-            !isset($options['disallowUser'])
-            || is_bool($options['disallowUser'])
+            !isset($options['denyUser'])
+            || is_bool($options['denyUser'])
         );
         assert(
-            !isset($options['disallowDynamic'])
-            || is_bool($options['disallowDynamic'])
+            !isset($options['denyDynamic'])
+            || is_bool($options['denyDynamic'])
         );
         // it's not possible to enable system and dynamic ports but disable user
         assert(
-            (isset($options['disallowDynamic']) && $options['disallowDynamic'])
-            || (!isset($options['disallowUser']) || !$options['disallowUser'])
-            || (isset($options['disallowSystem']) && $options['disallowSystem'])
+            (isset($options['denyDynamic']) && $options['denyDynamic'])
+            || (!isset($options['denyUser']) || !$options['denyUser'])
+            || (isset($options['denySystem']) && $options['denySystem'])
         );
         // it's not possible to disable all
         assert(
-            isset($options['disallowDynamic']) && $options['disallowDynamic']
-            && isset($options['disallowUser']) && $options['disallowUser']
-            && isset($options['disallowSystem']) && $options['disallowSystem']
+            isset($options['denyDynamic']) && $options['denyDynamic']
+            && isset($options['denyUser']) && $options['denyUser']
+            && isset($options['denySystem']) && $options['denySystem']
         );
             
         // return optimized array
@@ -129,14 +129,14 @@ class Net
     {
         // set the port ranges
         $intopt = array('type' => 16, 'unsigned' => true);
-        if (isset($options['disallowSystem']) 
-            && $options['disallowSystem'])
+        if (isset($options['denySystem']) 
+            && $options['denySystem'])
             $intopt['minRange'] = 1024;
-        if (isset($options['disallowDynamic']) 
-            && $options['disallowDynamic'])
+        if (isset($options['denyDynamic']) 
+            && $options['denyDynamic'])
             $intopt['maxRange'] = 49151;
-        if (isset($options['disallowUser']) 
-            && $options['disallowUser']) {
+        if (isset($options['denyUser']) 
+            && $options['denyUser']) {
             if (isset($intopt['minRange']))
                 $intopt['minRange'] = 49152;
             else if (isset($intopt['maxRange']))

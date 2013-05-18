@@ -26,20 +26,20 @@ class IOTest extends \PHPUnit_Framework_TestCase
 
     function testPathRelative()
     {
-        $this->assertTrue(is_string(IO::pathDescription(array('disallowRelative' => true))));
+        $this->assertTrue(is_string(IO::pathDescription(array('denyRelative' => true))));
         $this->assertEquals('filetest.txt', IO::path('filetest.txt', 'test directory'));
         $this->assertEquals('./filetest.txt', IO::path('./filetest.txt', 'test directory'));
-        $this->assertEquals('./filetest.txt', IO::path('./filetest.txt', 'test directory', array('disallowRelative' => false)));
+        $this->assertEquals('./filetest.txt', IO::path('./filetest.txt', 'test directory', array('denyRelative' => false)));
         $this->setExpectedException('Alinex\Validator\Exception');
-        IO::path('filetest.txt', 'incorect type', array('disallowRelative' => true));
+        IO::path('filetest.txt', 'incorect type', array('denyRelative' => true));
     }
 
     function testPathAbsolute()
     {
-        $this->assertTrue(is_string(IO::pathDescription(array('disallowAbsolute' => true))));
+        $this->assertTrue(is_string(IO::pathDescription(array('denyAbsolute' => true))));
         $this->assertEquals('/filetest.txt', IO::path('/filetest.txt', 'test directory'));
         $this->setExpectedException('Alinex\Validator\Exception');
-        IO::path('/filetest.txt', 'incorect type', array('disallowAbsolute' => true));
+        IO::path('/filetest.txt', 'incorect type', array('denyAbsolute' => true));
     }
 
     function testPathBackreferences()
