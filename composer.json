@@ -32,13 +32,14 @@
     ],
     "require": {
         "php": ">=5.3.2",
-        "doctrine/orm": "*"
+        "doctrine/orm": "*",
+        "mustangostang/spyc": "*"
     },
     "suggest": {
         "ext-gettext": "Allows fast non threaded internationalization",
         "ext-apc": "Allows alternative opcode- and user-cache to be used.",
         "ext-memcached": "Allows the memcache user-cahce to be used",
-        "ext-yaml": "Allows to export and import YAML data",
+        "ext-yaml": "Allows faster export and import of YAML data",
         "ext-PHPREDIS": "Allows faster access for credis library"
     },
     "require-dev": {

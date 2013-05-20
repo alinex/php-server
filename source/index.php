@@ -47,6 +47,17 @@ if (!file_exists(CONFIGFILE)) {
         ImportExport\Autodetect::findInstance(CONFIGFILE)
     );
 }
+if (!$registry->has(Alinex\DB\Connection::REGISTRY_BASE.'default'))
+    $registry->set(
+        Alinex\DB\Connection::REGISTRY_BASE.'default',
+        array(
+            'dbname' => 'a3',
+            'user' => 'alinex',
+            'password' => 'test',
+            'host' => 'localhost',
+            'driver' => 'pdo_mysql',
+        )
+    );
 
 // TEST STUFF
 

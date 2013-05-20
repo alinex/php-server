@@ -17,8 +17,9 @@ use Alinex\Dictionary;
 /**
  * Import and export hashtable values using YAML file.
  *
- * @attention
- * This needs the PECL extension under http://pecl.php.net/package/yaml to work.
+ * @note
+ * This will use the PECL extension under http://pecl.php.net/package/yaml if
+ * installed. If not it will use a pure php implementation to work.
  *
  * @verbinclude Alinex/Dictionary/ImportExport/storage.yaml
  */
@@ -42,8 +43,10 @@ class YamlFile extends File
      */
     function __construct(Dictionary\Engine $data = null, $file = null)
     {
+        // load the php spyc implementation if no native yaml supported
         if (!extension_loaded('yaml'))
-            throw new \BadMethodCallException("YAML extension not loaded");
+          require_once __DIR__.'/../../../vnd/spyc/Spyc.php';
+        
         parent::__construct($data, $file);
     }
 
@@ -60,7 +63,10 @@ class YamlFile extends File
         $this->checkReadable();
         $content = file_get_contents($this->_file);
         // set values
-        $import = yaml_parse($content);
+        if (extension_loaded('yaml'))
+            $import = yaml_parse($content);
+        else
+            $import = \Spyc::YAMLLoadString($yaml);
         if ($import === false)
             throw new Exception(
                 tr(
@@ -88,7 +94,10 @@ class YamlFile extends File
         // create header
         $content .= $this->getCommentHeader();
         // create export string
-        $content .= yaml_emit($this->getValues());
+        if (extension_loaded('yaml'))
+            $content .= yaml_emit($this->getValues());
+        else
+            $content .= \Spyc::YAMLDump($this->getValues());
         // add comments
         if (isset($this->_commentCallback)) {
             foreach (array_keys($this->getValues()) as $key) {
