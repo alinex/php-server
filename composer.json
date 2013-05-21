@@ -32,7 +32,7 @@
     ],
     "require": {
         "php": ">=5.3.2",
-        "doctrine/orm": "*",
+        "doctrine/orm": "2.*",
         "mustangostang/spyc": "*"
     },
     "suggest": {
@@ -44,7 +44,8 @@
     },
     "require-dev": {
         "launchpad/php-gettext": "*",
-        "colinmollenhour/credis": "*"
+        "colinmollenhour/credis": "*",
+        "symfony/yaml": "2.*"
     },
     "autoload": {
         "psr-0": {
