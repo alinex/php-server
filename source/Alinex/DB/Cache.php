@@ -12,7 +12,7 @@
 
 namespace Alinex\DB;
 
-use Alinex\Dictionary\Cache;
+use Alinex\Dictionary;
 
 /**
  * Interface to use the Alinex caching system for doctrine, too.
@@ -44,7 +44,7 @@ class Cache extends \Doctrine\Common\Cache\CacheProvider
      */
     protected function doFetch($id)
     {
-        return Cache::getInstance()->get($id);
+        return Dictionary\Cache::getInstance()->get($id);
     }
 
     /**
@@ -56,7 +56,7 @@ class Cache extends \Doctrine\Common\Cache\CacheProvider
      */
     protected function doContains($id)
     {
-        return Cache::getInstance()->has($id);
+        return Dictionary\Cache::getInstance()->has($id);
     }
 
     /**
@@ -72,7 +72,7 @@ class Cache extends \Doctrine\Common\Cache\CacheProvider
      */
     protected function doSave($id, $data, $lifeTime = false)
     {
-        return Cache::getInstance()->set($id, $data, $this->_flags, $lifeTime);
+        return Dictionary\Cache::getInstance()->set($id, $data, $this->_flags, $lifeTime);
     }
 
     /**
@@ -84,7 +84,7 @@ class Cache extends \Doctrine\Common\Cache\CacheProvider
      */
     protected function doDelete($id)
     {
-        return Cache::getInstance()->remove($id);
+        return Dictionary\Cache::getInstance()->remove($id);
     }
 
     /**
@@ -95,7 +95,7 @@ class Cache extends \Doctrine\Common\Cache\CacheProvider
      */
     protected function doFlush()
     {
-        return Cache::getInstance()->clear();
+        return Dictionary\Cache::getInstance()->clear();
     }
 
     /**

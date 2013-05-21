@@ -40,13 +40,7 @@ include_once 'bootstrap.php';
 // init session handling
 Alinex\Dictionary\Session::getInstance()->start();
 
-// initial creation of config file
-if (!file_exists(CONFIGFILE)) {
-    $registry = Alinex\Dictionary\Registry::getInstance();
-    $registry->export(
-        ImportExport\Autodetect::findInstance(CONFIGFILE)
-    );
-}
+$registry = Alinex\Dictionary\Registry::getInstance();
 // add database connection
 if (!$registry->has(Alinex\DB\Connection::REGISTRY_BASE.'default'))
     $registry->set(
@@ -59,6 +53,12 @@ if (!$registry->has(Alinex\DB\Connection::REGISTRY_BASE.'default'))
             'driver' => 'pdo_mysql',
         )
     );
+// initial creation of config file
+if (!file_exists(CONFIGFILE)) {
+    $registry->export(
+        ImportExport\Autodetect::findInstance(CONFIGFILE)
+    );
+}
 
 // TEST STUFF
 

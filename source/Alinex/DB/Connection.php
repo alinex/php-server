@@ -28,10 +28,11 @@ class Connection
     const REGISTRY_BASE = 'dbconn.';
     
     /**
-     * Cache group to store SQL results.
-     * This will hold the SQL codes which are generated out of DQL syntax.
+     * Result cache to use.
+     * This will hold the SQL codes which are generated out of DQL syntax. By
+     * default each connection uses a subgroup with the connection name.
      */
-    const CACHE_GROUP = 'dbsql.';
+    const CACHE_GROUP = 'db.';
 
     /**
      * Specific result cache to use.
@@ -86,17 +87,21 @@ class Connection
                 )
             );
         $connectionConfig = $registry->get(self::REGISTRY_BASE.$name);
+        if (!isset($connectionConfig))
+            throw new \Exception(
+                tr(__NAMESPACE__, 'Database is not configured')
+            );
         // check for cache
         $cache = self::$_resultCache;
         if (!isset($cache)) {
             $cache = new Cache();
-            $cache->setFlags(Engine::PERFORMANCE_HIGH & Engine::SCOPE_GLOBAL);
-            $cache->setNamespace(self::CACHE_GROUP);
+            $cache->setFlags(Engine::PERFORMANCE_MEDIUM & Engine::SCOPE_GLOBAL);
+            $cache->setNamespace(self::CACHE_GROUP.$name.'.');
         }
         // setup config
         $config = new \Doctrine\DBAL\Configuration();
         $config->setResultCacheImpl($cache);
-        if (!PRODUCTIVE)
+        if (!defined('PRODUCTIVE') || !PRODUCTIVE)
             $config->setSQLLogger(new SQLLogger());
 
         return DriverManager::getConnection($connectionConfig, $config);

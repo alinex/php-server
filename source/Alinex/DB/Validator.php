@@ -10,7 +10,7 @@
  * @see       http://alinex.de
  */
 
-namespace Alinex\Dictionary;
+namespace Alinex\DB;
 
 use Alinex\Validator\Exception;
 

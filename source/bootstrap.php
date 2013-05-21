@@ -61,7 +61,7 @@ I18n::init();
 
 Code\ErrorHandler::register();
 Code\ExceptionHandler::register();
-Code\AssertHandler::enabled(!PRODUCTIVE);
+Code\AssertHandler::enabled(!defined('PRODUCTIVE') || !PRODUCTIVE);
 
 // initialize registry
 Registry::getInstance(
