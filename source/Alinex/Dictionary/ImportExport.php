@@ -154,7 +154,7 @@ abstract class ImportExport
      */
     function setCommentCallback($callback)
     {
-        $callback = \Alinex\Validator\Code::callable(
+        $callback = \Alinex\Validator\Code::callback(
             $callback, 'callback', array('relative' => __CLASS__)
         );
         $this->_commentCallback = $callback;

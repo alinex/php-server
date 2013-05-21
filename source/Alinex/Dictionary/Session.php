@@ -510,8 +510,8 @@ class Session implements \SessionHandlerInterface
         session_regenerate_id($removeOld);
         session_unset();
         $_SESSION[self::SESSION_INITIATED] = TRUE;
-        $_SESSION[self::SESSION_INACTIVE] = time() + self::$inactive;
-        $_SESSION[self::SESSION_LIFETIME] = time() + self::$lifetime;
+        $_SESSION[self::SESSION_INACTIVE] = time() + $this->_inactivetime;
+        $_SESSION[self::SESSION_LIFETIME] = time() + $this->_lifetime;
         if (isset($_SERVER['HTTP_USER_AGENT']))
             $_SESSION[self::SESSION_AGENT] = md5($_SERVER['HTTP_USER_AGENT']);
     }

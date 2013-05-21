@@ -285,7 +285,7 @@ class Code
      * @return mixed callable information
      * @throws Exception if not valid
      */
-    static function callable($value, $name, array $options = null)
+    static function callback($value, $name, array $options = null)
     {
         if (!isset($options))
             $options = array();
@@ -359,7 +359,7 @@ class Code
         return $value;
     }
 
-    static function callableDescription(array $options = null)
+    static function callbackDescription(array $options = null)
     {
         $desc = tr(
             __NAMESPACE__,

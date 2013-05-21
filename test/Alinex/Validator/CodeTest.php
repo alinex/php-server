@@ -48,33 +48,33 @@ class CodeTest extends \PHPUnit_Framework_TestCase
 #        Code::phpClass('NotExisting', 'not existing class', $options);
     }
 
-    function testCallable()
+    function testCallback()
     {
-        $this->assertTrue(is_string(Code::callableDescription(
+        $this->assertTrue(is_string(Code::callbackDescription(
             array('relative' => 'xxx', 'allowFunction' => true)
         )));
-        $this->assertTrue(is_array(Code::callable('Alinex\Validator\Type::integer', 'test')), 'integer method');
-        $this->assertTrue(is_array(Code::callable('Type::integer', 'test', array('relative' => __NAMESPACE__))), 'integer method');
+        $this->assertTrue(is_array(Code::callback('Alinex\Validator\Type::integer', 'test')), 'integer method');
+        $this->assertTrue(is_array(Code::callback('Type::integer', 'test', array('relative' => __NAMESPACE__))), 'integer method');
         $this->setExpectedException('Alinex\Validator\Exception');
-        Code::callable('_not_allowed', 'starting _ is not allowed');
+        Code::callback('_not_allowed', 'starting _ is not allowed');
     }
 
-    function testCallableInvalidClass()
+    function testCallbackInvalidClass()
     {
         $this->setExpectedException('Alinex\Validator\Exception');
-        Code::callable('Alinex\Validator\Typppe::integer', 'not existing class');
+        Code::callback('Alinex\Validator\Typppe::integer', 'not existing class');
     }
 
-    function testCallableUndefinedMethod()
+    function testCallbackUndefinedMethod()
     {
         $this->setExpectedException('Alinex\Validator\Exception');
-        Code::callable('Alinex\Validator\Type::outteger', 'not existing method');
+        Code::callback('Alinex\Validator\Type::outteger', 'not existing method');
     }
 
-    function testCallableUndefinedFunction()
+    function testCallbackUndefinedFunction()
     {
         $this->setExpectedException('Alinex\Validator\Exception');
-        Code::callable('outteger', 'starting _ is not allowed', array('allowFunction' => true));
+        Code::callback('outteger', 'starting _ is not allowed', array('allowFunction' => true));
     }
 
     function testPrintf()

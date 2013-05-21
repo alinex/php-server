@@ -60,7 +60,7 @@ class Validator
     public static function check($value, $name, $callback,
         array $options = null)
     {
-        $callback = Validator\Code::callable(
+        $callback = Validator\Code::callback(
             $callback, 'callback', array('relative' => __CLASS__)
         );
 
@@ -103,7 +103,7 @@ class Validator
      */
     public static function describe($name, $callback, array $options = null)
     {
-        $callback = Validator\Code::callable(
+        $callback = Validator\Code::callback(
             $callback, 'callback', array('relative' => __CLASS__)
         );
         $message = '';

@@ -47,6 +47,7 @@ if (!file_exists(CONFIGFILE)) {
         ImportExport\Autodetect::findInstance(CONFIGFILE)
     );
 }
+// add database connection
 if (!$registry->has(Alinex\DB\Connection::REGISTRY_BASE.'default'))
     $registry->set(
         Alinex\DB\Connection::REGISTRY_BASE.'default',

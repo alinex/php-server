@@ -625,7 +625,7 @@ class Registry implements \Countable, \ArrayAccess
             return null;
         }
         // set validator method
-        $callback = Validator\Code::callable(
+        $callback = \Alinex\Validator\Code::callback(
             $callback, 'callback', array('relative' => 'Alinex\Validator')
         );
         $result = $this->_validator->set($key, array($callback, $options));
