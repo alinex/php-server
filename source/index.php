@@ -60,26 +60,24 @@ if (!file_exists(CONFIGFILE)) {
     );
 }
 
+
+$test = new Test();
+$test->setName('alex 2');
+
+$entityManager = Alinex\DB\EntityManager::getInstance();
+$entityManager->persist($test);
+$entityManager->flush();
+echo "Created Test with ID " . $test->getId() . "\n";
 // TEST STUFF
 
 echo('kkkk');
 
-$config = new \Doctrine\DBAL\Configuration();
-//..
-$connectionParams = array(
-    'dbname' => 'a3',
-    'user' => 'alinex',
-    'password' => 'test',
-    'host' => 'localhost',
-    'driver' => 'pdo_mysql',
-);
-#$conn = \Doctrine\DBAL\DriverManager::getConnection($connectionParams, $config);
-$conn = Alinex\DB\Connection::get();
-$sql = "SELECT * FROM test";
-$stmt = $conn->query($sql);
-while ($row = $stmt->fetch()) {
-    echo $row['name'];
-}
+#$conn = Alinex\DB\Connection::get();
+#$sql = "SELECT * FROM test";
+#$stmt = $conn->query($sql);
+#while ($row = $stmt->fetch()) {
+#    echo $row['name'];
+#}
 
 ?>
 <h1>Ende</h1>

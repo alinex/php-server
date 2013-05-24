@@ -305,10 +305,12 @@ class Validator
             __NAMESPACE__,
             'The value has to be a dictionary engine specification structure.'
         );
-        $desc .= ' '.Type::arraylistDescription(self::$_engineDefList);
+        $desc .= ' '.\Alinex\Validator\Type::arraylistDescription(
+            self::$_engineDefList
+        );
         // check for engine specific options
         $desc .= ' '.tr(__NAMESPACE__, 'For type \'redis\' and \'memcache\' servers are specified as:')
-            .Type::arraylistDescription(
+            .\Alinex\Validator\Type::arraylistDescription(
                 array(
                     'notEmpty' => true,
                     'keySpec' => array(
@@ -321,7 +323,7 @@ class Validator
                 )
             );
         $desc .= ' '.tr(__NAMESPACE__, 'For type \'directory\' the storage path has to be added:')
-            .IO::pathDescription(
+            .\Alinex\Validator\IO::pathDescription(
                 array(
                     'filetype' => 'dir',
                     'writable' => true,
