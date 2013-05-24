@@ -1174,20 +1174,18 @@ class Type
         if (isset($options['keySpec'])) {
             $desc .= ' '.tr(
                 __NAMESPACE__,
-                PHP_EOL.'The array may have the following values:'
+                ' '.'The array may have the following keys.'
             );
-            foreach (array_keys($options['keySpec']) as $key) {
+            foreach ($options['keySpec'] as $key => $keyspec) {
                 if (isset($options['allowedKeys'])
                     && !\in_array($key, $options['allowedKeys'])
                     && (!isset($options['mandatoryKeys'])
                         || !\in_array($key, $options['mandatoryKeys'])))
                     continue;
-                $desc .= ' '.\Alinex\Validator::describe(
-                    $key == '' ?: 'other keys',
-                    $options['keySpec'][$key][0],
-                    isset($options['keySpec'][$key][1])
-                    ? $options['keySpec'][$key][1]
-                    : null
+                $desc .= PHP_EOL.\Alinex\Validator::describe(
+                    $key ?: 'other keys',
+                    $keyspec[0],
+                    isset($keyspec[1]) ? $keyspec[1] : null
                 );
             }
         }

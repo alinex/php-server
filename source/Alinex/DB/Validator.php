@@ -13,6 +13,7 @@
 namespace Alinex\DB;
 
 use Alinex\Validator\Exception;
+use Alinex\Validator\Type;
 
 /**
  * Validator for database connections.
@@ -58,7 +59,7 @@ class Validator
             ),
             'path' => array(
                 'IO::path',
-                array('writeable' => true)
+                array('writable' => true)
             ),
             'memory' => array(
                 'Type::boolean',
@@ -190,7 +191,7 @@ class Validator
         // name of origin have to be a string
         assert(is_string($name));
 
-        $options = $this->connectionOptions($options);
+        $options = self::connectionOptions($options);
         // check the base configuration
         try {
             $value = Type::arraylist($value, $name, self::$_connDefList);
@@ -289,12 +290,13 @@ class Validator
     {
         self::connectionTextInit();
         
-        $options = $this->connectionOptions($options);
         $desc = tr(
             __NAMESPACE__,
             'The value has to be a database connection setting.'
         );
-        $desc .= ' '.Type::arraylistDescription(self::$_connDefList);
+        $desc .= ' '.Type::arraylistDescription(
+            self::$_connDefList
+        );
         // check for engine specific options
         $desc .= ' '.tr(__NAMESPACE__, 'For type \'pdo_sqlite\' the following parameters may be given:')
             .Type::arraylistDescription(
@@ -316,7 +318,7 @@ class Validator
                 )
             );
         $desc .= ' '.tr(__NAMESPACE__, 'For type \'pdo_pgsql\' and \'pdo_sqlsrv\' the following parameters may be given:')
-            .Type::arraylistDescription(
+            . Type::arraylistDescription(
                 array(
                     'mandatoryKeys' => array('driver'),
                     'allowedKeys' => array(

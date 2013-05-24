@@ -55,6 +55,9 @@ if (!$registry->has(Alinex\DB\Connection::REGISTRY_BASE.'default'))
     );
 // initial creation of config file
 if (!file_exists(CONFIGFILE)) {
+    try {
+        \Alinex\DB\Connection::get();
+    } catch (\Exception $ex) {}
     $registry->export(
         ImportExport\Autodetect::findInstance(CONFIGFILE)
     );

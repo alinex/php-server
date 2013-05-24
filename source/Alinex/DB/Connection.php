@@ -78,7 +78,6 @@ class Connection
                 self::REGISTRY_BASE.$name, 
                 __NAMESPACE__.'\Validator::connection',
                 array(
-                    'exclude' => 'Session',
                     'description' => tr(
                         __NAMESPACE__,
                         'Database connection configuration for {name}.',
