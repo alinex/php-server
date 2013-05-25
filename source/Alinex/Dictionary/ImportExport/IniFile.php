@@ -151,9 +151,12 @@ class IniFile extends File
         $list = $this->getValues();
         if (isset($list)) {
             if (isset($commentkeys))
-                $keys = array_merge($commentkeys, array_keys($list));
+                $keys = array_unique(
+                    array_merge($commentkeys, array_keys($list))
+                );
             else
                 $keys = array_keys($list);
+            error_log(print_r($keys,1));
             sort($keys);
             if ($this->_sections) {
                 $currentSection = null;
