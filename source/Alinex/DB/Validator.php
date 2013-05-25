@@ -270,9 +270,11 @@ class Validator
         if (isset($options['denyDriver'])
             && in_array($value['driver'], $options['denyDriver']))
                 throw new Exception(
-                    tr(
+                    trn(
                         __NAMESPACE__,
                         'The {type} driver is not allowed here',
+                        'The {type} drivers are not allowed here',
+                        count($value['driver']),
                         array('type' => $value['driver'])
                     )
                 );
@@ -298,8 +300,10 @@ class Validator
             self::$_connDefList
         );
         // check for engine specific options
-        $desc .= ' '.tr(__NAMESPACE__, 'For type \'pdo_sqlite\' the following parameters may be given:')
-            .Type::arraylistDescription(
+        $desc .= ' '.tr(
+            __NAMESPACE__,
+            'For type \'pdo_sqlite\' the following parameters may be given:'
+        )   .Type::arraylistDescription(
                 array(
                     'mandatoryKeys' => array('driver'),
                     'allowedKeys' => array(
@@ -307,8 +311,10 @@ class Validator
                     )              
                 )
             );
-        $desc .= ' '.tr(__NAMESPACE__, 'For type \'pdo_mysql\' the following parameters may be given:')
-            .Type::arraylistDescription(
+        $desc .= ' '.tr(
+            __NAMESPACE__, 
+            'For type \'pdo_mysql\' the following parameters may be given:'
+        )   .Type::arraylistDescription(
                 array(
                     'mandatoryKeys' => array('driver'),
                     'allowedKeys' => array(
@@ -317,8 +323,10 @@ class Validator
                     )              
                 )
             );
-        $desc .= ' '.tr(__NAMESPACE__, 'For type \'pdo_pgsql\' and \'pdo_sqlsrv\' the following parameters may be given:')
-            . Type::arraylistDescription(
+        $desc .= ' '.tr(
+            __NAMESPACE__, 
+            'For type \'pdo_pgsql\' and \'pdo_sqlsrv\' the following parameters may be given:'
+        )   . Type::arraylistDescription(
                 array(
                     'mandatoryKeys' => array('driver'),
                     'allowedKeys' => array(
@@ -326,8 +334,10 @@ class Validator
                     )              
                 )
             );
-        $desc .= ' '.tr(__NAMESPACE__, 'For type \'pdo_oci\' and \'oci\' the following parameters may be given:')
-            .Type::arraylistDescription(
+        $desc .= ' '.tr(
+            __NAMESPACE__, 
+            'For type \'pdo_oci\' and \'oci\' the following parameters may be given:'
+        )   .Type::arraylistDescription(
                 array(
                     'mandatoryKeys' => array('driver'),
                     'allowedKeys' => array(
@@ -343,8 +353,11 @@ class Validator
                 array('type' => $options['fixedDriver'])
             );
         if (isset($options['denyDriver']))
-            $desc .= ' '.tr(
-                __NAMESPACE__, 'The {types} driver are not allowed here.',
+            $desc .= ' '.trn(
+                __NAMESPACE__, 
+                'The {types} driver is not allowed here.',
+                'The {types} driver are not allowed here.',
+                count($options['denyDriver']),
                 array('types' => $options['denyDriver'])
             );
         

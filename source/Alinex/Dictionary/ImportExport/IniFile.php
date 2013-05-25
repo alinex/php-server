@@ -142,6 +142,12 @@ class IniFile extends File
         $content = '';
         // create header
         $content .= $this->getCommentHeader();
+        $content .= $this->getComment(
+            tr(
+                __NAMESPACE__,
+                'In this format array keys are written as extra lines using \'-\' as separator.'
+            )
+        );
         $list = $this->getValues();
         if (isset($list)) {
             if (isset($commentkeys))

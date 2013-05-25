@@ -171,7 +171,7 @@ class String
             $indentNum = strspn($value, ' ');
             $indent = $indentNum ? str_repeat(' ', $indentNum) : '';
             do {
-                $line = wordwrap($value, $width, $break.$indent, $cut);
+                $line = wordwrap($value, $width-$indentNum, $break.$indent, $cut);
                 $value = $indent.trim(substr($value, strlen($line)));
                 $string .= $line.PHP_EOL;
             } while (strlen($value) > $indentNum);

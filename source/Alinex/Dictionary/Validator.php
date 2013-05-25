@@ -309,8 +309,10 @@ class Validator
             self::$_engineDefList
         );
         // check for engine specific options
-        $desc .= ' '.tr(__NAMESPACE__, 'For type \'redis\' and \'memcache\' servers are specified as:')
-            .\Alinex\Validator\Type::arraylistDescription(
+        $desc .= ' '.tr(
+            __NAMESPACE__, 
+            'For type \'redis\' and \'memcache\' servers are specified as:'
+        )   .\Alinex\Validator\Type::arraylistDescription(
                 array(
                     'notEmpty' => true,
                     'keySpec' => array(
@@ -322,8 +324,10 @@ class Validator
                     'description' => tr(__NAMESPACE__, 'URIs of possible server.')
                 )
             );
-        $desc .= ' '.tr(__NAMESPACE__, 'For type \'directory\' the storage path has to be added:')
-            .\Alinex\Validator\IO::pathDescription(
+        $desc .= ' '.tr(
+            __NAMESPACE__, 
+            'For type \'directory\' the storage path has to be added:'
+        )   .\Alinex\Validator\IO::pathDescription(
                 array(
                     'filetype' => 'dir',
                     'writable' => true,

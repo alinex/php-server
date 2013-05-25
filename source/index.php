@@ -40,11 +40,6 @@ include_once 'bootstrap.php';
 // init session handling
 Alinex\Dictionary\Session::getInstance()->start();
 
-echo('<pre>'.Alinex\Util\String::wordbreak(
-        \Alinex\DB\Validator::connectionDescription()
-));
-exit;
-
 $registry = Alinex\Dictionary\Registry::getInstance();
 // add database connection
 if (!$registry->has(Alinex\DB\Connection::REGISTRY_BASE.'default'))
@@ -59,23 +54,23 @@ if (!$registry->has(Alinex\DB\Connection::REGISTRY_BASE.'default'))
         )
     );
 // initial creation of config file
-if (!file_exists(CONFIGFILE)) {
+#if (!file_exists(CONFIGFILE)) {
     try {
         \Alinex\DB\Connection::get();
     } catch (\Exception $ex) {}
     $registry->export(
         ImportExport\Autodetect::findInstance(CONFIGFILE)
     );
-}
+#}
 
 
-$test = new Test();
-$test->setName('alex 2');
+#$test = new Test();
+#$test->setName('alex 2');
 
-$entityManager = Alinex\DB\EntityManager::getInstance();
-$entityManager->persist($test);
-$entityManager->flush();
-echo "Created Test with ID " . $test->getId() . "\n";
+#$entityManager = Alinex\DB\EntityManager::getInstance();
+#$entityManager->persist($test);
+#$entityManager->flush();
+#echo "Created Test with ID " . $test->getId() . "\n";
 // TEST STUFF
 
 echo('kkkk');
