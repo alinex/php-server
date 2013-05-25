@@ -40,6 +40,11 @@ include_once 'bootstrap.php';
 // init session handling
 Alinex\Dictionary\Session::getInstance()->start();
 
+echo('<pre>'.Alinex\Util\String::wordbreak(
+        \Alinex\DB\Validator::connectionDescription()
+));
+exit;
+
 $registry = Alinex\Dictionary\Registry::getInstance();
 // add database connection
 if (!$registry->has(Alinex\DB\Connection::REGISTRY_BASE.'default'))

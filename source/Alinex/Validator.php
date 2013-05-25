@@ -25,6 +25,11 @@ use Alinex\Validator;
 class Validator
 {
     /**
+     * Indentation string for subparts.
+     */
+    const INDENT = '  ';
+    
+    /**
      * Call a validator method as specified in array.
      *
      * The document may be called with one of the following types:
@@ -107,13 +112,6 @@ class Validator
             $callback, 'callback', array('relative' => __CLASS__)
         );
         $message = '';
-        // predefined help
-        if (isset($name))
-            $message .= tr(
-                __NAMESPACE__,
-                'Specification for \'{name}\': ',
-                array('name' => $name)
-            ).PHP_EOL;
         if (isset($options['description']))
             $message .= $options['description'].PHP_EOL;
         // specific help
@@ -125,7 +123,18 @@ class Validator
         if (!isset($options))
             $options = array();
         $message .= call_user_func($callback, $options);
-
+        if ($message)
+            $message = self::INDENT.str_replace(
+                PHP_EOL, PHP_EOL.self::INDENT, $message
+            );
+        // predefined help text
+        if (isset($name))
+            $message = tr(
+                __NAMESPACE__,
+                'Specification for \'{name}\': ',
+                array('name' => $name)
+            ).PHP_EOL.$message;
+                
         return $message;
     }
 

@@ -1133,26 +1133,32 @@ class Type
                 'An empty array is not allowed.'
             );
         if (isset($options['mandatoryKeys']))
-            $desc .= ' '.tr(
+            $desc .= ' '.trn(
                 __NAMESPACE__,
+                'The key {list} has to be present.',
                 'The keys {list} have to be present.',
+                count($options['mandatoryKeys']),
                 array('list' => String::dump($options['mandatoryKeys']))
             );
         if (isset($options['mandatoryKeys']) && isset($options['allowedKeys']))
-            $desc .= ' '.tr(
+            $desc .= ' '.trn(
                 __NAMESPACE__,
+                'Additionally the key {list} is allowed.',
                 'Additionally the keys {list} are allowed.',
+                count($options['allowedKeys']),
                 array('list' => String::dump($options['allowedKeys']))
             );
         else if (isset($options['allowedKeys']))
-            $desc .= ' '.tr(
+            $desc .= ' '.trn(
                 __NAMESPACE__,
+                'Only the key {list} is allowed.',
                 'Only the keys {list} are allowed.',
+                count($options['allowedKeys']),
                 array('list' => String::dump($options['allowedKeys']))
             );
         // range description
         if (isset($options['minLength']) && isset($options['maxLength']))
-            $desc .= ' '.tr(
+            $desc .= ' '.trn(
                 __NAMESPACE__,
                 'The array has to consist of {min} to {max} elements.',
                 array('min' => $options['minLength'],

@@ -146,6 +146,9 @@ class String
 
     /**
      * Break text into multiple lines using wordwrap.
+     * 
+     * If a line is allready indented using spaces it will be also kept for the
+     * wrapped lines.
      *
      * @param string $string
      * @param int $width
@@ -165,11 +168,13 @@ class String
         $array = explode("\n", $string);
         $string = "";
         foreach ($array as $value) {
+            $indentNum = strspn($value, ' ');
+            $indent = $indentNum ? str_repeat(' ', $indentNum) : '';
             do {
-                $line = wordwrap($value, $width, $break, $cut);
-                $value = trim(substr($value, strlen($line)));
+                $line = wordwrap($value, $width, $break.$indent, $cut);
+                $value = $indent.trim(substr($value, strlen($line)));
                 $string .= $line.PHP_EOL;
-            } while ($value);
+            } while (strlen($value) > $indentNum);
         }
         return trim($string);
     }
